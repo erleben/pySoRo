@@ -80,8 +80,8 @@ class GridRender:
 
     def __init__(self, grid):
         vertex_data, index_data = create_wire_grid_data(grid)
-        vertex_shader = CORE.Shader('resources/shaders/grid_vertex.glsl', GL_VERTEX_SHADER)
-        fragment_shader = CORE.Shader('resources/shaders/grid_fragment.glsl', GL_FRAGMENT_SHADER)
+        vertex_shader = CORE.Shader('pyVISUALIZATION/shaders/grid_vertex.glsl', GL_VERTEX_SHADER)
+        fragment_shader = CORE.Shader('pyVISUALIZATION/shaders/grid_fragment.glsl', GL_FRAGMENT_SHADER)
 
         self.program = CORE.ShaderProgram([vertex_shader, fragment_shader])
 

@@ -71,7 +71,7 @@ class RenderWidget(QOpenGLWidget):
             raise RuntimeError("unable to apply OpenGL version profile")
         self.gl.initializeOpenGLFunctions()
 
-        self.open_file('resources/default_scene.xml')
+        self.open_file('settings.xml')
 
         self.point_cloud_render = PC.PointCloudRender()
         self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')

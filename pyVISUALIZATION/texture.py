@@ -91,8 +91,8 @@ class TextureRender:
     def __init__(self, texture):
         self.texture = texture
 
-        vertex_shader = CORE.Shader('resources/shaders/texture_vertex.glsl', GL_VERTEX_SHADER)
-        fragment_shader = CORE.Shader('resources/shaders/texture_fragment.glsl', GL_FRAGMENT_SHADER)
+        vertex_shader = CORE.Shader('pyVISUALIZATION/shaders/texture_vertex.glsl', GL_VERTEX_SHADER)
+        fragment_shader = CORE.Shader('pyVISUALIZATION/shaders/texture_fragment.glsl', GL_FRAGMENT_SHADER)
         program = CORE.ShaderProgram([vertex_shader, fragment_shader])
         self.program = program
 

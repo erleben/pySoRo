@@ -79,8 +79,8 @@ class PointCloudRender:
         self.should_upload = False
         self.render_lock = threading.Lock()
 
-        vertex_shader = CORE.Shader('resources/shaders/point_cloud_vertex.glsl', GL_VERTEX_SHADER)
-        fragment_shader = CORE.Shader('resources/shaders/point_cloud_fragment.glsl', GL_FRAGMENT_SHADER)
+        vertex_shader = CORE.Shader('pyVISUALIZATION/shaders/point_cloud_vertex.glsl', GL_VERTEX_SHADER)
+        fragment_shader = CORE.Shader('pyVISUALIZATION/shaders/point_cloud_fragment.glsl', GL_FRAGMENT_SHADER)
 
         self.program = CORE.ShaderProgram([vertex_shader, fragment_shader])
         self.vao = CORE.VAO()
