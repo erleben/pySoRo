@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scene clear_color="[1.0, 1.0, 1.0]">
+
+        <camera
+                eye="[2, 1, -0.2]"
+                center="[0, 0, 0]"
+                up="[0, -1, 0]"
+                near="0.1"
+                far="100.0"
+                fovy="45.0"
+        />
+
+        <grid
+                on="True"
+                start_x="-1.0"
+                end_x="1.0"
+                cells_x="10"
+                start_z="-1.0"
+                end_z="1.0"
+                cells_z="10"
+        />
+
+</scene>
