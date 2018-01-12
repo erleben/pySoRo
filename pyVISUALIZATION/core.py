@@ -96,7 +96,6 @@ class VAO:
 class VBO:
 
     def __init__(self, vertices, indices, make_static=True, make_triangles=True, elements_per_vertex=6):
-        print('Creating new VBO')
         self.is_triangles = make_triangles
         self.is_static = make_static
         self.elements_per_vertex = elements_per_vertex
@@ -538,7 +537,6 @@ class Camera:
         view_matrix[0, 3] = - np.inner(self.right, self.eye)
         view_matrix[1, 3] = - np.inner(self.up, self.eye)
         view_matrix[2, 3] =   np.inner(self.dof, self.eye)
-        #print(view_matrix)
         return view_matrix
 
     def compute_projection_matrix(self):
@@ -553,7 +551,6 @@ class Camera:
         projection_matrix[2][2] = -(self.z_far + self.z_near) / (self.z_far - self.z_near)
         projection_matrix[2][3] = -(2.0 * self.z_far * self.z_near) / (self.z_far - self.z_near)
         projection_matrix[3][2] = -1.0
-        #print(projection_matrix)
         return projection_matrix
 
     def get_ray(self, nx, ny):
@@ -629,36 +626,3 @@ class SceneGraph:
             instance.draw()
 
         self.program.stop()
-
-
-class MovieRecorder:
-
-    def __init__(self):
-        self.on = False
-        self.frame = 0
-        self.path = './'
-        self.type = 'png'
-        self.base_name = 'screen'
-
-    def clear(self):
-        self.frame = 0
-
-    def record(self, widget):
-        if self.on:
-
-            if not os.path.exists(self.path):
-                raise RuntimeError('movie path did not exist')
-
-            filename = os.path.join(self.path, self.base_name + str(self.frame).zfill(5) + '.' + self.image_type)
-
-            widget.grabFramebuffer().save(filename)
-
-            self.frame += 1
-
-    def set_state(self, is_on):
-        self.on = is_on
-        if self.on:
-            print('Movie recording is on')
-        else:
-            print('Movie recording is off')
-            self.clear()

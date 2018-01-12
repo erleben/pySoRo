@@ -3,6 +3,7 @@ import pyVISUALIZATION.core as CORE
 import pyVISUALIZATION.texture as TEXTURE
 from math import fabs
 import numpy as np
+import threading
 
 
 OpenGL.ERROR_CHECKING = True
@@ -14,8 +15,7 @@ OpenGL.FULL_LOGGING = True
 class PointCloudVBO:
 
     def __init__(self):
-        print('Creating new Point Cloud VBO')
-        self.max_count = 100000
+        self.max_count = 1000000
         self.count = 0
 
         vertex_nbytes = self.max_count*4*5
@@ -42,7 +42,6 @@ class PointCloudVBO:
         glDrawArrays(GL_POINTS, 0, self.count)
 
     def update(self, coordinates, uvs):
-        print('Zipping coordinates and uvs into vertex data')
         vertex_data = []
         index_data = []
         index = 0
@@ -57,36 +56,35 @@ class PointCloudVBO:
                 index += 1
         vertex_array = np.array(vertex_data, dtype=np.float32)
         index_array = np.array(index_data, dtype=np.uint32)
-        print('Data conversion done')
 
         self.count = index
-        print('Data for ', self.count, 'vertices are ready for upload')
 
-        print('Bind VBO buffer ', self.vbo)
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
-
-        print('Bind IBO buffer ', self.ibo)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
-
-        print('Transmit data to buffers')
         glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)
-        print('Transmission done')
 
 
 class PointCloudRender:
 
-    def __init__(self, render_lock):
-        self.render_lock = render_lock
-        self.render_lock.acquire()
+    def __init__(self):
+        self.coordinates = None
+        self.uvs = None
+        self.width = None
+        self.height = None
+        self.external_format = None
+        self.external_type = None
+        self.pixels = None
+        self.image = None
+        self.should_upload = False
+        self.render_lock = threading.Lock()
+
         vertex_shader = CORE.Shader('resources/shaders/point_cloud_vertex.glsl', GL_VERTEX_SHADER)
         fragment_shader = CORE.Shader('resources/shaders/point_cloud_fragment.glsl', GL_FRAGMENT_SHADER)
-        program = CORE.ShaderProgram([vertex_shader, fragment_shader])
 
-        self.program = program
+        self.program = CORE.ShaderProgram([vertex_shader, fragment_shader])
         self.vao = CORE.VAO()
         self.vbo = PointCloudVBO()
-        self.image = None
 
         self.program.use()
         self.vao.bind()
@@ -117,10 +115,29 @@ class PointCloudRender:
             )
 
         self.vao.unbind()
-        self.render_lock.release()
 
     def render(self, camera):
+
         self.render_lock.acquire()
+        if self.should_upload:
+            self.vbo.update(self.coordinates, self.uvs)
+            if self.image is None:
+                self.image = TEXTURE.Texture2D(self.width,
+                                               self.height,
+                                               self.external_format,
+                                               self.external_type,
+                                               self.pixels
+                                               )
+            else:
+                self.image.update(self.width,
+                                  self.height,
+                                  self.external_format,
+                                  self.external_type,
+                                  self.pixels
+                                  )
+            self.should_upload = False
+        self.render_lock.release()
+
         view_matrix = camera.compute_view_matrix()
         projection_matrix = camera.compute_projection_matrix()
         model_matrix = np.identity(4, dtype=np.float32)
@@ -139,19 +156,15 @@ class PointCloudRender:
         self.vbo.draw()
         self.vao.unbind()
         self.program.stop()
-        self.render_lock.release()
 
-    def update(self, coordinates, uvs, width, height, external_format, external_type, pixels):
+    def copy_data(self, coordinates, uvs, width, height, external_format, external_type, pixels):
         self.render_lock.acquire()
-        print('Trying to update VBO')
-        self.vbo.update(coordinates, uvs)
-        print('VBO was updated')
-        if self.image is None:
-            print('Trying to create texture')
-            self.image = TEXTURE.Texture2D(width, height, external_format, external_type, pixels)
-            print('Texture was created')
-        else:
-            print('Trying to update texture')
-            self.image.update(width, height, external_format, external_type, pixels)
-            print('Texture was updated')
+        self.coordinates = np.copy(coordinates)
+        self.uvs = np.copy(uvs)
+        self.pixels = np.copy(pixels)
+        self.width = width
+        self.height = height
+        self.external_format = external_format
+        self.external_type = external_type
+        self.should_upload = True
         self.render_lock.release()

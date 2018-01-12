@@ -20,7 +20,7 @@ class RealSenseThread (threading.Thread):
         self.render = render
 
     def run(self):
-        print('Running thread', self.name)
+        print('Real sense thread is starting up')
         try:
             pipeline = rs.pipeline()
             pipeline.start()
@@ -28,7 +28,7 @@ class RealSenseThread (threading.Thread):
         except Exception as e:
             print(e)
             return
-        print('done initializing real sense pipeline')
+        print('Done initializing real sense pipeline')
 
         count = 1
         while True:
@@ -55,8 +55,7 @@ class RealSenseThread (threading.Thread):
             #points.export_to_ply("test.ply", color)
 
             if self.render is not None:
-                print('  trying to update render with frame', count)
-                self.render.update(
+                self.render.copy_data(
                     coordinates,
                     uvs,
                     width,
@@ -65,7 +64,10 @@ class RealSenseThread (threading.Thread):
                     external_type,
                     pixels
                 )
-                print('    render was updated with frame', count)
 
             print('frame', count, 'done')
             count = count + 1
+
+            if not threading.main_thread().is_alive():
+                print('Main thread is dead, closing down sensor')
+                return

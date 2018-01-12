@@ -12,6 +12,8 @@ import pyVISUALIZATION.xml as XML
 import pyVISUALIZATION.core as CORE
 import pyVISUALIZATION.grid as GRID
 import pyVISUALIZATION.point_cloud as PC
+import pySENSOR.api as API
+
 
 OpenGL.ERROR_CHECKING = True
 OpenGL.CHECK_CONTEXT = True
@@ -21,7 +23,7 @@ OpenGL.FULL_LOGGING = True
 
 class RenderWidget(QOpenGLWidget):
 
-    def __init__(self, point_cloud_render_lock, sensor_thread):
+    def __init__(self):
         super(QOpenGLWidget, self).__init__()
         self.resize(400, 400)
         self.m_update_timer = QTimer()
@@ -33,8 +35,7 @@ class RenderWidget(QOpenGLWidget):
         self.grid = None
         self.clear_color = None
 
-        self.sensor_thread = sensor_thread
-        self.point_cloud_render_lock = point_cloud_render_lock
+        self.sensor_thread = None
         self.point_cloud_render = None
         self.grid_render = None
 
@@ -72,8 +73,10 @@ class RenderWidget(QOpenGLWidget):
 
         self.open_file('resources/default_scene.xml')
 
-        self.point_cloud_render = PC.PointCloudRender(self.point_cloud_render_lock)
+        self.point_cloud_render = PC.PointCloudRender()
+        self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')
         self.sensor_thread.connect(self.point_cloud_render)
+        self.sensor_thread.start()
 
         glClearColor(self.clear_color[0], self.clear_color[1], self.clear_color[2], 0.0)
         glEnable(GL_DEPTH_TEST)
@@ -81,15 +84,13 @@ class RenderWidget(QOpenGLWidget):
         glEnable(GL_CULL_FACE)
 
     def paintGL(self):
-        print('paintGL invoked')
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
         if self.grid_render is not None:
             self.grid_render.render(self.camera)
 
-        #if self.point_cloud_render is not None:
-        #    self.point_cloud_render.render(self.camera)
-        print('paintGL done')
+        if self.point_cloud_render is not None:
+            self.point_cloud_render.render(self.camera)
 
     def resizeGL(self, width, height):
         glViewport(0, 0, width, height)
