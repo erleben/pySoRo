@@ -48,6 +48,12 @@ class RealSenseThread (threading.Thread):
                 coordinates = np.asanyarray(points.get_vertices())
                 uvs = np.asanyarray(points.get_texture_coordinates())
 
+                #vertex_data = np.hstack((coordinates, uvs))
+                #print(type(vertex_data))
+                #print(vertex_data.dtype)
+                #print(vertex_data.shape)
+                #print(np.min(vertex_data), np.max(vertex_data))
+
                 #imsave('test.png', pixels)
                 #points.export_to_ply("test.ply", color)
 
