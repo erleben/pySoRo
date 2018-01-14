@@ -1,6 +1,8 @@
 # pySoRo
 
-
+This software is for creating data of moving soft robots. The
+software uses multiple intel real sensors to capture the current
+state of a soft robot.
 
 ## Intel Real Sense
 
@@ -8,13 +10,11 @@ In this project we use the librealsense python API. One can clone a git reposito
 
 https://github.com/IntelRealSense/librealsense
 
-We did encounter a few mac-specific challenges when working with this.
+We did encounter a few mac-specific challenges when working with this library.
 
 ### Third party libusb library
 
-In the CMake setup a library named usb is added with TARGET_LINK_LIBRARIES() command. This name refers to the usb-library that is bundled with librealsense and not the system libusb library. CMake unfortunately, generates code based on the name usb that will link against the system installed library. The solution we used is to rename the local bundled library to XXusb.
-
-In file librealsense/CMakeLists.txt
+In the CMake settings a library named usb is added with the TARGET_LINK_LIBRARIES() command. This name refers to the libusb-library that is bundled with librealsense and not the system libusb library. Unfortunately, CMake generates makefiles using the name usb and that will cause the makefile to link against the system installed library libsub. The solution we used is to rename the local bundled library to XXusb. Here are the details of how we did that. In the file librealsense/CMakeLists.txt
 
     if(NOT WIN32)
         target_link_libraries(realsense2 PRIVATE XXusb)
@@ -22,12 +22,14 @@ In file librealsense/CMakeLists.txt
         target_link_libraries(realsense2 PRIVATE XXusb)
     endif()
 
-In file librealsense/third-party/libsub/CMakeLists.txt
+Next in the file librealsense/third-party/libsub/CMakeLists.txt we changed names as well.
 
     project(XXusb)
-
+    ...
+    ...
     add_library(XXusb STATIC ${LIBUSB_C} ${LIBUSB_H})
-
+    ...
+    ...
     if(WIN32)
         set_target_properties (XXusb PROPERTIES FOLDER "3rd Party")
     endif()
@@ -37,38 +39,69 @@ In file librealsense/third-party/libsub/CMakeLists.txt
         find_library(iokit_lib IOKit)
         TARGET_LINK_LIBRARIES(XXusb objc ${corefoundation_lib} ${iokit_lib})
     endif()
+    ...
+    ...
 
 ## Installing pyrealsense2
 We mostly followed the description from the library
 
 https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.md
 
-There are some slight changes to this description. We used macport hence
+There are some slight changes to this description. We used Macport instead of brew. Hence, we wrote
 
     sudo port install libusb
     sudo port install pkgconfig
     sudo port install glfw
- 
- In CMake remember to turn on BUILD_PYTHON_BINDINGS. Once
- you have generated your xcode project files run install
- target from command line as sudo user. It all looks like this.
- 
- 
+
+In CMake one has to remember to turn on BUILD_PYTHON_BINDINGS to get the python wrapper installed later on. Once
+CMake have generated your xcode project files build the install
+target from the command line as sudo user. It all looks like this.
+
     mkdir build
     cd build
     cmake .. -DBUILD_PYTHON_BINDINGS=true -DBUILD_EXAMPLES=true -DBUILD_WITH_OPENMP=false -DHWM_OVER_XU=false -G Xcode
     sudo xcodebuild -target install
 
-
-librealsense will copy the final library files into usr/local/lib so you
+The install target will copy the final library files into the usr/local/lib folder for you. To make sure your python installation can find the new library you
 might want to make some changes to your .profile file by adding
 
     export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 
 
-# Adding 2 Dimensional Data Protocols
+# Experimental: Adding 2 Dimensional Data Protocols
+We ran profiling tools on current implementation and found that close to 80% of the application time is spend on converting buffer data from librealsense into numpy arrays that are more appropriate for openGL vertex buffers.
 
-In current implementation when one writes teh python code
+Here is the code that is causing the bad performance
+
+    def update(self, coordinates, uvs):
+        vertex_data = []
+        index_data = []
+        index = 0
+        for i in range(len(coordinates)):
+            if fabs(coordinates[i][2]) > 0.0:
+                vertex_data.append(coordinates[i][0])
+                vertex_data.append(coordinates[i][1])
+                vertex_data.append(coordinates[i][2])
+                vertex_data.append(uvs[i][0])
+                vertex_data.append(uvs[i][1])
+                index_data.append(index)
+                index += 1
+        vertex_array = np.array(vertex_data, dtype=np.float32)
+        index_array = np.array(index_data, dtype=np.uint32)
+
+        self.count = index
+
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)
+
+It is not really the openGL call at the end that is the problem, but rather that we setup up a for-loop that incrementally creates two lists in order to zip two numpy arrays into one numpy array. This is slow. Ideally we would much rather write something Like
+
+    vertex_array = np.hstack((coordinates, uvs))
+    index_array = np.arrange(len(vertex_array))
+
+Unfortunately, the current BufData implementation in the python wrapper of librealsense does not give us numpy arrays coordinates and uvs that have the right shape for writing the code above. With the current implementation when one writes the python code
 
     coordinates = np.asanyarray(points.get_vertices())
 
@@ -82,10 +115,13 @@ Then we get the output such as this
     [('f0', '<f4'), ('f1', '<f4'), ('f2', '<f4')]
     (307200,)
 
-This is a little unexpected. Hence, we made a few changes.
+This is a little unexpected. We would much rather have the output:
 
-In the python binders wrappers/python.cpp in the
-class BufData we added the constructor
+    <class 'numpy.ndarray'>
+    float32
+    (307200, 3)
+
+This is much more convenient data type to work with in Python. Hence, we made a few changes. In the python binders wrappers/python.cpp in the class BufData we added the constructor
 
       BufData(
               void *ptr       // Raw pointer
@@ -96,7 +132,7 @@ class BufData we added the constructor
       { }
 
 
-An finally we changed the get_vertices and get_texture_coordinates
+Finally we changed the get_vertices and get_texture_coordinates
 wrappers in the points class to create 2-dimensional buffers
 instead. Like this
 
@@ -123,14 +159,7 @@ instead. Like this
           .def("export_to_ply", &rs2::points::export_to_ply)
           .def("size", &rs2::points::size);
 
-With this change we now have the output
-
-    <class 'numpy.ndarray'>
-    float32
-    (307200, 3)
-
-This is much more convenient data type to work with in Python.
-
+This gave us the desired shape of the numpy arrays. Unfortunately, data is not always correct. This is still work in progress.
 
 ## Profiling Notes
 
@@ -147,4 +176,3 @@ Finally after having run the python application then write at the terminal
     $/opt/local/Library/Frameworks/Python.framework/Versions/3.5/bin/snakeviz stats.prof
 
 The long path is due to using Macport for installing python.
- 
