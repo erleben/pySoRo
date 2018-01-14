@@ -41,23 +41,23 @@ class PointCloudVBO:
         glPointSize(10.0)
         glDrawArrays(GL_POINTS, 0, self.count)
 
-    def update(self, coordinates, uvs):
-        vertex_data = []
-        index_data = []
-        index = 0
-        for i in range(len(coordinates)):
-            if fabs(coordinates[i][2]) > 0.0:
-                vertex_data.append(coordinates[i][0])
-                vertex_data.append(coordinates[i][1])
-                vertex_data.append(coordinates[i][2])
-                vertex_data.append(uvs[i][0])
-                vertex_data.append(uvs[i][1])
-                index_data.append(index)
-                index += 1
-        vertex_array = np.array(vertex_data, dtype=np.float32)
-        index_array = np.array(index_data, dtype=np.uint32)
-
-        self.count = index
+    def update(self, vertex_array):
+        #vertex_data = []
+        #index_data = []
+        #index = 0
+        #for i in range(len(coordinates)):
+        #    if fabs(coordinates[i][2]) > 0.0:
+        #        vertex_data.append(coordinates[i][0])
+        #        vertex_data.append(coordinates[i][1])
+        #        vertex_data.append(coordinates[i][2])
+        #        vertex_data.append(uvs[i][0])
+        #        vertex_data.append(uvs[i][1])
+        #        index_data.append(index)
+        #        index += 1
+        #vertex_array = np.array(vertex_data, dtype=np.float32)
+        #index_array = np.array(index_data, dtype=np.uint32)
+        self.count = vertex_array.shape[0]
+        index_array = np.arange(self.count, dtype=np.uint32)
 
         glBindBuffer(GL_ARRAY_BUFFER, self.vbo)
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)
@@ -68,8 +68,7 @@ class PointCloudVBO:
 class PointCloudRender:
 
     def __init__(self):
-        self.coordinates = None
-        self.uvs = None
+        self.vertex_array = None
         self.width = None
         self.height = None
         self.external_format = None
@@ -119,7 +118,7 @@ class PointCloudRender:
     def render(self, camera):
         with self.render_lock:
             if self.should_upload:
-                self.vbo.update(self.coordinates, self.uvs)
+                self.vbo.update(self.vertex_array)
                 if self.image is None:
                         self.image = TEXTURE.Texture2D(self.width,
                                                    self.height,
@@ -155,10 +154,9 @@ class PointCloudRender:
         self.vao.unbind()
         self.program.stop()
 
-    def copy_data(self, coordinates, uvs, width, height, external_format, external_type, pixels):
+    def copy_data(self, vertex_array, width, height, external_format, external_type, pixels):
         with self.render_lock:
-            self.coordinates = np.copy(coordinates)
-            self.uvs = np.copy(uvs)
+            self.vertex_array = np.copy(vertex_array)
             self.pixels = np.copy(pixels)
             self.width = width
             self.height = height

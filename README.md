@@ -42,7 +42,7 @@ Next in the file librealsense/third-party/libsub/CMakeLists.txt we changed names
     ...
     ...
 
-## Installing pyrealsense2
+### Installing pyrealsense2
 We mostly followed the description from the library
 
 https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.md
@@ -68,7 +68,7 @@ might want to make some changes to your .profile file by adding
     export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 
 
-# Experimental: Adding 2 Dimensional Data Protocols
+### Adding Two Dimensional Data Protocols
 We ran profiling tools on current implementation and found that close to 80% of the application time is spend on converting buffer data from librealsense into numpy arrays that are more appropriate for openGL vertex buffers.
 
 Here is the code that is causing the bad performance
@@ -128,38 +128,62 @@ This is much more convenient data type to work with in Python. Hence, we made a 
               , size_t count  // Number of points
               , size_t dim    // The number of floats inside a point
               )
-      : BufData(ptr, 4, "@f", 2, std::vector<size_t> { count, dim }, std::vector<size_t> { 4, count*dim*4 })
+      : BufData(
+                ptr
+                , sizeof(float)
+                , "@f"
+                , 2
+                , std::vector<size_t> { count, dim }
+                , std::vector<size_t> { sizeof(float)*dim, sizeof(float) }
+               )
       { }
 
 
-Finally we changed the get_vertices and get_texture_coordinates
+Finally we extended the get_vertices and get_texture_coordinates
 wrappers in the points class to create 2-dimensional buffers
 instead. Like this
 
     py::class_<rs2::points, rs2::frame> points(m, "points");
     points.def(py::init<>())
           .def(py::init<rs2::frame>())
+          .def("get_vertices_EXT", [](rs2::points& self) -> BufData
+               {
+                          return BufData(
+                                         const_cast<rs2::vertex*>(self.get_vertices())  //Raw pointer
+                                         , self.size()           // Number of vertices
+                                         , 3                     // A vertex got 3 coordinates
+                                         );
+
+               }, py::keep_alive<0, 1>())
+          .def("get_texture_coordinates_EXT", [](rs2::points& self) -> BufData
+               {
+                           return BufData(
+                                         const_cast<rs2::texture_coordinate*>(self.get_texture_coordinates())  //Raw pointer
+                                         , self.size()           // Number of texture coordinates
+                                         , 2                     // A texture coordinate got 2 coordinates
+                                         );
+               }, py::keep_alive<0, 1>())
           .def("get_vertices", [](rs2::points& self) -> BufData
                {
-                 return BufData(
-                                const_cast<rs2::vertex*>(self.get_vertices())  //Raw pointer
-                                , self.size()           // Number of vertices
-                                , 3                     // A vertex got 3 coordinates
-                                );
-
+                   return BufData(
+                                  const_cast<rs2::vertex*>(self.get_vertices())  //Raw pointer to items (an item is a vertex)
+                                  , sizeof(rs2::vertex)   // Number of bytes for 3 floats
+                                  , std::string("@fff")   // 3 floats
+                                  , self.size()           // Number of vertices
+                                  );
                }, py::keep_alive<0, 1>())
           .def("get_texture_coordinates", [](rs2::points& self) -> BufData
                {
-                  return BufData(
-                                const_cast<rs2::texture_coordinate*>(self.get_texture_coordinates())  //Raw pointer
-                                , self.size()           // Number of texture coordinates
-                                , 2                     // A texture coordinate got 2 coordinates
+                   return BufData(
+                                const_cast<rs2::texture_coordinate*>(self.get_texture_coordinates())
+                                , sizeof(rs2::texture_coordinate)
+                                , std::string("@ff"), self.size()
                                 );
                }, py::keep_alive<0, 1>())
           .def("export_to_ply", &rs2::points::export_to_ply)
           .def("size", &rs2::points::size);
 
-This gave us the desired shape of the numpy arrays. Unfortunately, data is not always correct. This is still work in progress.
+This gave us the desired shape of the numpy arrays and increased performance.
 
 ## Profiling Notes
 

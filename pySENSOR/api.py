@@ -45,22 +45,20 @@ class RealSenseThread (threading.Thread):
 
                 external_type = GL_UNSIGNED_BYTE
                 pixels = np.asanyarray(color.get_data())
-                coordinates = np.asanyarray(points.get_vertices())
-                uvs = np.asanyarray(points.get_texture_coordinates())
+                # 2018-01-14 Kenny: This is the old librealsense2 interface
+                #coordinates = np.asanyarray(points.get_vertices())
+                #uvs = np.asanyarray(points.get_texture_coordinates())
 
-                #vertex_data = np.hstack((coordinates, uvs))
-                #print(type(vertex_data))
-                #print(vertex_data.dtype)
-                #print(vertex_data.shape)
-                #print(np.min(vertex_data), np.max(vertex_data))
+                coords = np.asanyarray(points.get_vertices_EXT(), dtype=np.float32)
+                texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
+                vertex_array = np.hstack((coords, texs))
 
                 #imsave('test.png', pixels)
                 #points.export_to_ply("test.ply", color)
 
                 if self.render is not None:
                     self.render.copy_data(
-                        coordinates,
-                        uvs,
+                        vertex_array,
                         width,
                         height,
                         external_format,
