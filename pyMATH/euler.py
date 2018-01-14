@@ -1,4 +1,3 @@
-import numpy as np
 from pyMATH.quaternion import to_matrix
 from math import atan2, asin, pi
 

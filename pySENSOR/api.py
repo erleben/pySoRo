@@ -3,17 +3,17 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import numpy as np
-from scipy.misc import imsave
+#from scipy.misc import imsave
 from OpenGL.GL import *
 import threading
 
 
 class RealSenseThread (threading.Thread):
 
-    def __init__(self, threadID, name):
+    def __init__(self, threadID, thread_name):
         threading.Thread.__init__(self)
         self.threadID = threadID
-        self.name = name
+        self.name = thread_name
         self.render = None
 
     def connect(self, render):

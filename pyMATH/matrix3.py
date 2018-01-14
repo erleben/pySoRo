@@ -1,6 +1,7 @@
 import numpy as np
 from math import cos, sin
 
+
 def identity():
     return np.identity(3, dtype=np.float64)
 
@@ -25,7 +26,7 @@ def make(A00, A01, A02, A10, A11, A12, A20, A21, A22):
     return np.array([[A00, A01, A02], [A10, A11, A12], [A20, A21, A22]], dtype=np.float64)
 
 
-def make_from_rows( row0, row1, row2):
+def make_from_rows(row0, row1, row2):
     return np.array([row0, row1, row2], dtype=np.float64)
 
 

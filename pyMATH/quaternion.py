@@ -20,17 +20,17 @@ def from_string(value):
         return identity()
 
     if value.startswith('rx:'):
-        degrees = float( value.strip('rx:') )
+        degrees = float(value.strip('rx:'))
         radians = ANGLE.degrees_to_radians(degrees)
         return Rx(radians)
 
     if value.startswith('ry:'):
-        degrees = float( value.strip('ry:') )
+        degrees = float(value.strip('ry:'))
         radians = ANGLE.degrees_to_radians(degrees)
         return Ry(radians)
 
     if value.startswith('rz:'):
-        degrees = float( value.strip('rz:') )
+        degrees = float(value.strip('rz:'))
         radians = ANGLE.degrees_to_radians(degrees)
         return Rz(radians)
 
@@ -53,9 +53,9 @@ def identity():
 
 
 def unit(q):
-    l = np.linalg.norm(q)
-    if l > 0.0:
-        return from_array(q / l)
+    length = np.linalg.norm(q)
+    if length > 0.0:
+        return from_array(q / length)
     return identity()
 
 
@@ -198,7 +198,7 @@ def to_angle(Q, axis):
     else:
         theta = 2.0 * atan2(st2, -ct2)
 
-    if theta>pi:
+    if theta > pi:
         theta -= 2.0*pi
 
     return theta

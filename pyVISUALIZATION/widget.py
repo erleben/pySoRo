@@ -44,6 +44,7 @@ class RenderWidget(QOpenGLWidget):
         self.pan_mode = False               # If on then one translates in the screen space
         self.trackball_mode = False         # If on then one rotates around the camera center
         self.fpv_mode = False               # If on then one rotates around the camera position
+        self.selection_mode = False
         self.dolly_sensitivity = 0.025
         self.pan_sensitivity = 0.025
         self.anchor_x = None                # Original x-position when doing a mouse operation
@@ -102,12 +103,12 @@ class RenderWidget(QOpenGLWidget):
 
         nx, ny = self.compute_normalized_device_coordinates(x, y)
 
-        left = (int(e.buttons()) & Qt.LeftButton) != 0
-        middle = (int(e.buttons()) & Qt.MidButton) != 0
-        right = (int(e.buttons()) & Qt.RightButton) != 0
-        ctrl = (int(QApplication.keyboardModifiers()) & Qt.ControlModifier) != 0
-        shift = (int(QApplication.keyboardModifiers()) & Qt.ShiftModifier) != 0
-        alt = (int(QApplication.keyboardModifiers()) & Qt.AltModifier) != 0
+        #left = (int(e.buttons()) & Qt.LeftButton) != 0
+        #middle = (int(e.buttons()) & Qt.MidButton) != 0
+        #right = (int(e.buttons()) & Qt.RightButton) != 0
+        #ctrl = (int(QApplication.keyboardModifiers()) & Qt.ControlModifier) != 0
+        #shift = (int(QApplication.keyboardModifiers()) & Qt.ShiftModifier) != 0
+        #alt = (int(QApplication.keyboardModifiers()) & Qt.AltModifier) != 0
 
         self.camera.update(self.anchor_eye, self.anchor_center, self.anchor_up)
 
@@ -139,7 +140,7 @@ class RenderWidget(QOpenGLWidget):
         nx, ny = self.compute_normalized_device_coordinates(x, y)
 
         left = (int(e.buttons()) & Qt.LeftButton) != 0
-        middle = (int(e.buttons()) & Qt.MidButton) != 0
+        #middle = (int(e.buttons()) & Qt.MidButton) != 0
         right = (int(e.buttons()) & Qt.RightButton) != 0
         ctrl = (int(QApplication.keyboardModifiers()) & Qt.ControlModifier) != 0
         shift = (int(QApplication.keyboardModifiers()) & Qt.ShiftModifier) != 0
@@ -218,9 +219,9 @@ class RenderWidget(QOpenGLWidget):
 
 
 def initialize_opengl():
-    format = QSurfaceFormat()
-    format.setProfile(QSurfaceFormat.CoreProfile)
-    format.setVersion(4, 5)
-    format.setSamples(4)
-    QSurfaceFormat.setDefaultFormat(format)
+    surface_format = QSurfaceFormat()
+    surface_format.setProfile(QSurfaceFormat.CoreProfile)
+    surface_format.setVersion(4, 5)
+    surface_format.setSamples(4)
+    QSurfaceFormat.setDefaultFormat(surface_format)
 

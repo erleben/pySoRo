@@ -1,6 +1,5 @@
 import xml.etree.ElementTree as ET
 import pyUTILITY.util as UTIL
-import pyMATH.vector3 as V3
 import pyMATH.angle as ANGLE
 from pyVISUALIZATION.core import *
 from pyVISUALIZATION.grid import *
@@ -76,12 +75,12 @@ def __load_material(materials, material_tag):
     if material_tag is None:
         raise RuntimeError('__load_material can not load from none?')
 
-    name = UTIL.string_from_xml(material_tag, 'name', None)
+    material_name = UTIL.string_from_xml(material_tag, 'name', None)
 
-    if name is None:
+    if material_name is None:
         raise RuntimeError('__load_material missing name on material')
 
-    material = Material(name)
+    material = Material(material_name)
 
     material.wire_color = UTIL.vector3_from_xml(material_tag, 'wire_color', material.wire_color)
     material.wire_thickness = UTIL.float_from_xml(material_tag, 'wire_thickness', material.wire_thickness)

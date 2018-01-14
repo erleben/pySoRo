@@ -21,7 +21,7 @@ def sinc(x):
     tiny = 1.0e-4
     factor = 0.166666666666666666667
     if fabs(x) < tiny:
-        return 1.0 - x* x * factor
+        return 1.0 - x * x * factor
     return sin(x) / x
 
 

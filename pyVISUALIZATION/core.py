@@ -1,5 +1,4 @@
 from OpenGL.GL import *
-import os.path
 import numpy as np
 import pyMESH.mesh as MESH
 import pyMATH.quaternion as Q
@@ -8,8 +7,8 @@ import pyMATH.vector3 as V3
 
 class Shader:
 
-    def __init__(self, filename, type):
-        self.shader = glCreateShader(type)
+    def __init__(self, filename, shader_type):
+        self.shader = glCreateShader(shader_type)
         self.source = open(filename, "r").read()
         glShaderSource(self.shader, self.source)
         glCompileShader(self.shader)
@@ -365,6 +364,12 @@ class InstanceNode:
 class Trackball:
 
     def __init__(self):
+        self.radius = None
+        self.anchor_position = None
+        self.current_position = None
+        self.angle = None
+        self.axis = None
+        self.rotation_matrix = None
         self.reset()
 
     def reset(self):
@@ -378,12 +383,12 @@ class Trackball:
         self.project_onto_surface(self.current_position)
 
     def click_at(self, nx, ny):
-        '''
+        """
 
         :param nx:  Normalized x device coordinate [-1..1]
         :param ny:  Normalized y device coordinate [-1..1]
         :return:
-        '''
+        """
         self.angle = 0.0
         self.axis = np.zeros((3,), dtype=np.float32)
         self.rotation_matrix = np.identity(3, dtype=np.float32)
@@ -393,12 +398,12 @@ class Trackball:
         self.project_onto_surface(self.current_position)
 
     def move_to(self, nx, ny):
-        '''
+        """
 
         :param nx:  Normalized x device coordinate [-1..1]
         :param ny:  Normalized y device coordinate [-1..1]
         :return:
-        '''
+        """
         self.current_position = np.array([nx, ny, 0.0], dtype=np.float32)
         self.project_onto_surface(self.current_position)
         self.compute_rotation_matrix()
@@ -473,11 +478,11 @@ class Camera:
         return np.dot(self.dof, (r - self.eye))
 
     def rotate(self, R):
-        '''
+        """
 
         :param R:    Rotation of camera given in camera space
         :return:
-        '''
+        """
         Rc2w = np.identity(3, dtype=np.float32)
         Rc2w[:, 0] = self.right
         Rc2w[:, 1] = self.up
@@ -493,11 +498,11 @@ class Camera:
         self.update(self.eye, self.center, self.up)
 
     def orbit(self, R):
-        '''
+        """
 
         :param R:    Rotation of camera given in camera space
         :return:
-        '''
+        """
         Rc2w = np.identity(3, dtype=np.float32)
         Rc2w[:, 0] = self.right
         Rc2w[:, 1] = self.up
@@ -554,18 +559,18 @@ class Camera:
         return projection_matrix
 
     def get_ray(self, nx, ny):
-        '''
+        """
 
         :param nx:  Normalized x device coordinate [-1..1]
         :param ny:  Normalized y device coordinate [-1..1]
         :return:
-        '''
+        """
         nz = 1.0
 
         view_matrix = self.compute_view_matrix()
         projection_matrix = self.compute_projection_matrix()
 
-        ray_nds = np.array([nx, ny, nz], dtype=np.float32)                        # Normalized device space
+        #ray_nds = np.array([nx, ny, nz], dtype=np.float32)                        # Normalized device space
         ray_clip = np.array([nx, ny, -1.0, 1.0], dtype=np.float32)                 # Clip space
         ray_eye = np.linalg.inv(projection_matrix).dot(ray_clip)                     # Eye space
         ray_eye = np.array([ray_eye[0], ray_eye[1], -1.0, 0.0], dtype=np.float32) # Manually set to forward direction vector
@@ -595,8 +600,8 @@ class LightSetup:
 
 class Material:
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, material_name):
+        self.name = material_name
         self.Ks = V3.make(0.7, 0.7, 0.7)  # Specular color
         self.Kd = V3.make(0.7, 0.7, 0.7)  # Diffuse color
         self.Ka = V3.make(0.7, 0.7, 0.7)  # Ambient color

@@ -48,7 +48,7 @@ def profile_sweep(profile, slices):
     bottom = K-1      # Index to bottom vertex
     top = K-2         # Index to top vertex
     H = N-2           # Number of latitude circles
-    F = 2*J*(N-1)     # Total number of triangle faces
+    #F = 2*J*(N-1)     # Total number of triangle faces
 
     vhandles = []
 

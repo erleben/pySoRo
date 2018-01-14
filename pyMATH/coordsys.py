@@ -2,6 +2,7 @@ import numpy as np
 import pyMATH.quaternion as Q
 import pyMATH.vector3 as V3
 
+
 class CoordSys:
 
     def __init__(self):
@@ -21,7 +22,7 @@ def xform_point(X, p):
 
 
 def xform_vector(X, v):
-    return Q.rotate(X.q, p)
+    return Q.rotate(X.q, v)
 
 
 def xform_matrix(X, M):
@@ -31,13 +32,13 @@ def xform_matrix(X, M):
 
 def concat(B, A):
     """
-    Concate transformations.. First A then B, Hence, C = B*A
+    Concatenate transformations.. First A then B, Hence, C = B*A
     :param B:
     :param A:
     :return:
     """
     C = CoordSys()
-    C.q = Q.unit(prod(B.q, A.q))
+    C.q = Q.unit(Q.prod(B.q, A.q))
     C.r = Q.rotate(B.q, A.r) + B.r
     return C
 
@@ -51,7 +52,8 @@ def inverse(X):
 
 def make_coordsys_from_to(A, B):
     """
-    Assumes that 'A' maps from bf_1 to wcs, and 'B' maps from bf_2 to wcs. Now compute the transform that maps from bf_1 to bf_2
+    Assumes that 'A' maps from bf_1 to wcs, and 'B' maps from bf_2 to wcs.
+    Now compute the transform that maps from bf_1 to bf_2
 
     :param A:
     :param B:
@@ -59,6 +61,6 @@ def make_coordsys_from_to(A, B):
     """
     A2B = CoordSys()
     A2B.q = Q.unit(Q.prod(Q.conjugate(B.q), A.q))
-    A2B.r = Q.rotate( Q.conjugate(B.q), A.r - B.r)
+    A2B.r = Q.rotate(Q.conjugate(B.q), A.r - B.r)
     return A2B
 
