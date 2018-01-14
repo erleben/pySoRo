@@ -117,26 +117,24 @@ class PointCloudRender:
         self.vao.unbind()
 
     def render(self, camera):
-
-        self.render_lock.acquire()
-        if self.should_upload:
-            self.vbo.update(self.coordinates, self.uvs)
-            if self.image is None:
-                self.image = TEXTURE.Texture2D(self.width,
-                                               self.height,
-                                               self.external_format,
-                                               self.external_type,
-                                               self.pixels
-                                               )
-            else:
-                self.image.update(self.width,
-                                  self.height,
-                                  self.external_format,
-                                  self.external_type,
-                                  self.pixels
-                                  )
-            self.should_upload = False
-        self.render_lock.release()
+        with self.render_lock:
+            if self.should_upload:
+                self.vbo.update(self.coordinates, self.uvs)
+                if self.image is None:
+                        self.image = TEXTURE.Texture2D(self.width,
+                                                   self.height,
+                                                   self.external_format,
+                                                   self.external_type,
+                                                   self.pixels
+                                                   )
+                else:
+                    self.image.update(self.width,
+                                      self.height,
+                                      self.external_format,
+                                      self.external_type,
+                                      self.pixels
+                                    )
+                self.should_upload = False
 
         view_matrix = camera.compute_view_matrix()
         projection_matrix = camera.compute_projection_matrix()
@@ -158,13 +156,12 @@ class PointCloudRender:
         self.program.stop()
 
     def copy_data(self, coordinates, uvs, width, height, external_format, external_type, pixels):
-        self.render_lock.acquire()
-        self.coordinates = np.copy(coordinates)
-        self.uvs = np.copy(uvs)
-        self.pixels = np.copy(pixels)
-        self.width = width
-        self.height = height
-        self.external_format = external_format
-        self.external_type = external_type
-        self.should_upload = True
-        self.render_lock.release()
+        with self.render_lock:
+            self.coordinates = np.copy(coordinates)
+            self.uvs = np.copy(uvs)
+            self.pixels = np.copy(pixels)
+            self.width = width
+            self.height = height
+            self.external_format = external_format
+            self.external_type = external_type
+            self.should_upload = True
