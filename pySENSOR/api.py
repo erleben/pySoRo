@@ -21,9 +21,15 @@ class RealSenseThread (threading.Thread):
 
     def run(self):
         try:
+
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
-            pipeline.start()
+
+            config = rs.config()
+            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
+            config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
+
+            pipeline.start(config)
             pointcloud = rs.pointcloud()
             print('Done initializing real sense pipeline')
 
