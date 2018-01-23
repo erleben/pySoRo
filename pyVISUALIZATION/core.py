@@ -1,6 +1,6 @@
 from OpenGL.GL import *
 import numpy as np
-import pyMESH.mesh as MESH
+#import pyMESH.mesh as MESH
 import pyMATH.quaternion as Q
 import pyMATH.vector3 as V3
 
@@ -131,29 +131,29 @@ class VBO:
             glDrawArrays(GL_LINES, 0, self.index_count)
 
 
-def create_mesh_array_data(mesh):
-    index_data = []
-    vertex_data = []
-    index = 0
-    for fh in mesh.faces():
-        (n, w) = MESH.compute_face_plane(mesh, fh)
-        first_index = index
-        for vh in mesh.fv(fh):
-            index_data.append(index)
-            v = MESH.get_vertex_coords(mesh, vh)
-            vertex_data.append(v[0])
-            vertex_data.append(v[1])
-            vertex_data.append(v[2])
-            vertex_data.append(n[0])
-            vertex_data.append(n[1])
-            vertex_data.append(n[2])
-            index += 1
-        if index - first_index != 3:
-            raise RuntimeError('create_mesh_arary_data() expected triangle mesh input')
-
-    vertex_array = np.array(vertex_data, dtype=np.float32)
-    index_array = np.array(index_data, dtype=np.uint32)
-    return vertex_array, index_array
+# def create_mesh_array_data(mesh):
+#     index_data = []
+#     vertex_data = []
+#     index = 0
+#     for fh in mesh.faces():
+#         (n, w) = MESH.compute_face_plane(mesh, fh)
+#         first_index = index
+#         for vh in mesh.fv(fh):
+#             index_data.append(index)
+#             v = MESH.get_vertex_coords(mesh, vh)
+#             vertex_data.append(v[0])
+#             vertex_data.append(v[1])
+#             vertex_data.append(v[2])
+#             vertex_data.append(n[0])
+#             vertex_data.append(n[1])
+#             vertex_data.append(n[2])
+#             index += 1
+#         if index - first_index != 3:
+#             raise RuntimeError('create_mesh_arary_data() expected triangle mesh input')
+#
+#     vertex_array = np.array(vertex_data, dtype=np.float32)
+#     index_array = np.array(index_data, dtype=np.uint32)
+#     return vertex_array, index_array
 
 
 def create_cube_array_data():
