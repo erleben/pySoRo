@@ -1,4 +1,5 @@
 import sys
+import time
 # Kenny Add pyrealsense2 library path to current system path
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
@@ -26,16 +27,18 @@ class RealSenseThread (threading.Thread):
             pipeline = rs.pipeline()
 
             config = rs.config()
-            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
-            config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
+            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 60)
+            config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 60)
 
-            pipeline.start(config)
+            profile = pipeline.start(config)
             pointcloud = rs.pointcloud()
+            print()
             print('Done initializing real sense pipeline')
 
             count = 1
             while True:
-
+                time.sleep(1)
+                #motor controll goes here
                 frames = pipeline.wait_for_frames()
 
                 depth = frames.get_depth_frame()
