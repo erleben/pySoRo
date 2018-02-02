@@ -34,17 +34,17 @@ class RealSenseThread (threading.Thread):
             pointcloud = rs.pointcloud()
             print()
             print('Done initializing real sense pipeline')
-            
+
             ser = mc.setup()
 
             count = 1
             while True:
-                
+
                 msg = mc.nextPos(ser)
                 pos = msg.split(',')
                 print('Motor 1: '+ str(pos[0]) + ' Motor 2:' + str(pos[1]))
                 name = 'm1_'+str(pos[0]+'m2_'+str(pos[1]))
-                
+
                 frames = pipeline.wait_for_frames()
 
                 depth = frames.get_depth_frame()
@@ -68,8 +68,8 @@ class RealSenseThread (threading.Thread):
                 texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
                 vertex_array = np.hstack((coords, texs))
 
-                imsave('../../../data/'+name+'.png', pixels)
-                points.export_to_ply("../../../data/"+name+".ply", color)
+                #imsave('../../../data/'+name+'.png', pixels)
+                #points.export_to_ply("../../../data/"+name+".ply", color)
 
                 if self.render is not None:
                     self.render.copy_data(
