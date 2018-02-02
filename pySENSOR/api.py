@@ -1,5 +1,4 @@
 import sys
-import time
 # Kenny Add pyrealsense2 library path to current system path
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
@@ -21,7 +20,7 @@ class RealSenseThread (threading.Thread):
         self.render = render
 
     def run(self):
-        try:
+        try :
 
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
@@ -37,7 +36,7 @@ class RealSenseThread (threading.Thread):
 
             count = 1
             while True:
-                time.sleep(1)
+                #time.sleep(1)
                 #motor controll goes here
                 frames = pipeline.wait_for_frames()
 
