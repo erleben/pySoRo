@@ -1,0 +1,8 @@
+{"NumBoards" : 2,
+ "Board0" : {"StartStep" : 0,
+             "StepSize" : 40,
+             "StopStep" : 200},
+ "Board1" : {"StartStep" : 0,
+             "StepSize" : 40,
+             "StopStep" : 200},
+ "LastAlpha" : [0, 0]}

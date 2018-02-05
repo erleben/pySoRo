@@ -54,14 +54,9 @@ def uploadConfig(ser):
         raise RedboardException("Uploading configuration file failed")
 
 def getConfig():
-    config = {'NumBoards' : 2,
-              'Board0' : {'StartStep' : 0,
-                          'StepSize' : 40,
-                          'StopStep' : 200},
-              'Board1' : {'StartStep' : 0,
-                          'StepSize' : 40,
-                          'StopStep' : 200},
-              'LastAlpha' : [0, 0]}
+    with open('../config.txt') as config_file:
+        config = json.load(config_file)
+        
     return json.dumps(config)
 
     
