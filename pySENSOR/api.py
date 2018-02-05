@@ -26,8 +26,8 @@ class RealSenseThread (threading.Thread):
             pipeline = rs.pipeline()
 
             config = rs.config()
-            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
-            config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
+            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+            config.enable_stream(rs.stream.color, 960, 540, rs.format.rgb8, 30)
 
             pipeline.start(config)
             pointcloud = rs.pointcloud()
