@@ -20,22 +20,24 @@ class RealSenseThread (threading.Thread):
         self.render = render
 
     def run(self):
-        try:
+        try :
 
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
 
             config = rs.config()
-            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
-            config.enable_stream(rs.stream.color, 960, 540, rs.format.rgb8, 30)
+            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
+            config.enable_stream(rs.stream.color, 960, 540, rs.format.rgb8, 10)
 
-            pipeline.start(config)
+            profile = pipeline.start(config)
             pointcloud = rs.pointcloud()
+            print()
             print('Done initializing real sense pipeline')
 
             count = 1
             while True:
-
+                #time.sleep(1)
+                #motor controll goes here
                 frames = pipeline.wait_for_frames()
 
                 depth = frames.get_depth_frame()
