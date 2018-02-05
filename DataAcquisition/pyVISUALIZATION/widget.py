@@ -13,6 +13,7 @@ import pyVISUALIZATION.core as CORE
 import pyVISUALIZATION.grid as GRID
 import pyVISUALIZATION.point_cloud as PC
 import pySENSOR.api as API
+import pySENSOR.xml as RSXML
 
 
 OpenGL.ERROR_CHECKING = True
@@ -75,7 +76,9 @@ class RenderWidget(QOpenGLWidget):
         self.open_file('settings.xml')
 
         self.point_cloud_render = PC.PointCloudRender()
-        self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')
+
+        self.sensor_thread = RSXML.load('settings.xml')
+        #self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')
         self.sensor_thread.connect(self.point_cloud_render)
         self.sensor_thread.start()
 

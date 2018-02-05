@@ -21,4 +21,11 @@
                 cells_z="10"
         />
 
+        <realsense
+                save_png="true"
+                save_ply="true"
+                use_motor_control="false"
+                prefix="../output/"
+                postfix=""
+        />
 </scene>

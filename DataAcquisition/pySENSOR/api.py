@@ -6,7 +6,7 @@ import numpy as np
 from scipy.misc import imsave
 from OpenGL.GL import *
 import threading
-from MotorControl import MCutils as mc
+from MotorControl import api as MC
 
 
 class RealSenseThread (threading.Thread):
@@ -16,6 +16,11 @@ class RealSenseThread (threading.Thread):
         self.threadID = threadID
         self.name = thread_name
         self.render = None
+        self.use_motor_control = False
+        self.save_png = False
+        self.save_ply = False
+        self.prefix_filename = '../../../data/'
+        self.postfix_filename = ''
 
     def connect(self, render):
         self.render = render
@@ -35,15 +40,20 @@ class RealSenseThread (threading.Thread):
             print()
             print('Done initializing real sense pipeline')
 
-            ser = mc.setup()
+            motor_control = None
+            if self.use_motor_control:
+                print('Initializing Arduino board')
+                motor_control = MC.setup()
+                print('Done initializing Arduino board')
 
             count = 1
             while True:
 
-                msg = mc.nextPos(ser)
-                pos = msg.split(',')
-                print('Motor 1: '+ str(pos[0]) + ' Motor 2:' + str(pos[1]))
-                name = 'm1_'+str(pos[0]+'m2_'+str(pos[1]))
+                if self.use_motor_control:
+                    msg = MC.nextPos(motor_control)
+                    pos = msg.split(',')
+                    print('Motor 1: '+ str(pos[0]) + ' Motor 2:' + str(pos[1]))
+                    motor_filename = 'm1_'+str(pos[0]+'m2_'+str(pos[1]))
 
                 frames = pipeline.wait_for_frames()
 
@@ -68,8 +78,14 @@ class RealSenseThread (threading.Thread):
                 texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
                 vertex_array = np.hstack((coords, texs))
 
-                #imsave('../../../data/'+name+'.png', pixels)
-                #points.export_to_ply("../../../data/"+name+".ply", color)
+                filename = self.prefix_filename + 'frame' + str(count) + self.postfix_filename
+                if self.use_motor_control:
+                    filename = self.prefix_filename + motor_filename + self.postfix_filename
+
+                if self.save_png:
+                    imsave(filename + '.png', pixels)
+                if self.save_ply:
+                    points.export_to_ply(filename + '.ply', color)
 
                 if self.render is not None:
                     self.render.copy_data(
@@ -88,7 +104,9 @@ class RealSenseThread (threading.Thread):
                     print('Main thread is dead, closing down sensor')
                     pipeline.stop()
                     return
+
         except Exception as e:
             print(e)
             pipeline.stop()
             return
+
