@@ -1,86 +1,98 @@
 import serial
-import json
 import time
+import json
 
 
-def establishConnection():
-    while True:
-        try:
-            ser = serial.Serial('/dev/cu.usbserial-DN02Z6PY', 9600)
-            time.sleep(2)
-            break
-        except:
+class Motorcontrol:
+
+    def __init__(self):
+        self.num_boards = 2
+        self.position = [0]*self.num_boards
+        self.portname = '/dev/cu.usbserial-DN02Z6PY'
+        self.distribution = 'uniform'
+        self.board_io = None
+
+    def establishConnection(self):
+        while True:
+            try:
+                board_io = serial.Serial(self.portname, 9600)
+                time.sleep(2)
+                break
+            except serial.SerialException:
+                pass
+                time.sleep(1)
+
+        self.board_io = board_io
+        # Confirm that Serial comunication is working
+        self.board_io.write(b'5')
+        while self.board_io.in_waiting == 0:
             pass
-            time.sleep(1)
 
-    # Confirm that Serial comunication is working
-    ser.write(b'5')
-    while ser.in_waiting == 0:
-        pass
+        msg = self.board_io.readline().decode('utf-8')
 
-    msg = ser.readline().decode("utf-8")
+        if msg == 'Connected!\r\n':
+            print('ok: A connected')
+        else:
+            raise RedboardException('Could not confirm connection')
 
-    if msg == 'Connected!\r\n':
-        print('ok: A connected')
-        return ser
-    else:
-        raise RedboardException("Could not confirm connection")
+    def sanityCheck(self):
+        while self.board_io.in_waiting == 0:
+            pass
 
+        msg = self.board_io.readline().decode('utf-8')
+        if msg == '0\r\n':
+            raise RedboardException('Motor config failed. Check hardware setup')
+        else:
+            print('Configuration successful!')
 
-def sanityCheck(ser):
-    while ser.in_waiting == 0:
-        pass
+    def uploadConfig(self):
+        config = self.makeConfig()
 
-    msg = ser.readline().decode("utf-8")
-    if msg == '0\r\n':
-        raise RedboardException("Configurating the motors failed. Check hardware setup")
-    else:
-        print("Configuration successful!")
+        time.sleep(1) #check if needed
 
+        self.board_io.write(config.encode('utf-8'))
+        while self.board_io.in_waiting == 0:
+            pass
 
-def uploadConfig(ser):
-    config = getConfig()
+        msg = self.board_io.readline().decode('utf-8')
 
-    time.sleep(1)
-    ser.write(config.encode("utf-8"))
-    while ser.in_waiting == 0:
-        pass
+        if msg == 'Received!\r\n':
+            print('ok: Arduino received data')
+        else:
+            raise RedboardException('Uploading configuration file failed')
 
-    msg = ser.readline().decode("utf-8")
+# This is a separate function in case we want
+# to add more to the config later
+    def makeConfig(self):
+        config = {}
+        config['num_boards'] = self.num_boards
+        return json.dumps(config)
 
-    if msg == 'Received!\r\n':
-        print('ok: Arduino received data')
-    else:
-        raise RedboardException("Uploading configuration file failed")
+    def nextPos(self):
+        nextPosStr = self.positionGenerator()
+        self.board_io.write(nextPosStr.encode('utf-8'))
+        while self.board_io.in_waiting == 0:
+            pass
 
+        msg = self.board_io.readline().decode('utf-8')
+        if msg == '0':
+            raise RedboardException('Redboard could not read position')
+        else:
+            return nextPosStr
 
-def getConfig():
-    with open('config.txt') as config_file:
-        config = json.load(config_file)
+    def positionGenerator(self):
+        if self.distribution == 'uniform':
+            #increment position
+            print('jo')
 
-    return json.dumps(config)
+        pos = {'position': self.position}
+        return json.dumps(pos)
+    
+    def setup(self):
+        self.establishConnection()
+        self.uploadConfig()
+        self.sanityCheck()
 
-
-def nextPos(ser):
-    ser.write(b'1')
-    while ser.in_waiting == 0:
-        pass
-
-    msg = ser.readline().decode("utf-8")
-    if msg == 'Done!\r\n':
-        raise RedboardException("Program has ended")
-    else:
-        return msg
-
-
-def setup():
-    ser = establishConnection()
-    uploadConfig(ser)
-    sanityCheck(ser)
-    return ser
-
-def positionGenerator():
-    print('todo')
 
 class RedboardException(Exception):
     pass

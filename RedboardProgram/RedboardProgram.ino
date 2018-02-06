@@ -5,13 +5,8 @@
 
 #define MAX_BOARDS 5
 int NUM_BOARDS;
-int startStep [MAX_BOARDS];
-int stopStep [MAX_BOARDS];
-int stepSize [MAX_BOARDS];
-int counter [MAX_BOARDS];
-int pos [MAX_BOARDS];
 unsigned long state [MAX_BOARDS];
-
+StaticJsonBuffer<100> jsonBuffer;
 AutoDriver *boardIndex[MAX_BOARDS];
 AutoDriver boardA(0,10,6);
 AutoDriver boardB(1,10,6);
@@ -44,25 +39,22 @@ void setup() {
 
 void loop() {
 
-  String currPos;
   while (Serial.available() == 0) {}
-  int msg = Serial.parseInt();
-  for (int bd = 0; bd <NUM_BOARDS; bd++) {
-      boardIndex[bd]->goTo(pos[bd]);
-  }
-
-  for (int bd = 0; bd <NUM_BOARDS; bd++) {
-      while (boardIndex[bd]->busyCheck()) {}
-      currPos = currPos + String(pos[bd])+String(',');
-  }
+  JsonObject& root = jsonBuffer.parse(Serial);
+  if (root.success()) {
   
-  Serial.println(currPos);
-  nextPos();
+    for (int bd = 0; bd <NUM_BOARDS; bd++) {
+        int pos = root["position"][bd];
+        boardIndex[bd]->goTo(pos);
+    }
   
-  if (pos[0]>stopStep[0]) {
-    while (Serial.available() == 0) {}
-    Serial.parseInt();
-    Serial.println(String("Done!")); }
+    for (int bd = 0; bd <NUM_BOARDS; bd++) {
+        while (boardIndex[bd]->busyCheck()) {}
+    }
+    
+    Serial.println(1); } 
+  else {
+    Serial.println(0);}
 }
 
 

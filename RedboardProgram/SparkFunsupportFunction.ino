@@ -36,23 +36,22 @@ void dSPINConfig(void)
 
 
 // Update position
-void nextPos(void) {
-  ++counter[NUM_BOARDS - 1];
-  for (int bd = NUM_BOARDS - 1; (bd > 0) && ((counter[bd] *stepSize[bd]) > stopStep[bd]); --bd) {
-    counter[bd] = startStep[bd];
-    ++counter[bd - 1];
-  }
-  for (int bd = 0; bd < NUM_BOARDS; bd++) {
-    pos[bd] = counter[bd] * stepSize[bd];
-  }
-}
+//void nextPos(void) {
+//  ++counter[NUM_BOARDS - 1];
+//  for (int bd = NUM_BOARDS - 1; (bd > 0) && ((counter[bd] *stepSize[bd]) > stopStep[bd]); --bd) {
+//    counter[bd] = startStep[bd];
+//    ++counter[bd - 1];
+//  }
+//  for (int bd = 0; bd < NUM_BOARDS; bd++) {
+//    pos[bd] = counter[bd] * stepSize[bd];
+//  }
+//}
 
 
 
 // Connect to computer, recieve config file, set variables
 void establishConnection(void) {
   Serial.begin(9600);
-  StaticJsonBuffer<300> jsonBuffer;
   // Establish connection
   while (Serial.available() == 0)
   {}
@@ -62,20 +61,10 @@ void establishConnection(void) {
   // Wait for and receive json-config file
   while (Serial.available() == 0)
   {}
-  //String json_str =  Serial.readString();
+
   JsonObject& root = jsonBuffer.parse(Serial);
   if (root.success()) {
     NUM_BOARDS = root["NumBoards"];
-    for (int bd = 0; bd < NUM_BOARDS; bd++) {
-      String bdID = "Board" + String(bd);
-      startStep[bd] = root[bdID]["StartStep"];
-      stopStep[bd] = root[bdID]["StopStep"];
-      stepSize[bd] = root[bdID]["StepSize"];
-      pos[bd] = root["LastAlpha"][bd];
-      counter[bd] = pos[bd]/stepSize[bd];
-      // TODO: Check if the vals were read
-    }
-    
     Serial.println(F("Received!"));
     Serial.flush();
     
