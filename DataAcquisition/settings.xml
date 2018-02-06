@@ -22,10 +22,17 @@
         />
 
         <realsense
-                save_png="true"
-                save_ply="true"
-                use_motor_control="false"
+                save_png="false"
+                save_ply="false"
+                use_motor_control="true"
                 prefix="../output/"
                 postfix=""
         />
+        
+        <motor
+                position_distribution="uniform"
+                serial_port="/dev/cu.usbserial-DN02Z6PY"
+                number_of_motors="2"
+        />
+        
 </scene>

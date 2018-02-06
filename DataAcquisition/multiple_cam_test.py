@@ -25,7 +25,7 @@ for dev in devices:
 
 print('Configuration is done for', len(configs), 'devices')
 
-pipelines =[]
+pipelines = []
 for cfg in configs:
     pipe = rs.pipeline()
     pipelines.append(pipe)
@@ -39,7 +39,7 @@ while running:
 
     for camNo, pipe in enumerate(pipelines):
         frames = pipe.wait_for_frames()
-        print('camera number: ',camNo, 'frame number: ', frame_number)
+        print('camera number: ', camNo, 'frame number: ', frame_number)
 
     if frame_number > 30:
         running = False
@@ -48,4 +48,3 @@ while running:
 
 for pipeline in pipelines:
     pipeline.stop()
-

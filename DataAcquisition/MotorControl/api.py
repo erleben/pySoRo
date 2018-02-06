@@ -55,7 +55,7 @@ def uploadConfig(ser):
 
 
 def getConfig():
-    with open('../config.txt') as config_file:
+    with open('config.txt') as config_file:
         config = json.load(config_file)
 
     return json.dumps(config)
@@ -79,6 +79,8 @@ def setup():
     sanityCheck(ser)
     return ser
 
+def positionGenerator():
+    print('todo')
 
 class RedboardException(Exception):
     pass

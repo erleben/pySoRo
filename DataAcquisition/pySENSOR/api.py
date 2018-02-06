@@ -52,7 +52,7 @@ class RealSenseThread (threading.Thread):
                 if self.use_motor_control:
                     msg = MC.nextPos(motor_control)
                     pos = msg.split(',')
-                    print('Motor 1: '+ str(pos[0]) + ' Motor 2:' + str(pos[1]))
+                    print('Motor 1: ' + str(pos[0]) + ' Motor 2:' + str(pos[1]))
                     motor_filename = 'm1_'+str(pos[0]+'m2_'+str(pos[1]))
 
                 frames = pipeline.wait_for_frames()
