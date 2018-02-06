@@ -8,13 +8,13 @@ context = rs.context()
 devices = context.query_devices()
 print(devices.size(), 'connected cameras')
 
-pipelines =[]
+pipelines = []
 for dev in devices:
     p = rs.pipeline()
     pipelines.append(p)
-    
+
     serial_number = dev.get_info(rs.camera_info(1))
-    print('Serial number:' ,serial_number)
+    print('Serial number:' , serial_number)
     
     config = rs.config()
     config.enable_device(serial_number)
