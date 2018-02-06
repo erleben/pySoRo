@@ -2,9 +2,11 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 
+
 context = rs.context()
 
 devices = context.query_devices()
+print(devices.size(), 'connected cameras')
 
 pipelines =[]
 for dev in devices:
@@ -12,7 +14,7 @@ for dev in devices:
     pipelines.append(p)
     
     serial_number = dev.get_info(rs.camera_info(1))
-    print(serial_number)
+    print('Serial number:' ,serial_number)
     
     config = rs.config()
     config.enable_device(serial_number)
@@ -25,10 +27,10 @@ running = True
 
 while running:
 
-    for pipe in pipelines:
+    for camNo, pipe in enumerate(pipelines):
         frames = pipe.wait_for_frames()
-        print('frame number: ', frames.frame_number) 
-        if frames.frame_number > 100:
+        print('camera number: ',camNo, 'frame number: ', frames.frame_number) 
+        if frames.frame_number > 30:
             running = False
 
 for pipeline in pipelines:
