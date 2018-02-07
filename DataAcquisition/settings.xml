@@ -24,15 +24,15 @@
         <realsense
                 save_png="false"
                 save_ply="false"
-                use_motor_control="true"
                 prefix="../output/"
                 postfix=""
         />
         
         <motor
-                position_distribution="uniform"
-                serial_port="/dev/cu.usbserial-DN02Z6PY"
-                number_of_motors="2"
+                use_motor_control="true"
+                distribution="uniform"
+                portname="/dev/cu.usbserial-DN02Z6PY"
+                num_boards="2"
         />
         
 </scene>

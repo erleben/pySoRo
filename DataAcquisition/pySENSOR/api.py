@@ -16,7 +16,7 @@ class RealSenseThread (threading.Thread):
         self.threadID = threadID
         self.name = thread_name
         self.render = None
-        self.use_motor_control = False
+        self.motor_control = None
         self.save_png = False
         self.save_ply = False
         self.prefix_filename = '../../../data/'
@@ -40,20 +40,18 @@ class RealSenseThread (threading.Thread):
             print()
             print('Done initializing real sense pipeline')
 
-            motor_control = None
-            if self.use_motor_control:
+            if self.motor_control is not None:
                 print('Initializing Arduino board')
-                motor_control = MC.setup()
+                self.motor_control.setup()
                 print('Done initializing Arduino board')
 
             count = 1
             while True:
 
-                if self.use_motor_control:
-                    msg = MC.nextPos(motor_control)
-                    pos = msg.split(',')
+                if self.motor_control is not None:
+                    pos = self.motor_control.nextPos()
                     print('Motor 1: ' + str(pos[0]) + ' Motor 2:' + str(pos[1]))
-                    motor_filename = 'm1_'+str(pos[0]+'m2_'+str(pos[1]))
+                    motor_filename = 'm1_' + str(pos[0]) + 'm2_' + str(pos[1])
 
                 frames = pipeline.wait_for_frames()
 
@@ -79,7 +77,7 @@ class RealSenseThread (threading.Thread):
                 vertex_array = np.hstack((coords, texs))
 
                 filename = self.prefix_filename + 'frame' + str(count) + self.postfix_filename
-                if self.use_motor_control:
+                if self.motor_control is not None:
                     filename = self.prefix_filename + motor_filename + self.postfix_filename
 
                 if self.save_png:

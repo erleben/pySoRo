@@ -12,6 +12,9 @@ class Motorcontrol:
         self.distribution = 'uniform'
         self.board_io = None
 
+    def update(self):
+        self.position = [0]*self.num_boards
+
     def establishConnection(self):
         while True:
             try:
@@ -48,8 +51,6 @@ class Motorcontrol:
     def uploadConfig(self):
         config = self.makeConfig()
 
-        time.sleep(1) #check if needed
-
         self.board_io.write(config.encode('utf-8'))
         while self.board_io.in_waiting == 0:
             pass
@@ -75,19 +76,21 @@ class Motorcontrol:
             pass
 
         msg = self.board_io.readline().decode('utf-8')
-        if msg == '0':
+        if msg == '0\r\n':
             raise RedboardException('Redboard could not read position')
         else:
-            return nextPosStr
+            return self.position
 
     def positionGenerator(self):
         if self.distribution == 'uniform':
             #increment position
-            print('jo')
+            print()
 
+        self.position[0] += 20
+        self.position[1] += 20
         pos = {'position': self.position}
         return json.dumps(pos)
-    
+
     def setup(self):
         self.establishConnection()
         self.uploadConfig()

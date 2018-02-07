@@ -14,6 +14,7 @@ import pyVISUALIZATION.grid as GRID
 import pyVISUALIZATION.point_cloud as PC
 import pySENSOR.api as API
 import pySENSOR.xml as RSXML
+import MotorControl.xml as MCXML
 
 
 OpenGL.ERROR_CHECKING = True
@@ -37,6 +38,7 @@ class RenderWidget(QOpenGLWidget):
         self.clear_color = None
 
         self.sensor_thread = None
+        self.motor_control = None
         self.point_cloud_render = None
         self.grid_render = None
 
@@ -80,6 +82,8 @@ class RenderWidget(QOpenGLWidget):
         self.sensor_thread = RSXML.load('settings.xml')
         #self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')
         self.sensor_thread.connect(self.point_cloud_render)
+        self.motor_control = MCXML.load('settings.xml')
+        self.sensor_thread.motor_control = self.motor_control
         self.sensor_thread.start()
 
         glClearColor(self.clear_color[0], self.clear_color[1], self.clear_color[2], 0.0)

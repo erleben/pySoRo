@@ -18,7 +18,6 @@ def load_from_elementtree(root_tag):
 
     rs_thread.save_png = UTIL.bool_from_xml(rs_tag, 'save_png', rs_thread.save_png)
     rs_thread.save_ply = UTIL.bool_from_xml(rs_tag, 'save_ply', rs_thread.save_ply)
-    rs_thread.use_motor_control = UTIL.bool_from_xml(rs_tag, 'use_motor_control', rs_thread.use_motor_control)
     rs_thread.prefix_filename = UTIL.string_from_xml(rs_tag, 'prefix', rs_thread.prefix_filename)
     rs_thread.postfix_filename = UTIL.string_from_xml(rs_tag, 'postfix', rs_thread.postfix_filename)
 
@@ -46,7 +45,6 @@ def save_to_elementtree(rs_thread, root_tag):
     rs_tag = ET.SubElement(root_tag, 'realsense')
     rs_tag.attrib['save_png'] = str(rs_thread.save_png)
     rs_tag.attrib['save_ply'] = str(rs_thread.save_ply)
-    rs_tag.attrib['use_motor_control'] = str(rs_thread.use_motor_control)
     rs_tag.attrib['postfix'] = str(rs_thread.postfix)
     rs_tag.attrib['prefix'] = str(rs_thread.prefix)
 

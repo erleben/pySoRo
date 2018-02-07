@@ -34,21 +34,6 @@ void dSPINConfig(void)
   }
 }
 
-
-// Update position
-//void nextPos(void) {
-//  ++counter[NUM_BOARDS - 1];
-//  for (int bd = NUM_BOARDS - 1; (bd > 0) && ((counter[bd] *stepSize[bd]) > stopStep[bd]); --bd) {
-//    counter[bd] = startStep[bd];
-//    ++counter[bd - 1];
-//  }
-//  for (int bd = 0; bd < NUM_BOARDS; bd++) {
-//    pos[bd] = counter[bd] * stepSize[bd];
-//  }
-//}
-
-
-
 // Connect to computer, recieve config file, set variables
 void establishConnection(void) {
   Serial.begin(9600);
@@ -61,10 +46,10 @@ void establishConnection(void) {
   // Wait for and receive json-config file
   while (Serial.available() == 0)
   {}
-
+  StaticJsonBuffer<100> jsonBuffer;
   JsonObject& root = jsonBuffer.parse(Serial);
   if (root.success()) {
-    NUM_BOARDS = root["NumBoards"];
+    NUM_BOARDS = root["num_boards"];
     Serial.println(F("Received!"));
     Serial.flush();
     

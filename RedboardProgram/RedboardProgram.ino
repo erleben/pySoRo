@@ -6,7 +6,6 @@
 #define MAX_BOARDS 5
 int NUM_BOARDS;
 unsigned long state [MAX_BOARDS];
-StaticJsonBuffer<100> jsonBuffer;
 AutoDriver *boardIndex[MAX_BOARDS];
 AutoDriver boardA(0,10,6);
 AutoDriver boardB(1,10,6);
@@ -38,7 +37,7 @@ void setup() {
 
 
 void loop() {
-
+  StaticJsonBuffer<100> jsonBuffer;
   while (Serial.available() == 0) {}
   JsonObject& root = jsonBuffer.parse(Serial);
   if (root.success()) {
