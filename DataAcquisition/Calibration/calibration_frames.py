@@ -3,7 +3,7 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import time
-from scipy.misc import imsave
+from skimage.io import imsave
 import numpy as np
 
 
@@ -13,13 +13,15 @@ devices = context.query_devices()
 print(devices.size(), 'connected cameras')
 
 configs = []
+serial_numbers = []
 for dev in devices:
     camera_name = dev.get_info(rs.camera_info(0))
     print('Camera name:', camera_name)
     if camera_name == 'Platform Camera':
         continue
-    serial_number = dev.get_info(rs.camera_info(1))
+    serial_number = dev.get_info(rs.camera_info.serial_number)
     print('Serial number:', serial_number)
+    serial_numbers.append(serial_number)
     config = rs.config()
     config.enable_device(serial_number)
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
@@ -37,21 +39,32 @@ for cfg in configs:
 
 print(len(pipelines), 'Pipelines are started')
 
-time.sleep(3)
+pc = rs.pointcloud()
+points = rs.points()
 
+time.sleep(3)
+real_depth = np.zeros((640, 480))
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
-    print('camera number: ', camNo)
-    pointcloud = rs.pointcloud()
-    depth = frames.get_depth_frame()
-    points = pointcloud.calculate(depth)
-    color = frames.get_color_frame()
-    pointcloud.map_to(color)
-    pixels = np.asanyarray(color.get_data())
     
-    imsave('col' + '.png', pixels)
-    points.export_to_ply('dep' + '.ply', color)
-
+    depth_frame = frames.get_depth_frame()
+    color_frame = frames.get_color_frame()
+    
+    depth_image = np.asanyarray(depth_frame.get_data())
+    color_image = np.asanyarray(color_frame.get_data())
+    
+    pc.map_to(color_frame)
+    points = pc.calculate(depth_frame)
+    print('Depth and color saved for camera with serial number ', serial_numbers[camNo])
+    
+    imsave('col' + '.tif', color_image)
+    imsave('dep' + '.tif', depth_image)
+    
+    for i in range(depth_frame.width):
+        for j in range(depth_frame.height):
+            real_depth[i,j] = depth_frame.get_distance(i,j)
+            
+    imsave('realdep' + '.tif', real_depth, )
 
 
 for pipeline in pipelines:
