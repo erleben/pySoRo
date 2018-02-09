@@ -42,20 +42,28 @@ print(len(pipelines), 'Pipelines are started')
 pc = rs.pointcloud()
 points = rs.points()
 
-time.sleep(3)
+time.sleep(8)
 real_depth = np.zeros((640, 480))
+
+align_to = rs.stream.color
+align = rs.align(align_to)
+
 # Get images without foreground
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
     
-    depth_frame = frames.get_depth_frame()
-    color_frame = frames.get_color_frame()
+    aligned_frames = align.proccess(frames)
+    
+    depth_frame = aligned_frames.get_depth_frame()
+    color_frame = aligned_frames.get_color_frame()
     
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
     
     pc.map_to(color_frame)
     points = pc.calculate(depth_frame)
+    points.export_to_ply('data/'+ str(serial_numbers[camNo])+'back.ply',color_frame)
+    
     print('Background depth and color saved for camera with serial number ', serial_numbers[camNo])
     
     imsave('data/'+ str(serial_numbers[camNo])+'color_back.tif', color_image)
@@ -65,20 +73,25 @@ for camNo, pipe in enumerate(pipelines):
             real_depth[i,j] = depth_frame.get_distance(i,j)
             
     imsave('data/'+ str(serial_numbers[camNo])+'depth_back.tif', real_depth)
+  
     
 input("Place balls in the box and press enter")
 
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
     
-    depth_frame = frames.get_depth_frame()
-    color_frame = frames.get_color_frame()
+    aligned_frames = align.proccess(frames)
+    
+    depth_frame = aligned_frames.get_depth_frame()
+    color_frame = aligned_frames.get_color_frame()
     
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
     
     pc.map_to(color_frame)
     points = pc.calculate(depth_frame)
+    points.export_to_ply('data/'+ str(serial_numbers[camNo])+'fore.ply',color_frame)
+    
     print('Foreground depth and color saved for camera with serial number ', serial_numbers[camNo])
     
     imsave('data/'+ str(serial_numbers[camNo])+'color_fore.tif', color_image)
