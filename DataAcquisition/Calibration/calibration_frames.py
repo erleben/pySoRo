@@ -44,6 +44,7 @@ points = rs.points()
 
 time.sleep(3)
 real_depth = np.zeros((640, 480))
+# Get images without foreground
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
     
@@ -55,16 +56,38 @@ for camNo, pipe in enumerate(pipelines):
     
     pc.map_to(color_frame)
     points = pc.calculate(depth_frame)
-    print('Depth and color saved for camera with serial number ', serial_numbers[camNo])
+    print('Background depth and color saved for camera with serial number ', serial_numbers[camNo])
     
-    imsave('col' + '.tif', color_image)
-    imsave('dep' + '.tif', depth_image)
+    imsave('data/'+ str(serial_numbers[camNo])+'color_back.tif', color_image)
     
     for i in range(depth_frame.width):
         for j in range(depth_frame.height):
             real_depth[i,j] = depth_frame.get_distance(i,j)
             
-    imsave('realdep' + '.tif', real_depth, )
+    imsave('data/'+ str(serial_numbers[camNo])+'depth_back.tif', real_depth)
+    
+input("Place balls in the box and press enter")
+
+for camNo, pipe in enumerate(pipelines):
+    frames = pipe.wait_for_frames()
+    
+    depth_frame = frames.get_depth_frame()
+    color_frame = frames.get_color_frame()
+    
+    depth_image = np.asanyarray(depth_frame.get_data())
+    color_image = np.asanyarray(color_frame.get_data())
+    
+    pc.map_to(color_frame)
+    points = pc.calculate(depth_frame)
+    print('Foreground depth and color saved for camera with serial number ', serial_numbers[camNo])
+    
+    imsave('data/'+ str(serial_numbers[camNo])+'color_fore.tif', color_image)
+    
+    for i in range(depth_frame.width):
+        for j in range(depth_frame.height):
+            real_depth[i,j] = depth_frame.get_distance(i,j)
+            
+    imsave('data/'+ str(serial_numbers[camNo])+'depth_fore.tif', real_depth)
 
 
 for pipeline in pipelines:
