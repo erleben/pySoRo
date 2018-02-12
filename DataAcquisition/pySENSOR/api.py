@@ -30,12 +30,15 @@ class RealSenseThread (threading.Thread):
 
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
+            align_to = rs.stream.color
+            align = rs.align(align_to)
 
             config = rs.config()
             config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
             config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
 
             pipeline.start(config)
+            
             pointcloud = rs.pointcloud()
             print()
             print('Done initializing real sense pipeline')
@@ -55,10 +58,16 @@ class RealSenseThread (threading.Thread):
 
                 frames = pipeline.wait_for_frames()
 
+                #aligned_frames = align.proccess(frames)
+                #depth = aligned_frames.get_depth_frame()
+                #color = aligned_frames.get_color_frame()
+
                 depth = frames.get_depth_frame()
-                points = pointcloud.calculate(depth)
                 color = frames.get_color_frame()
+                
                 pointcloud.map_to(color)
+                points = pointcloud.calculate(depth)
+                
                 width = color.get_width()
                 height = color.get_height()
 

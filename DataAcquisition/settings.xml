@@ -29,7 +29,7 @@
         />
         
         <motor
-                use_motor_control="true"
+                use_motor_control="false"
                 distribution="uniform"
                 portname="/dev/cu.usbserial-DN02Z6PY"
                 num_boards="2"

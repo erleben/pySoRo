@@ -42,6 +42,7 @@ print(len(pipelines), 'Pipelines are started')
 pc = rs.pointcloud()
 points = rs.points()
 
+print('Camera is warming up')
 time.sleep(8)
 real_depth = np.zeros((640, 480))
 
@@ -52,10 +53,12 @@ align = rs.align(align_to)
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
     
-    aligned_frames = align.proccess(frames)
+    #aligned_frames = align.proccess(frames)
+    #depth_frame = aligned_frames.get_depth_frame()
+    #color_frame = aligned_frames.get_color_frame()
     
-    depth_frame = aligned_frames.get_depth_frame()
-    color_frame = aligned_frames.get_color_frame()
+    depth_frame = frames.get_depth_frame()
+    color_frame = frames.get_color_frame()
     
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
@@ -74,16 +77,20 @@ for camNo, pipe in enumerate(pipelines):
             
     imsave('data/'+ str(serial_numbers[camNo])+'depth_back.tif', real_depth)
   
+    tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
+    imsave('data/'+ str(serial_numbers[camNo])+'texture_back.tif', tex_coor)
     
 input("Place balls in the box and press enter")
 
 for camNo, pipe in enumerate(pipelines):
     frames = pipe.wait_for_frames()
     
-    aligned_frames = align.proccess(frames)
+#    aligned_frames = align.proccess(frames)
+#    depth_frame = aligned_frames.get_depth_frame()
+#    color_frame = aligned_frames.get_color_frame()
     
-    depth_frame = aligned_frames.get_depth_frame()
-    color_frame = aligned_frames.get_color_frame()
+    depth_frame = frames.get_depth_frame()
+    color_frame = frames.get_color_frame()
     
     depth_image = np.asanyarray(depth_frame.get_data())
     color_image = np.asanyarray(color_frame.get_data())
@@ -102,6 +109,8 @@ for camNo, pipe in enumerate(pipelines):
             
     imsave('data/'+ str(serial_numbers[camNo])+'depth_fore.tif', real_depth)
 
+    tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
+    imsave('data/'+ str(serial_numbers[camNo])+'texture_back.tif', tex_coor)
 
 for pipeline in pipelines:
     pipeline.stop()
