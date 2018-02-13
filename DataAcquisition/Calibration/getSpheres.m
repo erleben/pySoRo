@@ -32,13 +32,13 @@ for num = 1:numBalls
     Col = pc.Color;
     Col(~isBallList,:)=[];
     newpc=pointCloud(Loc,'Color',Col);
-    [model, ~] = pcfitsphere(newpc, 0.01);
+    [model, ~] = pcfitsphere(newpc, 0.001);
     spheremodels{num} = model;
 end 
 
 if showClouds
     pcshow(pc);
-    hold on;
+    hold on; 
     for num = 1:numBalls
         plot(spheremodels{num});
         hold on;

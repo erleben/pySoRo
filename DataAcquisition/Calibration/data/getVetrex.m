@@ -1,4 +1,4 @@
-function depth = getVetrex(X, pc)
+function depth = getVtrex(X, pc)
 
 Loc = pc.Location;
 

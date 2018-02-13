@@ -1,8 +1,18 @@
-back_name = 'data/618204002727color_back.tif';
-fore_name = 'data/618204002727color_fore.tif';
+function points = getPoints(serial)
+
+back_name = strcat('data/',serial,'color_back.tif');
+fore_name = strcat('data/',serial,'color_fore.tif');
 
 balls = getBallProps(back_name,fore_name);
 
-pc = pcread('data/618204002727fore.ply');
-tex_name = 'data/618204002727texture_back.tif';
+pc = pcread(strcat('data/',serial,'fore.ply'));
+tex_name = strcat('data/',serial, 'texture_fore.tif');
 spheremodels=getSpheres(balls, pc, tex_name, true);
+
+numBalls = length(spheremodels);
+points = zeros(numBalls,3);
+for num = 1:numBalls
+    points(num,:)=spheremodels{num}.Center;
+end
+
+end

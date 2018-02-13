@@ -1,4 +1,4 @@
-function [R, T] = getTransform(p_ref, p_targ)
+function [R, T] = getTransformParam(p_ref, p_targ)
 
 o_mean = mean(p_ref);
 t_mean = mean(p_targ);
