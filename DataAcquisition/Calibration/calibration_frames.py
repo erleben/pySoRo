@@ -110,7 +110,7 @@ for camNo, pipe in enumerate(pipelines):
     imsave('data/'+ str(serial_numbers[camNo])+'depth_fore.tif', real_depth)
 
     tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
-    imsave('data/'+ str(serial_numbers[camNo])+'texture_back.tif', tex_coor)
+    imsave('data/'+ str(serial_numbers[camNo])+'texture_fore.tif', tex_coor)
 
 for pipeline in pipelines:
     pipeline.stop()
