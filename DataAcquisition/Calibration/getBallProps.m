@@ -5,6 +5,7 @@ right_back = imread(back_name);
 
 BW=imbinarize(right_back-right_fore);
 isBall = BW(:,:,1);
+isBall = imopen(isBall,strel('disk',4));
 elements = bwconncomp(isBall);
 balls = {elements.NumObjects, 1};
 

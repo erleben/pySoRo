@@ -29,8 +29,8 @@ for num = 1:numBalls
     isBallList = isBallList(ispoint,:);
     Loc = pc.Location;
     Loc(~isBallList,:)=[];
-    
     Col = pc.Color;
+    if tex_name == 'data/618204002727texture_fore.tif'
     Col(~isBallList,:)=[];
     newpc=pointCloud(Loc,'Color',Col);
     [model, ~] = pcfitsphere(newpc, 0.001);
