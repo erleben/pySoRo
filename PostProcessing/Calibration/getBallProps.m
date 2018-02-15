@@ -10,7 +10,7 @@ elements = bwconncomp(isBall);
 balls = {elements.NumObjects, 1};
 
 for num = 1:elements.NumObjects
-    if num > 1
+    if num > 1 
      ball = bwareafilt(isBall, num) -bwareafilt(isBall,num-1);
     else
      ball = bwareafilt(isBall, num);

@@ -3,6 +3,7 @@ serial_1 = '618204002727';
 serial_2 = '616205005055';
 
 
+
 points_1 = getPoints(serial_1);
 points_2 = getPoints(serial_2);
 
