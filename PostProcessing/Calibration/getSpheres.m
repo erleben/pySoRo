@@ -1,4 +1,4 @@
-function spheremodels = getSpheres(balls, pc, tex_name, showClouds)
+function [spheremodels, sphere_pcs] = getSpheres(balls, pc, tex_name, showClouds)
 
 [height, width] = size(balls{1});
 
@@ -35,6 +35,7 @@ for num = 1:numBalls
     newpc=pointCloud(Loc,'Color',Col);
     [model, ~] = pcfitsphere(newpc, 0.001);
     spheremodels{num} = model;
+    sphere_pcs{num} = newpc;
 end 
 
 if showClouds
