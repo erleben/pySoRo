@@ -8,7 +8,7 @@ ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 tex_imco = round(tex.*[width,height]);
 [numBalls, ~] = size(balls);
 
-
+ 
 for num = 1:numBalls
     isBall = balls(num,1);
     isBall = isBall{1};
@@ -44,7 +44,7 @@ if showClouds
     for num = 1:numBalls
         plot(spheremodels{num});
         hold on;
-    end
+    end 
      
 end
 

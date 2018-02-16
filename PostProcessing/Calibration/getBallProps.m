@@ -1,11 +1,12 @@
-function balls = getBallProps(fore_name, back_name)
+function balls = getBallProps(back_name, fore_name)
 
 right_fore = imread(fore_name);
 right_back = imread(back_name);
 
-BW=imbinarize(right_back-right_fore);
-isBall = BW(:,:,1);
+BW=imbinarize(right_fore-right_back);
+isBall = BW(:,:,1); 
 isBall = imopen(isBall,strel('disk',4));
+isBall = imerode(isBall, strel('disk', 3));
 elements = bwconncomp(isBall);
 balls = {elements.NumObjects, 1};
 

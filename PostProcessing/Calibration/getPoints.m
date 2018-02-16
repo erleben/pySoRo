@@ -15,4 +15,4 @@ for num = 1:numBalls
     points(num,:)=spheremodels{num}.Center;
 end
 
-end 
+end

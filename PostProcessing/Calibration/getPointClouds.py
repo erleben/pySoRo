@@ -3,10 +3,8 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import time
-from skimage.io import imsave
-import numpy as np
 
-def setup(back_then_fore):
+def setup(path):
     context = rs.context()
     
     devices = context.query_devices()
@@ -43,49 +41,28 @@ def setup(back_then_fore):
     time.sleep(8)
     
     
-    # Get data without foreground
-    capture(back_then_fore, pipelines, serial_numbers, True)
-    # Get images with foreground
-    capture(not back_then_fore, pipelines, serial_numbers, False)
-
+    # Capture pointcloud
+    capture(pipelines, serial_numbers, path)
+    
     # Might be neccesary to shut down lasers in between due to interference
     # Shut down sensors
     cleanup(pipelines)
 
-def capture(isBack, pipelines, serial_numbers, isFirst):
-    if isBack:
-        ground = 'back'
-    else:
-        ground = 'fore'
-        pc = rs.pointcloud()
-        points = rs.points()
-        
-            
+def capture(pipelines, serial_numbers, path):
+
+    pc = rs.pointcloud()
+    points = rs.points()
     for camNo, pipe in enumerate(pipelines):
         frames = pipe.wait_for_frames()
         
         depth_frame = frames.get_depth_frame()
         color_frame = frames.get_color_frame()
+                
+        pc.map_to(color_frame)
+        points = pc.calculate(depth_frame)
+        points.export_to_ply(path + str(serial_numbers[camNo])+'.ply',color_frame)
         
-        color_image = np.asanyarray(color_frame.get_data())
-        
-        if not isBack:
-            pc.map_to(color_frame)
-            points = pc.calculate(depth_frame)
-            points.export_to_ply('data/'+ str(serial_numbers[camNo])+ground+'.ply',color_frame)
-        
-            tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
-            imsave('data/'+ str(serial_numbers[camNo])+'texture_'+ground+'.tif', tex_coor)
-        
-            print('Foreground pointcloud and texture coordinates saved for camera with serial number ', serial_numbers[camNo])
-
-        
-        imsave('data/'+ str(serial_numbers[camNo])+'color_'+ground+'.tif', color_image)
-        print('Foreground color image saved for camera with serial number ', serial_numbers[camNo])
-
-        
-        if isFirst:
-            input("Place balls in the box and press enter")
+        print('Pointcloud saved for camera with serial number', serial_numbers[camNo])
 
 
 def cleanup(pipelines):
@@ -93,5 +70,5 @@ def cleanup(pipelines):
         pipeline.stop()
         
 if __name__ == "__main__":
-    back_then_fore = False
-    setup(back_then_fore)
+    path = 'pointclouds/'
+    setup(path)

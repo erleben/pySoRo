@@ -1,7 +1,8 @@
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-directory = 'data/';
+
+directory = 'data_5_balls/';
 
 % Get the centroids of the balls
 [points_1, sphere_pcs_1] = getPoints(serial_1, directory);
@@ -46,6 +47,7 @@ ref_points = ref_PC.Location;
 for i = 1:ref_PC.Count
     ref_transformed(i,:)=(R*ref_points(i,:)')'+T';
 end
+ref_transformed_PC = pointCloud(ref_transformed, 'Color', ref_PC.Color);
 
 
 % Display the result
@@ -66,7 +68,6 @@ zlabel('z');
 title('Point cloud B')
 
 subplot(1,3,3);
-ref_transformed_PC = pointCloud(ref_transformed, 'Color', ref_PC.Color);
 pcshow(ref_transformed_PC); 
 view([0 -90])
 xlabel('x');
