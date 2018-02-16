@@ -1,0 +1,22 @@
+function spheremodels = getSphereModels(sphere_pcs, doPlot)
+
+num_balls = lenght(sphere_pcs);
+
+for b = 1:num_balls
+    
+    [model, ~] = pcfitsphere(newpc, 0.001);
+    spheremodels{num} = model;
+    
+    
+    if showClouds
+        pcshow(pc);
+        hold on;
+        for num = 1:numBalls
+            plot(spheremodels{num});
+            hold on;
+        end
+    end
+    
+    
+end
+end

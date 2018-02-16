@@ -1,6 +1,6 @@
-function [spheremodels, sphere_pcs] = getSpheres(balls, pc, tex_name, showClouds)
+function object_pcs = getObjPointclouds(objects, pc, tex_name)
 
-[height, width] = size(balls{1});
+[height, width] = size(objects{1});
 
 % Texture coordinates is a mapping from point index in the point cloud to
 % a tuple (u,v) where (u*height, v*width) are  thecoordinates of where the 
@@ -16,47 +16,40 @@ ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 % To get the coordinates, we have to multiply by the withd and height of
 % the color image
 tex_imco = round(tex.*[width,height]);
-[numBalls, ~] = size(balls);
+[numObj, ~] = size(objects);
 
 % For each object, find the point cloud indices that correspond to points
 % in that object
-for num = 1:numBalls
-    isBall = balls(num,1);
-    isBall = isBall{1};
+for num = 1:numObj
+    isObj = objects(num,1);
+    isObj = isObj{1};
     
-    isBallList = zeros(width*height,1);
+    isObjList = zeros(width*height,1);
     for i = 1:length(tex_imco)
         x = tex_imco(i,1);
         y = tex_imco(i,2);
         
         if (x<width) && (x>0) && (y<height) && (y>0)
-            if isBall(y,x) == 1
-                isBallList(i) = 1;
+            if isObj(y,x) == 1
+                isObjList(i) = 1;
             end
             
         end
     end
     
-    isBallList = isBallList(ispoint,:);
-    Loc = pc.Location;
-    Loc(~isBallList,:)=[];
+    % Remove invalid points
+    isObjList = isObjList(ispoint,:);
     
+    % Extract points that belong to the object
+    Loc = pc.Location;
+    Loc(~isObjList,:)=[];
     Col = pc.Color;
-    Col(~isBallList,:)=[];
-    newpc=pointCloud(Loc,'Color',Col);
-    [model, ~] = pcfitsphere(newpc, 0.001);
-    spheremodels{num} = model;
-    sphere_pcs{num} = newpc;
+    Col(~isObjList,:)=[];
+    
+    % Create a separeate pointcloud for the object
+    object_pcs{num} = pointCloud(Loc,'Color',Col);
 end
 
-if showClouds
-    pcshow(pc);
-    hold on;
-    for num = 1:numBalls
-        plot(spheremodels{num});
-        hold on;
-    end
-    
-end
+
 
 end

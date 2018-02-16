@@ -1,4 +1,4 @@
-function [spheremodels, sphere_pcs] = getSpheres(balls, pc, tex_name, showClouds)
+function object_pcs = getObjPointclouds(balls, pc, tex_name)
 
 [height, width] = size(balls{1});
 
@@ -16,11 +16,12 @@ ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 % To get the coordinates, we have to multiply by the withd and height of
 % the color image
 tex_imco = round(tex.*[width,height]);
-[numBalls, ~] = size(balls);
+[numObj, ~] = size(objects
+);
 
 % For each object, find the point cloud indices that correspond to points
 % in that object
-for num = 1:numBalls
+for num = 1:numObj
     isBall = balls(num,1);
     isBall = isBall{1};
     
@@ -37,26 +38,19 @@ for num = 1:numBalls
         end
     end
     
+    % Remove invalid points
     isBallList = isBallList(ispoint,:);
+    
+    % Extract points that belong to the object
     Loc = pc.Location;
     Loc(~isBallList,:)=[];
-    
     Col = pc.Color;
     Col(~isBallList,:)=[];
-    newpc=pointCloud(Loc,'Color',Col);
-    [model, ~] = pcfitsphere(newpc, 0.001);
-    spheremodels{num} = model;
-    sphere_pcs{num} = newpc;
+    
+    % Create a separeate pointcloud for the object
+    object_pcs{num} = pointCloud(Loc,'Color',Col);
 end
 
-if showClouds
-    pcshow(pc);
-    hold on;
-    for num = 1:numBalls
-        plot(spheremodels{num});
-        hold on;
-    end
-    
-end
+
 
 end

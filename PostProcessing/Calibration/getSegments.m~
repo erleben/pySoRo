@@ -1,0 +1,37 @@
+% This funciton takes the path of a foreground and a background color
+% image and returns a cell array of binary images. One for each ball.
+% binary(x,y) = 1 if there is a ball at x,y in the foreground image.
+function balls = getBallProps(back_name, fore_name)
+
+foreground = imread(fore_name);
+background = imread(back_name);
+
+
+% Since the background is black, we binarize the intensity channel of 
+% the HSV image
+HSV = rgb2hsv(foreground-background);
+isBall = imbinarize(HSV(:,:,3)); 
+
+% Remove the string of the hagning ball
+isBall = imopen(isBall,strel('disk',4));
+
+% If it is so that the point cloud data quality is poor on the edges of the
+% objects, then eroding will remove the outermost points
+isBall = imerode(isBall, strel('disk', 3));
+elements = bwconncomp(isBall);
+balls = {elements.NumObjects, 1};
+
+for num = 1:elements.NumObjects
+    if num > 1 
+     ball = bwareafilt(isBall, num) -bwareafilt(isBall,num-1);
+    else
+     ball = bwareafilt(isBall, num);
+    end
+    balls{num, 1} = ball;
+end
+
+end
+
+
+
+ 
