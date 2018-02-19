@@ -17,7 +17,8 @@ class RealSenseThread (threading.Thread):
         self.name = thread_name
         self.render = None
         self.motor_control = None
-        self.save_png = False
+        self.save_color = False
+        self.save_texture = False
         self.save_ply = False
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
@@ -89,9 +90,13 @@ class RealSenseThread (threading.Thread):
                 if self.motor_control is not None:
                     filename = self.prefix_filename + motor_filename + self.postfix_filename
 
-                # TODO: Save as tif. Add option to save texture
-                if self.save_png:
-                    imsave(filename + '.png', pixels)
+                if self.save_color:
+                    imsave(filename + 'color.tif', pixels)
+                    
+                if self.save_texture:
+                    texture = np.asanyarray(points.get_texture_coordinates_EXT())
+                    imsave(filename + 'texture.tif', texture)
+                    
                 if self.save_ply:
                     points.export_to_ply(filename + '.ply', color)
 

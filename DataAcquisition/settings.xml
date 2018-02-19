@@ -22,8 +22,9 @@
         />
 
         <realsense
-                save_png="false"
-                save_ply="false"
+                save_color="true"
+                save_texture="true"
+                save_ply="true"
                 prefix="../output/"
                 postfix=""
         />
