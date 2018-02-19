@@ -5,7 +5,7 @@ segment = true;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-path_to_pcs = 'pointclouds_4_180_shoe/';
+path_to_pcs = 'pointclouds/';
 path_to_back = 'data_4_balls_180/';
 
 PC_from = pcread(strcat(path_to_pcs,serial_1,'.ply'));

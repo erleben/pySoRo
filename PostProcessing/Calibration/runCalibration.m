@@ -1,9 +1,11 @@
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
+directory = 'data_6_balls/';
 
-directory = 'data/';
-doICP = true;
+just_balls = false;
+N = 1;
+remove_N_worst = true;
 
 % Get the centroids of the balls
 [points_1, sphere_pcs_1] = getPoints(serial_1, directory);
@@ -11,7 +13,17 @@ doICP = true;
 
 [num_balls, ~] = size(points_1);
 
-% Find out which centroids in points_1 corresponds to which 
+
+if just_balls
+    pc_balls_1 = sphere_pcs_1{1};
+    pc_balls_2 = sphere_pcs_2{1};
+    for num = 2:num_balls
+        pc_balls_1 = pcmerge(pc_balls_1, sphere_pcs_1{num},0.0001);
+        pc_balls_2 = pcmerge(pc_balls_2, sphere_pcs_2{num},0.0001);
+    end
+end
+
+% Find which centroids in points_1 corresponds to which 
 % centroids in points_2 by checking all permutations. Pick the 
 % permutaion with the smallest squared error
 perm = perms(1:num_balls);
@@ -30,17 +42,23 @@ end
 
 [mse, pind] = min(se);
 mse=mse/num_balls;
-
+points_1 = points_1(perm(pind,:)',:);
 
 % Get the transformation for the corresponding points
-points_1 = points_1(perm(pind,:)',:);
-[R,T] = getTransformParam(points_1, points_2);
-
+if remove_N_worst
+    [R,T, mse, in] = getTrainsformParam_Ransac(points_1, points_2, num_balls-N);
+else
+    [R,T] = getTransformParam(points_1, points_2);
+end
 
 % Read in the pointclouds
-ref_PC = pcread(strcat(directory,serial_1,'fore.ply'));
-target_PC = pcread(strcat(directory,serial_2,'fore.ply'));
-
+if just_balls
+    ref_PC = pc_balls_1;
+    target_PC = pc_balls_2;
+else
+    ref_PC = pcread(strcat(directory,serial_1,'fore.ply'));
+    target_PC = pcread(strcat(directory,serial_2,'fore.ply'));
+end
 
 % Apply transformation on ref_PC
 ref_transformed = zeros(ref_PC.Count,3);
@@ -77,10 +95,11 @@ zlabel('z');
 title('Point cloud B transformed')
 
 % Merge the transformed pointcloud with the target-pointcloud
-pcmerged=pcmerge(ref_transformed_PC,target_PC,0.001);
+pcmerged=pcmerge(ref_transformed_PC, target_PC, 0.001);
 
 hold on;
 figure;
+%pcmerged.Color=pcmerged.Color/2;
 pcshow(pcmerged);
 view([0 -90])
 xlabel('x');
@@ -98,12 +117,10 @@ disp(det(R));
 disp('MSE of transformed centroids:');
 disp(mse);
 
-% if doICP
-%     pc_balls_1 = sphere_pcs_1{1};
-%     pc_balls_2 = sphere_pcs_2{1};
-%     for num = 2:num_balls
-%         pc_balls_1 = pcmerge(pc_balls_1, sphere_pcs_1{num},0.0001);
-%         pc_balls_2 = pcmerge(pc_balls_2, sphere_pcs_2{num},0.0001);
-%     end
-%     [tform, ICP_PC, dist] = pcregrigid(pc_balls_1, pc_balls_2,'InlierRatio', 0.2);
-% end
+if remove_N_worst
+    disp('Removed ball number:')
+    disp(setdiff(1:num_balls,in));
+end
+
+%TODO:
+%Consider to use ICP to fine tune R and T
