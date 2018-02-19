@@ -1,29 +1,32 @@
 
 %make a function
 % find a good way to store T, R, color, tex and PCS
-segment = false;
+segment = true;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-directory = 'pointclouds/';
+path_to_pcs = 'pointclouds_4_180_shoe/';
+path_to_back = 'data_4_balls_180/';
 
-PC_from = pcread(strcat(directory,serial_1,'.ply'));
-PC_to = pcread(strcat(directory,serial_2,'.ply'));
+PC_from = pcread(strcat(path_to_pcs,serial_1,'.ply'));
+PC_to = pcread(strcat(path_to_pcs,serial_2,'.ply'));
 
 if segment
-    fore_1;
-    back_1;
-    fore_2;
-    back_2;
-    tex_1;
-    tex_2;
+    fore_1 = strcat(path_to_pcs, serial_1, 'color_fore.tif');
+    back_1 = strcat(path_to_back, serial_1, 'color_back.tif');
+    fore_2 = strcat(path_to_pcs, serial_2, 'color_fore.tif');
+    back_2 = strcat(path_to_back, serial_2, 'color_back.tif');
+    tex_1  = strcat(path_to_pcs, serial_1, 'texture_fore.tif');
+    tex_2  = strcat(path_to_pcs, serial_2, 'texture_fore.tif');
     
-    isObj_1 = getSegments(fore_1, back_1, 1);
-    isObj_2 = getSegments(fore_2, back_2, 1);
+    isObj_1 = getSegments(back_1, fore_1, 1);
+    isObj_2 = getSegments(back_2, fore_2, 1);
     
     PC_from = getObjPointclouds(isObj_1, PC_from, tex_1);
+    PC_from = PC_from{1};
     PC_to = getObjPointclouds(isObj_2, PC_to, tex_2);
-end
+    PC_to = PC_to{1};
+end 
 
 from_transformed = zeros(PC_from.Count,3);
 from_points = PC_from.Location;
@@ -37,10 +40,32 @@ from_transformed_PC = pointCloud(from_transformed, 'Color', PC_from.Color);
 PC_merged = pcmerge(PC_to,from_transformed_PC, 0.0001);
 
 figure;
-pcshow(PC_merged);
+subplot(1,2,1);
+pcshow(from_transformed_PC);
+title('moving');
+view([0 -90])
+subplot(1,2,2);
+pcshow(PC_to);
+title('fixed');
+view([0 -90])
 
-% figure;
-% pcshow(PC_merged);
-% hold on;
-% plot(pcshow(pcfitcylinder(PC_merged, 0.01)));
-% plot(pcshow(pcfitplane(PC_merged, 0.01)));
+figure;
+pcshow(PC_merged);
+title('Pointclouds merged');
+view([0 -90])
+
+% from_transformed_PC = pcdownsample(from_transformed_PC,'gridAverage',0.001);
+% PC_to = pcdownsample(PC_to,'gridAverage',0.001);
+
+% Use the ICP algorithm to improve alignment
+[tform, ICP_PC, dist] = pcregrigid(from_transformed_PC, PC_to,'InlierRatio', 0.1);
+figure;
+pcshow(ICP_PC);
+title('ICP');
+view([0 -90])
+
+figure;
+tf = affine3d(tform.T);
+title('Merged pointclouds based on ICP transform');
+pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001))
+

@@ -1,22 +1,24 @@
-function spheremodels = getSphereModels(sphere_pcs, doPlot)
+function spheremodels = getSphereModels(sphere_pcs, pc, showClouds)
 
-num_balls = lenght(sphere_pcs);
+num_balls = length(sphere_pcs);
 
-for b = 1:num_balls
-    
-    [model, ~] = pcfitsphere(newpc, 0.001);
-    spheremodels{num} = model;
-    
-    
-    if showClouds
-        pcshow(pc);
-        hold on;
-        for num = 1:numBalls
-            plot(spheremodels{num});
-            hold on;
-        end
-    end
-    
-    
+for num = 1:num_balls
+    spheremodels{num} = pcfitsphere(sphere_pcs{num}, 0.001);
 end
+
+for num = 1:num_balls
+    ROI = pc.select(pcspheremodels{num}.Center,spheremodels{num}.Radius*1.2);
+    spheremodels{num} = pcfitsphere(ROI,0.001);
+end
+
+if showClouds
+    pcshow(pc);
+    hold on;
+    for num = 1:num_balls
+        plot(spheremodels{num});
+        hold on;
+    end
+end
+
+
 end

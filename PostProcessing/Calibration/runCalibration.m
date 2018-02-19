@@ -2,7 +2,8 @@
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 
-directory = 'data_5_balls/';
+directory = 'data/';
+doICP = true;
 
 % Get the centroids of the balls
 [points_1, sphere_pcs_1] = getPoints(serial_1, directory);
@@ -96,3 +97,13 @@ disp('Determinant of R:')
 disp(det(R));
 disp('MSE of transformed centroids:');
 disp(mse);
+
+% if doICP
+%     pc_balls_1 = sphere_pcs_1{1};
+%     pc_balls_2 = sphere_pcs_2{1};
+%     for num = 2:num_balls
+%         pc_balls_1 = pcmerge(pc_balls_1, sphere_pcs_1{num},0.0001);
+%         pc_balls_2 = pcmerge(pc_balls_2, sphere_pcs_2{num},0.0001);
+%     end
+%     [tform, ICP_PC, dist] = pcregrigid(pc_balls_1, pc_balls_2,'InlierRatio', 0.2);
+% end

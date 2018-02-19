@@ -89,6 +89,7 @@ class RealSenseThread (threading.Thread):
                 if self.motor_control is not None:
                     filename = self.prefix_filename + motor_filename + self.postfix_filename
 
+                # TODO: Save as tif. Add option to save texture
                 if self.save_png:
                     imsave(filename + '.png', pixels)
                 if self.save_ply:

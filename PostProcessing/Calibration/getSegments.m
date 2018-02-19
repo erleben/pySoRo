@@ -15,24 +15,30 @@ background = imread(back_name);
 % the HSV image
 HSV = rgb2hsv(foreground-background);
 isObject = imbinarize(HSV(:,:,3));
-
+ 
 % Remove the string of the hagning ball
 isObject = imopen(isObject,strel('disk',4));
 
 % If it is so that the point cloud data quality is poor on the edges of the
 % objects, then eroding will remove the outermost points
-%isBall = imerode(isBall, strel('disk', 3));
-elements = bwconncomp(isObject);
-objects = {elements.NumObjects, 1};
+isObject = imerode(isObject, strel('disk', 3));
 
+elements = bwconncomp(isObject);
+objects = {elements.NumObjects};
+largest_size = 0; 
 % Separete the balls into independent binary images
 for num = 1:min(elements.NumObjects, max_num_obj)
     if num > 1
         obj = bwareafilt(isObject, num) -bwareafilt(isObject,num-1);
+        
     else
         obj = bwareafilt(isObject, num);
     end
-    objects{num, 1} = obj;
+    largest_size = max(largest_size, sum(obj(:)));
+    
+    if largest_size < sum(obj(:))*5
+        objects{num, 1} = obj;
+    end
 end
 
 end

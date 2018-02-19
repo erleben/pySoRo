@@ -3,6 +3,8 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import time
+from skimage.io import imsave
+import numpy as np
 
 def setup(path):
     context = rs.context()
@@ -64,6 +66,11 @@ def capture(pipelines, serial_numbers, path):
         
         print('Pointcloud saved for camera with serial number', serial_numbers[camNo])
 
+        color_image = np.asanyarray(color_frame.get_data())
+        imsave(path+ str(serial_numbers[camNo])+'color_fore.tif', color_image)
+        
+        tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
+        imsave(path+ str(serial_numbers[camNo])+'texture_fore.tif', tex_coor)
 
 def cleanup(pipelines):
     for pipeline in pipelines:
