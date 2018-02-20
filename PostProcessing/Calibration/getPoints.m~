@@ -11,10 +11,8 @@ balls = getSegments(back_name, fore_name);
 sphere_pcs = getObjPointclouds(balls, pc, tex_name);
 
 if isnan(radius)
-    sphere_models = getSphereModels(sphere_pcs, pc, true);
-else
-    sphere_models = getSphereModelsRadius(sphere_pcs, pc, true, radius);
-end
+    
+sphere_models = getSphereModelsRadius(sphere_pcs, pc, true, radius);
 
 numBalls = length(sphere_models);
 points = zeros(numBalls,3);

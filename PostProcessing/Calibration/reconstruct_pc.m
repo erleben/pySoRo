@@ -5,17 +5,20 @@ segment = true;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-path_to_pcs = 'pointclouds/';
-path_to_back = 'data_4_balls_180/';
+path_to_pcs = 'pointclouds_4_180_shoe/';
+path_to_calibration = 'data_4_balls_180/';
 
-PC_from = pcread(strcat(path_to_pcs,serial_1,'.ply'));
-PC_to = pcread(strcat(path_to_pcs,serial_2,'.ply'));
+%path_to_pcs = 'pointclouds_shoe_6/';
+%path_to_calibration = 'data_6_balls/';
+
+PC_from = pcread(strcat(path_to_pcs, serial_1, '.ply'));
+PC_to = pcread(strcat(path_to_pcs, serial_2, '.ply'));
 
 if segment
     fore_1 = strcat(path_to_pcs, serial_1, 'color_fore.tif');
-    back_1 = strcat(path_to_back, serial_1, 'color_back.tif');
+    back_1 = strcat(path_to_calibration, serial_1, 'color_back.tif');
     fore_2 = strcat(path_to_pcs, serial_2, 'color_fore.tif');
-    back_2 = strcat(path_to_back, serial_2, 'color_back.tif');
+    back_2 = strcat(path_to_calibration, serial_2, 'color_back.tif');
     tex_1  = strcat(path_to_pcs, serial_1, 'texture_fore.tif');
     tex_2  = strcat(path_to_pcs, serial_2, 'texture_fore.tif');
     
@@ -66,6 +69,6 @@ view([0 -90])
 
 figure;
 tf = affine3d(tform.T);
-title('Merged pointclouds based on ICP transform');
 pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001))
+title('Merged pointclouds based on ICP transform');
 

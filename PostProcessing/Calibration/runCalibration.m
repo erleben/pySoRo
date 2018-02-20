@@ -1,15 +1,20 @@
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-directory = 'data_6_balls/';
+directory = 'data_4_balls_180/';
+%directory = 'data_6_balls/';
 
-just_balls = false;
+just_balls = true;
+
 N = 1;
-remove_N_worst = true;
+remove_N_worst = false;
+
+radius = 0.036;
+%or nan
 
 % Get the centroids of the balls
-[points_1, sphere_pcs_1] = getPoints(serial_1, directory);
-[points_2, sphere_pcs_2] = getPoints(serial_2, directory);
+[points_1, sphere_pcs_1] = getPoints(serial_1, directory, radius);
+[points_2, sphere_pcs_2] = getPoints(serial_2, directory, radius);
 
 [num_balls, ~] = size(points_1);
 
