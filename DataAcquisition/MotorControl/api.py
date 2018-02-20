@@ -1,7 +1,7 @@
 import serial
 import time
 import json
-
+from MotorControl import UniformDist
 
 class Motorcontrol:
 
@@ -11,9 +11,13 @@ class Motorcontrol:
         self.portname = '/dev/cu.usbserial-DN02Z6PY'
         self.distribution = 'uniform'
         self.board_io = None
+        self.positionGenerator = None
 
     def update(self):
         self.position = [0]*self.num_boards
+        if self.distribution == 'uniform':
+            self.positionGenerator = UniformDist.UniformDist()
+            self.positionGenerator.update()
 
     def establishConnection(self):
         while True:
@@ -69,9 +73,15 @@ class Motorcontrol:
         config['num_boards'] = self.num_boards
         return json.dumps(config)
 
+
     def nextPos(self):
-        nextPosStr = self.positionGenerator()
-        self.board_io.write(nextPosStr.encode('utf-8'))
+        (self.position, isDone) = self.positionGenerator.increment()
+        
+        if isDone:
+            raise RedboardException('Final position reached')
+            
+        positionStr = json.dumps({'position': self.position})
+        self.board_io.write(positionStr.encode('utf-8'))
         while self.board_io.in_waiting == 0:
             pass
 
@@ -81,17 +91,9 @@ class Motorcontrol:
         else:
             return self.position
 
-    def positionGenerator(self):
-        if self.distribution == 'uniform':
-            #increment position
-            print()
-
-        self.position[0] += 20
-        self.position[1] += 20
-        pos = {'position': self.position}
-        return json.dumps(pos)
 
     def setup(self):
+        self.update()
         self.establishConnection()
         self.uploadConfig()
         self.sanityCheck()

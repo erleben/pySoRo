@@ -22,18 +22,19 @@
         />
 
         <realsense
-                save_color="true"
-                save_texture="true"
-                save_ply="true"
+                save_color="false"
+                save_texture="false"
+                save_ply="false"
                 prefix="../output/"
                 postfix=""
         />
         
         <motor
-                use_motor_control="false"
+                use_motor_control="true"
                 distribution="uniform"
                 portname="/dev/cu.usbserial-DN02Z6PY"
                 num_boards="2"
+                
         />
         
 </scene>
