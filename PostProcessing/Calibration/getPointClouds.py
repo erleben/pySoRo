@@ -6,7 +6,17 @@ import time
 from skimage.io import imsave
 import numpy as np
 
-def setup(path):
+
+def main():
+    prefix = '../../data/reconstruction/'
+    postfix = ''
+    
+    (pipelines, serial_numbers) = setup()
+    capture(pipelines, serial_numbers, prefix, postfix)
+
+    cleanup(pipelines)
+
+def setup():
     context = rs.context()
     
     devices = context.query_devices()
@@ -42,15 +52,10 @@ def setup(path):
     print('Camera is warming up')
     time.sleep(8)
     
+    return (pipelines, serial_numbers)
     
-    # Capture pointcloud
-    capture(pipelines, serial_numbers, path)
-    
-    # Might be neccesary to shut down lasers in between due to interference
-    # Shut down sensors
-    cleanup(pipelines)
 
-def capture(pipelines, serial_numbers, path):
+def capture(pipelines, serial_numbers, prefix, postfix):
 
     pc = rs.pointcloud()
     points = rs.points()
@@ -62,20 +67,19 @@ def capture(pipelines, serial_numbers, path):
                 
         pc.map_to(color_frame)
         points = pc.calculate(depth_frame)
-        points.export_to_ply(path + str(serial_numbers[camNo])+'.ply',color_frame)
+        points.export_to_ply(prefix + str(serial_numbers[camNo]) + '_' + postfix + '.ply', color_frame)
         
         print('Pointcloud saved for camera with serial number', serial_numbers[camNo])
 
         color_image = np.asanyarray(color_frame.get_data())
-        imsave(path+ str(serial_numbers[camNo])+'color_fore.tif', color_image)
+        imsave(prefix + str(serial_numbers[camNo]) + '_' + postfix + 'color_fore.tif', color_image)
         
         tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
-        imsave(path+ str(serial_numbers[camNo])+'texture_fore.tif', tex_coor)
+        imsave(prefix + str(serial_numbers[camNo]) + '_' + postfix + 'texture_fore.tif', tex_coor)
 
 def cleanup(pipelines):
     for pipeline in pipelines:
         pipeline.stop()
         
 if __name__ == "__main__":
-    path = 'pointclouds/'
-    setup(path)
+    main()

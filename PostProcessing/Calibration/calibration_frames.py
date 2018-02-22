@@ -6,6 +6,24 @@ import time
 from skimage.io import imsave
 import numpy as np
 
+def main():
+    
+    back_then_fore = False
+    prefix = '../../data/calibration/'
+    postfix = ''
+    
+    (pipelines, serial_numbers) = setup(back_then_fore)
+    
+    # Get data without foreground
+    capture(back_then_fore, pipelines, serial_numbers, True, prefix, postfix)
+    # Get images with foreground
+    capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
+
+    # Might be neccesary to shut down lasers in between due to interference
+    # Shut down sensors
+    cleanup(pipelines)
+
+
 def setup(back_then_fore):
     context = rs.context()
     
@@ -42,17 +60,10 @@ def setup(back_then_fore):
     print('Camera is warming up')
     time.sleep(8)
     
+    return (pipelines, serial_numbers)
     
-    # Get data without foreground
-    capture(back_then_fore, pipelines, serial_numbers, True)
-    # Get images with foreground
-    capture(not back_then_fore, pipelines, serial_numbers, False)
 
-    # Might be neccesary to shut down lasers in between due to interference
-    # Shut down sensors
-    cleanup(pipelines)
-
-def capture(isBack, pipelines, serial_numbers, isFirst):
+def capture(isBack, pipelines, serial_numbers, isFirst, prefix, postfix):
     if isBack:
         ground = 'back'
     else:
@@ -72,16 +83,16 @@ def capture(isBack, pipelines, serial_numbers, isFirst):
         if not isBack:
             pc.map_to(color_frame)
             points = pc.calculate(depth_frame)
-            points.export_to_ply('data/'+ str(serial_numbers[camNo])+ground+'.ply',color_frame)
+            points.export_to_ply(prefix + str(serial_numbers[camNo]) + '_' + postfix + ground + '.ply',color_frame)
         
             tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())
-            imsave('data/'+ str(serial_numbers[camNo])+'texture_'+ground+'.tif', tex_coor)
+            imsave(prefix + str(serial_numbers[camNo]) + '_' + postfix + 'texture_' + ground + '.tif', tex_coor)
         
             print('Foreground pointcloud and texture coordinates saved for camera with serial number ', serial_numbers[camNo])
 
         
-        imsave('data/'+ str(serial_numbers[camNo])+'color_'+ground+'.tif', color_image)
-        print('Foreground color image saved for camera with serial number ', serial_numbers[camNo])
+        imsave(prefix + str(serial_numbers[camNo]) + '_' + postfix + 'color_' + ground+'.tif', color_image)
+        print(ground +'ground color image saved for camera with serial number ', serial_numbers[camNo])
 
         
         if isFirst:
@@ -93,5 +104,4 @@ def cleanup(pipelines):
         pipeline.stop()
         
 if __name__ == "__main__":
-    back_then_fore = False
-    setup(back_then_fore)
+    main()

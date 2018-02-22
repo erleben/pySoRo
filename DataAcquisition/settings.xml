@@ -25,7 +25,7 @@
                 save_color="false"
                 save_texture="false"
                 save_ply="false"
-                prefix="../output/"
+                prefix="../data/output/"
                 postfix=""
         />
         

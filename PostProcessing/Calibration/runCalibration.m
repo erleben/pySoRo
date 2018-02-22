@@ -1,7 +1,7 @@
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-directory = 'data_4_balls_180/';
+directory = '../../data/calibration/data_4_balls_180/';
 %directory = 'data_6_balls/';
 
 just_balls = true;
@@ -9,7 +9,7 @@ just_balls = true;
 N = 1;
 remove_N_worst = false;
 
-radius = 0.036;
+radius = 0.035;
 %or nan
 
 % Get the centroids of the balls
@@ -129,3 +129,6 @@ end
 
 %TODO:
 %Consider to use ICP to fine tune R and T
+% [tform, ICP_PC, dist] = pcregrigid(ref_transformed_PC, target_PC,'InlierRatio', 0.9);
+% tf = affine3d(tform.T);
+% pcshow(pcmerge(target_PC, pctransform(ref_transformed_PC,tf),0.001),'Markersize',100)
