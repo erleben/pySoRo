@@ -5,15 +5,14 @@ segment = true;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-path_to_pcs = '../../data/reconstruction/pointclouds_4_180_shoe/';
-path_to_calibration = '../../data/calibration/data_4_balls_180/';
-postfix = '';
+path_to_pcs = '../../data/reconstruction/';
+path_to_calibration = '../../data/calibration/';
+postfix = '1';
+postfix = strcat('_',postfix);
 
-%path_to_pcs = 'pointclouds_shoe_6/';
-%path_to_calibration = 'data_6_balls/';
 
-PC_from = pcread(strcat(path_to_pcs, serial_1, '.ply'));
-PC_to = pcread(strcat(path_to_pcs, serial_2, '.ply'));
+PC_from = pcread(strcat(path_to_pcs, serial_1, postfix, '.ply'));
+PC_to = pcread(strcat(path_to_pcs, serial_2, postfix, '.ply'));
 
 if segment
     fore_1 = strcat(path_to_pcs, serial_1, postfix, 'color_fore.tif');
@@ -58,8 +57,8 @@ pcshow(PC_merged);
 title('Pointclouds merged');
 view([0 -90])
 
-% from_transformed_PC = pcdownsample(from_transformed_PC,'gridAverage',0.001);
-% PC_to = pcdownsample(PC_to,'gridAverage',0.001);
+ from_transformed_PC = pcdownsample(from_transformed_PC,'gridAverage',0.001);
+ PC_to = pcdownsample(PC_to,'gridAverage',0.001);
 
 % Use the ICP algorithm to improve alignment
 [tform, ICP_PC, dist] = pcregrigid(from_transformed_PC, PC_to,'InlierRatio', 0.1);
@@ -70,6 +69,6 @@ view([0 -90])
 
 figure;
 tf = affine3d(tform.T);
-pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',150)
+pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',40)
 title('Merged pointclouds based on ICP transform');
 

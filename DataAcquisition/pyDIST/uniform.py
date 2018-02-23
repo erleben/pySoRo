@@ -1,7 +1,7 @@
 import numpy as np
 
 # Todo: Add options to change stepsize, startpos and stoppos in settings.xml
-class UniformDist:
+class Uniform:
 
     def __init__(self):
         self.num_boards = 2
@@ -12,6 +12,20 @@ class UniformDist:
 
     # You have to update the counter if you change startpos or stepsize 
     # from the default
+    
+    def setStartPos(self, start_p):
+        self.startpos = start_p
+        
+    def setStopPos(self, stop_p):
+        self.stoppos = stop_p
+        
+    def setNumBoards(self, num_b):
+        self.num_boards = num_b
+        
+    def setStepSize(self, step_s):
+        self.stepsize = step_s
+        
+        
     def update(self):
         self.counter = np.divide(self.startpos, self.stepsize).astype('int')
         

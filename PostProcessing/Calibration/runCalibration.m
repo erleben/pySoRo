@@ -1,7 +1,9 @@
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
-directory = '../../data/calibration/data_4_balls_180/';
+directory = '../../data/calibration/';
+postfix = '1';
+postfix = strcat('_', postfix);
 %directory = 'data_6_balls/';
 
 just_balls = true;
@@ -10,11 +12,12 @@ N = 1;
 remove_N_worst = false;
 
 radius = 0.035;
-%or nan
+raduis = nan;
+show_spheres = true;
 
 % Get the centroids of the balls
-[points_1, sphere_pcs_1] = getPoints(serial_1, directory, radius);
-[points_2, sphere_pcs_2] = getPoints(serial_2, directory, radius);
+[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius);
+[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius);
 
 [num_balls, ~] = size(points_1);
 
@@ -61,8 +64,8 @@ if just_balls
     ref_PC = pc_balls_1;
     target_PC = pc_balls_2;
 else
-    ref_PC = pcread(strcat(directory,serial_1,'fore.ply'));
-    target_PC = pcread(strcat(directory,serial_2,'fore.ply'));
+    ref_PC = pcread(strcat(directory,serial_1, postfix, 'fore.ply'));
+    target_PC = pcread(strcat(directory,serial_2, postfix, 'fore.ply'));
 end
 
 % Apply transformation on ref_PC
@@ -125,6 +128,18 @@ disp(mse);
 if remove_N_worst
     disp('Removed ball number:')
     disp(setdiff(1:num_balls,in));
+end
+
+
+if show_spheres
+    radius = 0.035;
+    figure()
+    for b =1:num_balls
+        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
+        hold on;
+        plot(sphereModel([points_2(b,:),  radius]));
+    end
+    view([0 -90])
 end
 
 %TODO:

@@ -1,4 +1,18 @@
 import importlib
+import os
+
+def getPathToDist(module_name):
+    path = ''
+    cwd_dirs = os.getcwd().split('/')[1:]
+    
+    for dir_ in cwd_dirs:
+        path = path+'/'+dir_
+        if dir_ == 'DataAcquisition':
+            break
+    
+    path = path + '/pyDIST/' + module_name
+    return path
+
 
 def load_module(file_path, module_name):
     try:
@@ -23,3 +37,14 @@ print(fun())
     
 #print(os.path.dirname(os.path.abspath(__file__)))
 #print(os.getcwd())
+
+#Load module, increment and getPos
+#In xml settup
+#settup.xml: 
+#    motor:  num_baords
+#            ...
+#            distribution_module_name
+#
+#Hardcoded: The place you stpre the module
+#            The name of increment and getPos
+            

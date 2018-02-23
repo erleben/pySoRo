@@ -1,10 +1,10 @@
-function [points, sphere_pcs] = getPoints(serial, directory, radius)
+function [points, sphere_pcs] = getPoints(serial, directory, postfix, radius)
 
-back_name = strcat(directory,serial, 'color_back.tif');
-fore_name = strcat(directory,serial, 'color_fore.tif');
+back_name = strcat(directory,serial, postfix, 'color_back.tif');
+fore_name = strcat(directory,serial, postfix, 'color_fore.tif');
 
-pc = pcread(strcat(directory,serial, 'fore.ply'));
-tex_name = strcat(directory,serial, 'texture_fore.tif');
+pc = pcread(strcat(directory,serial, postfix, 'fore.ply'));
+tex_name = strcat(directory,serial, postfix, 'texture_fore.tif');
 
 balls = getSegments(back_name, fore_name);
 

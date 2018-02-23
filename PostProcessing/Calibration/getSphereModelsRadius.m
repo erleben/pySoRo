@@ -5,7 +5,7 @@ function spheremodels = getSphereModelsRadius(sphere_pcs, pc, showClouds, radius
 % moving radius units in the z-direction. This approach is sensitive to
 % noise in the data. 
 if nargin < 4
-    radius = 0.0350;
+    radius = 0.0360;
 end
 num_balls = length(sphere_pcs);
 
@@ -30,5 +30,6 @@ if showClouds
         hold on;
     end
 end
+
 
 end

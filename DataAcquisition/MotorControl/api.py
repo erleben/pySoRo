@@ -1,7 +1,7 @@
 import serial
 import time
 import json
-from MotorControl import UniformDist
+
 
 class Motorcontrol:
 
@@ -9,15 +9,13 @@ class Motorcontrol:
         self.num_boards = 2
         self.position = [0]*self.num_boards
         self.portname = '/dev/cu.usbserial-DN02Z6PY'
-        self.distribution = 'uniform'
         self.board_io = None
         self.positionGenerator = None
 
     def update(self):
         self.position = [0]*self.num_boards
-        if self.distribution == 'uniform':
-            self.positionGenerator = UniformDist.UniformDist()
-            self.positionGenerator.update()
+
+
 
     def establishConnection(self):
         while True:
