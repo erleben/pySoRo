@@ -18,7 +18,7 @@ class MessageBotThread (threading.Thread):
         self.TOKEN = "501932857:AAEvQCN3zfmeBTwWABZxjN_P-UojD5paC5Q"
         self.URL = None
         self.bot = None
-        self.USER = 516765287
+        self.USER = None
         self.enable_images = False
         self.update()
         self.sensor = None
