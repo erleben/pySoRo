@@ -6,7 +6,6 @@ import numpy as np
 from scipy.misc import imsave
 from OpenGL.GL import *
 import threading
-from MotorControl import api as MC
 
 
 class RealSenseThread (threading.Thread):
@@ -22,6 +21,7 @@ class RealSenseThread (threading.Thread):
         self.save_ply = False
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
+        self.bot = None
 
     def connect(self, render):
         self.render = render
@@ -31,8 +31,6 @@ class RealSenseThread (threading.Thread):
 
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
-            align_to = rs.stream.color
-            align = rs.align(align_to)
 
             config = rs.config()
             config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
@@ -58,10 +56,6 @@ class RealSenseThread (threading.Thread):
                     motor_filename = 'm1_' + str(pos[0]) + 'm2_' + str(pos[1])
 
                 frames = pipeline.wait_for_frames()
-
-                #aligned_frames = align.proccess(frames)
-                #depth = aligned_frames.get_depth_frame()
-                #color = aligned_frames.get_color_frame()
 
                 depth = frames.get_depth_frame()
                 color = frames.get_color_frame()
@@ -116,10 +110,13 @@ class RealSenseThread (threading.Thread):
                 if not threading.main_thread().is_alive():
                     print('Main thread is dead, closing down sensor')
                     pipeline.stop()
+                    if self.bot is not None:
+                        self.bot.end('')
                     return
 
         except Exception as e:
             print(e)
             pipeline.stop()
+            if self.bot is not None:
+                self.bot.end(e)
             return
-
