@@ -7,7 +7,10 @@ serial_1 = '618204002727';
 serial_2 = '616205005055';
 path_to_pcs = '../../data/reconstruction/';
 path_to_calibration = '../../data/calibration/';
-postfix = '1';
+
+postfix_calib = '2';
+postfix_calib = strcat('_',postfix_calib);
+postfix = '2_2';
 postfix = strcat('_',postfix);
 
 
@@ -16,9 +19,9 @@ PC_to = pcread(strcat(path_to_pcs, serial_2, postfix, '.ply'));
 
 if segment
     fore_1 = strcat(path_to_pcs, serial_1, postfix, 'color_fore.tif');
-    back_1 = strcat(path_to_calibration, serial_1, postfix, 'color_back.tif');
+    back_1 = strcat(path_to_calibration, serial_1, postfix_calib, 'color_back.tif');
     fore_2 = strcat(path_to_pcs, serial_2, postfix, 'color_fore.tif');
-    back_2 = strcat(path_to_calibration, serial_2, postfix, 'color_back.tif');
+    back_2 = strcat(path_to_calibration, serial_2, postfix_calib, 'color_back.tif');
     tex_1  = strcat(path_to_pcs, serial_1, postfix, 'texture_fore.tif');
     tex_2  = strcat(path_to_pcs, serial_2, postfix, 'texture_fore.tif');
     
@@ -69,6 +72,6 @@ view([0 -90])
 
 figure;
 tf = affine3d(tform.T);
-pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',40)
+pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',140)
 title('Merged pointclouds based on ICP transform');
 

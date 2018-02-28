@@ -2,7 +2,7 @@
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 directory = '../../data/calibration/';
-postfix = '1';
+postfix = '2';
 postfix = strcat('_', postfix);
 %directory = 'data_6_balls/';
 

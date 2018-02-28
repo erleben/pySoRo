@@ -22,6 +22,7 @@ class RealSenseThread (threading.Thread):
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
         self.bot = None
+        self.motor_filename = ''
 
     def connect(self, render):
         self.render = render
@@ -53,7 +54,7 @@ class RealSenseThread (threading.Thread):
                 if self.motor_control is not None:
                     pos = self.motor_control.nextPos()
                     print('Motor 1: ' + str(pos[0]) + ' Motor 2:' + str(pos[1]))
-                    motor_filename = 'm1_' + str(pos[0]) + 'm2_' + str(pos[1])
+                    self.motor_filename = 'm1_' + str(pos[0]) + 'm2_' + str(pos[1])
 
                 frames = pipeline.wait_for_frames()
 
@@ -82,7 +83,7 @@ class RealSenseThread (threading.Thread):
 
                 filename = self.prefix_filename + 'frame' + str(count) + self.postfix_filename
                 if self.motor_control is not None:
-                    filename = self.prefix_filename + motor_filename + self.postfix_filename
+                    filename = self.prefix_filename + self.motor_filename + self.postfix_filename
 
                 if self.save_color:
                     imsave(filename + 'color.tif', pixels)

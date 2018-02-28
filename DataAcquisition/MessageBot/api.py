@@ -6,6 +6,7 @@ import cv2
 from io import BytesIO
 import telegram
 from PIL import Image
+import time
 #from MotorControl import api as MC
 
 
@@ -77,20 +78,25 @@ class MessageBotThread (threading.Thread):
         return max(update_ids)
 
     def send_image(self):
-        cap = cv2.VideoCapture(1)
-        (ret, frame) = cap.read()
-        if not ret:
-            cap.release()
-            cap = cv2.VideoCapture(0)
+        try:
+            cap = cv2.VideoCapture(1)
+            time.sleep(2)
             (ret, frame) = cap.read()
-            
-        image = Image.fromarray(frame)
-        bio = BytesIO()
-        bio.name = 'image.jpeg'
-        image.save(bio, 'JPEG')
-        bio.seek(0)
-        self.bot.send_photo(self.USER, bio)
-        cap.release()
+            if not ret:
+                cap.release()
+                cap = cv2.VideoCapture(0)
+                time.sleep(2)
+                (ret, frame) = cap.read()
+                
+            image = Image.fromarray(frame)
+            bio = BytesIO()
+            bio.name = 'image.jpeg'
+            image.save(bio, 'JPEG')
+            bio.seek(0)
+            self.bot.send_photo(self.USER, bio)
+            cap.release()
+        except Exception as e:
+            print(e)
     
     def echo_all(self, updates):
         for update in updates["result"]:
@@ -98,10 +104,19 @@ class MessageBotThread (threading.Thread):
                 if update["message"]["from"]["id"] == self.USER:
                     text = update["message"]["text"]
                     chat = update["message"]["chat"]["id"]
-                    self.send_message(text, chat)
                     if text == 'image':
                         if self.enable_images:
                             self.send_image()
+                        else:
+                            self.send_message('Image capture disabled', chat)
+                    elif text == 'pos':
+                        if self.sensor is None:
+                            self.send_message('Not connected', chat)
+                        elif self.sensor.motor_control is None:
+                            self.send_message('Motor control disabled', chat)
+                        else:
+                            pos = self.sensor.motor_filename
+                            self.send_message(pos, chat)
             
             except Exception as e:
                 print(e)
