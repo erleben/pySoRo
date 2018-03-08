@@ -1,21 +1,26 @@
+clear;
 
-%make a function
-% find a good way to store T, R, color, tex and PCS
 segment = true;
+with_color = false;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 path_to_pcs = '../../data/reconstruction/';
 path_to_calibration = '../../data/calibration/';
 
-postfix_calib = '2';
+postfix_calib = '3';
 postfix_calib = strcat('_',postfix_calib);
-postfix = '2_2';
+postfix = '3_1';
 postfix = strcat('_',postfix);
 
+tform_name = strcat(path_to_calibration, 'tform', postfix_calib, '.mat');
+tform = load(tform_name);
 
 PC_from = pcread(strcat(path_to_pcs, serial_1, postfix, '.ply'));
 PC_to = pcread(strcat(path_to_pcs, serial_2, postfix, '.ply'));
+
+
+
 
 if segment
     fore_1 = strcat(path_to_pcs, serial_1, postfix, 'color_fore.tif');
@@ -25,8 +30,8 @@ if segment
     tex_1  = strcat(path_to_pcs, serial_1, postfix, 'texture_fore.tif');
     tex_2  = strcat(path_to_pcs, serial_2, postfix, 'texture_fore.tif');
     
-    isObj_1 = getSegments(back_1, fore_1, 1);
-    isObj_2 = getSegments(back_2, fore_2, 1);
+    isObj_1 = getSegments(back_1, fore_1, 1, false);
+    isObj_2 = getSegments(back_2, fore_2, 1, false);
     
     PC_from = getObjPointclouds(isObj_1, PC_from, tex_1);
     PC_from = PC_from{1};
@@ -34,11 +39,16 @@ if segment
     PC_to = PC_to{1};
 end 
 
+if ~with_color
+    PC_from = pointCloud(PC_from.Location);
+    PC_to = pointCloud(PC_to.Location);
+end
+
 from_transformed = zeros(PC_from.Count,3);
 from_points = PC_from.Location;
 
 for i = 1:PC_from.Count
-    from_transformed(i,:)=(R*from_points(i,:)')'+T';
+    from_transformed(i,:)=(tform.R*from_points(i,:)')'+tform.T';
 end
 from_transformed_PC = pointCloud(from_transformed, 'Color', PC_from.Color);
 

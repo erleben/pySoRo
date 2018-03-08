@@ -4,7 +4,7 @@ function spheremodels = getSphereModelsRadius(sphere_pcs, pc, showClouds, radius
 % ball that is closest to the camera and projects into the center of it be
 % moving radius units in the z-direction. This approach is sensitive to
 % noise in the data. 
-if nargin < 4
+if nargin < 4 
     radius = 0.0360;
 end
 num_balls = length(sphere_pcs);
@@ -17,8 +17,13 @@ for num = 1:num_balls
     % Extract the points closest to the camera
     B=ROI.Location(ROI.Location(:,3)==min(ROI.Location(:,3)),:);
     %Compute the mean x and y coordinate 
+    
     center = mean(B,1);
     center(3) = center(3)+radius;
+%     proj = ROI.Location(findNearestNeighbors(ROI,[0,0,0],1),:);
+%     proj_len = sqrt(sum(proj.*proj));
+%     alpha  = (proj_len + radius) / proj_len;
+%     center = alpha *proj;
     spheremodels{num} = sphereModel([center,radius]);
 end
  

@@ -2,22 +2,23 @@
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 directory = '../../data/calibration/';
-postfix = '2';
+postfix = '3';
 postfix = strcat('_', postfix);
 %directory = 'data_6_balls/';
 
 just_balls = true;
 
 N = 1;
-remove_N_worst = false;
+remove_N_worst = true;
 
-radius = 0.035;
-raduis = nan;
+radius = 0.012;
+use_raduis = false; 
 show_spheres = true;
+with_color = false;
 
 % Get the centroids of the balls
-[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius);
-[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius);
+[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius, use_raduis);
+[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius, use_raduis);
 
 [num_balls, ~] = size(points_1);
 
@@ -77,6 +78,12 @@ end
 ref_transformed_PC = pointCloud(ref_transformed, 'Color', ref_PC.Color);
 
 
+if ~with_color
+    ref_PC = pointCloud(ref_PC.Location);
+    target_PC = pointCloud(target_PC.Location);
+end
+
+
 % Display the result
 subplot(1,3,1);
 pcshow(ref_PC);
@@ -132,7 +139,6 @@ end
 
 
 if show_spheres
-    radius = 0.035;
     figure()
     for b =1:num_balls
         plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
@@ -142,8 +148,12 @@ if show_spheres
     view([0 -90])
 end
 
+
+tform_name = strcat(directory, 'tform', postfix,'.mat');
+save(tform_name, 'R', 'T');
+
 %TODO:
 %Consider to use ICP to fine tune R and T
-% [tform, ICP_PC, dist] = pcregrigid(ref_transformed_PC, target_PC,'InlierRatio', 0.9);
-% tf = affine3d(tform.T);
-% pcshow(pcmerge(target_PC, pctransform(ref_transformed_PC,tf),0.001),'Markersize',100)
+ %[tform, ICP_PC, dist] = pcregrigid(ref_transformed_PC, target_PC,'InlierRatio', 0.001);
+ %tf = affine3d(tform.T);
+ %pcshow(pcmerge(target_PC, pctransform(ref_transformed_PC,tf),0.001),'Markersize',100)

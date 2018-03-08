@@ -3,7 +3,7 @@ function [ traction_info ] = bend_create_surface_traction_info( time, state, mes
 
 %--- Find the triangle surfaces where we want to apply the surface --------
 %--- traction   -----------------------------------------------------------
-trep  = TriRep(mesh.T, mesh.x0, mesh.y0, mesh.z0);
+trep  = triangulation(mesh.T, mesh.x0, mesh.y0, mesh.z0);
 ff    = freeBoundary(trep);
 X     = mesh.x0;
 

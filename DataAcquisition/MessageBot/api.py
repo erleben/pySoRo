@@ -33,10 +33,13 @@ class MessageBotThread (threading.Thread):
         self.update()
         last_update_id = None
         while True:
-            updates = self.get_updates(last_update_id)
-            if len(updates["result"]) > 0:
-                last_update_id = self.get_last_update_id(updates) + 1
-                self.echo_all(updates)
+            try:
+                updates = self.get_updates(last_update_id)
+                if len(updates["result"]) > 0:
+                    last_update_id = self.get_last_update_id(updates) + 1
+                    self.echo_all(updates)
+            except Exception as e:
+                print(e)
                 
     def get_url(self, url):
         response = requests.get(url)

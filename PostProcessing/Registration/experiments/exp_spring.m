@@ -35,15 +35,15 @@ mvy = 0;
 
 for i  = 1:500
     state          = method.clear_forces(state);
-    traction_info  = add_external_force(state,mesh, pind, goal_pos, 3000000);
-    state          = method.add_surface_traction(state, traction_info);
+    %traction_info  = add_external_force(state,mesh, pind, goal_pos, 3000000);
+    %state          = method.add_surface_traction(state, traction_info);
     state          = method.compute_elastic_forces(mesh, state, params);
     [state, conv]  = method.semi_implicit_step(0.003, state, bcon, profile);
     if mod(i,50)==0
         my = [my, max(state.x)];
         mvy = [mvy, max(state.vx)];
     end
-end
+end 
 
 
 figure()
