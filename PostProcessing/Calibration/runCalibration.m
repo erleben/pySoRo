@@ -2,7 +2,7 @@
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 directory = '../../data/calibration/';
-postfix = '3';
+postfix = '4';
 postfix = strcat('_', postfix);
 %directory = 'data_6_balls/';
 
@@ -12,16 +12,17 @@ N = 1;
 remove_N_worst = true;
 
 radius = 0.012;
-use_raduis = false; 
+use_radius = false; 
 show_spheres = true;
 with_color = false;
+fit_circle = true;
 
 % Get the centroids of the balls
-[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius, use_raduis);
-[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius, use_raduis);
+[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius, use_radius, fit_circle);
+[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius, use_radius, fit_circle);
 
 [num_balls, ~] = size(points_1);
-
+ 
 
 if just_balls
     pc_balls_1 = sphere_pcs_1{1};

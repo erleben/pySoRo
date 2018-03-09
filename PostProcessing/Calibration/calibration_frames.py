@@ -10,7 +10,7 @@ def main():
     
     back_then_fore = False
     prefix = '../../data/calibration/'
-    postfix = '3'
+    postfix = '4'
     
     (pipelines, serial_numbers) = setup(back_then_fore)
     

@@ -13,7 +13,7 @@ tex = imread(tex_name);
 % Find valid points
 ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 
-% To get the coordinates, we have to multiply by the withd and height of
+% To get the coordinates, we have to multiply by the width and height of
 % the color image
 tex_imco = round(tex.*[width,height]);
 [numObj, ~] = size(objects);
@@ -23,7 +23,7 @@ tex_imco = round(tex.*[width,height]);
 for num = 1:numObj
     isObj = objects(num,1);
     isObj = isObj{1};
-    
+   
     isObjList = zeros(width*height,1);
     for i = 1:length(tex_imco)
         x = tex_imco(i,1);
@@ -38,18 +38,18 @@ for num = 1:numObj
     end
     
     % Remove invalid points
-    isObjList = isObjList(ispoint,:);
+    isObjList = logical(isObjList(ispoint,:));
     
     % Extract points that belong to the object
-    Loc = pc.Location;
+    Loc = pc.Location; 
     Loc(~isObjList,:)=[];
     Col = pc.Color;
     Col(~isObjList,:)=[];
-    
+     
     % Create a separeate pointcloud for the object
     object_pcs{num} = pointCloud(Loc,'Color',Col);
 end
+ 
 
-
-
+ 
 end

@@ -1,4 +1,4 @@
-function [points, sphere_pcs] = getPoints(serial, directory, postfix, radius, use_radius)
+function [points, sphere_pcs] = getPoints(serial, directory, postfix, radius, use_radius, fit_circle)
  
 back_name = strcat(directory,serial, postfix, 'color_back.tif');
 fore_name = strcat(directory,serial, postfix, 'color_fore.tif');
@@ -6,7 +6,7 @@ fore_name = strcat(directory,serial, postfix, 'color_fore.tif');
 pc = pcread(strcat(directory,serial, postfix, 'fore.ply'));
 tex_name = strcat(directory,serial, postfix, 'texture_fore.tif');
 
-balls = getSegments(back_name, fore_name, use_radius);
+balls = getSegments(back_name, fore_name, fit_circle);
 
 sphere_pcs = getObjPointclouds(balls, pc, tex_name);
 

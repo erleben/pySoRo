@@ -1,16 +1,16 @@
 clear;
 
 segment = true;
-with_color = false;
+with_color = true;
 
 serial_1 = '618204002727';
 serial_2 = '616205005055';
 path_to_pcs = '../../data/reconstruction/';
 path_to_calibration = '../../data/calibration/';
 
-postfix_calib = '3';
+postfix_calib = '4';
 postfix_calib = strcat('_',postfix_calib);
-postfix = '3_1';
+postfix = '4_3';
 postfix = strcat('_',postfix);
 
 tform_name = strcat(path_to_calibration, 'tform', postfix_calib, '.mat');
@@ -30,8 +30,8 @@ if segment
     tex_1  = strcat(path_to_pcs, serial_1, postfix, 'texture_fore.tif');
     tex_2  = strcat(path_to_pcs, serial_2, postfix, 'texture_fore.tif');
     
-    isObj_1 = getSegments(back_1, fore_1, 1, false);
-    isObj_2 = getSegments(back_2, fore_2, 1, false);
+    isObj_1 = getSegments(back_1, fore_1, false, 1);
+    isObj_2 = getSegments(back_2, fore_2, false, 1);
     
     PC_from = getObjPointclouds(isObj_1, PC_from, tex_1);
     PC_from = PC_from{1};
@@ -85,3 +85,4 @@ tf = affine3d(tform.T);
 pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',140)
 title('Merged pointclouds based on ICP transform');
 
+%getMarkerCentroids(path_to_pcs, serial_1, serial_2, fore_1, fore_2, postfix, isObj_1, isObj_2, tex_1, tex_2)
