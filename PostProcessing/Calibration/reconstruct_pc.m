@@ -10,7 +10,7 @@ path_to_calibration = '../../data/calibration/';
 
 postfix_calib = '4';
 postfix_calib = strcat('_',postfix_calib);
-postfix = '4_3';
+postfix = '4_4';
 postfix = strcat('_',postfix);
 
 tform_name = strcat(path_to_calibration, 'tform', postfix_calib, '.mat');
@@ -37,7 +37,7 @@ if segment
     PC_from = PC_from{1};
     PC_to = getObjPointclouds(isObj_2, PC_to, tex_2);
     PC_to = PC_to{1};
-end 
+end  
 
 if ~with_color
     PC_from = pointCloud(PC_from.Location);

@@ -23,7 +23,10 @@ tex_imco = round(tex.*[width,height]);
 for num = 1:numObj
     isObj = objects(num,1);
     isObj = isObj{1};
-   
+    if sum(isObj(:)) < 4
+        isObj = imdilate(isObj, strel('disk', 1));
+    end
+    
     isObjList = zeros(width*height,1);
     for i = 1:length(tex_imco)
         x = tex_imco(i,1);

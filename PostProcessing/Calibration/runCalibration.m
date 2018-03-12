@@ -9,9 +9,9 @@ postfix = strcat('_', postfix);
 just_balls = true;
 
 N = 1;
-remove_N_worst = true;
+remove_N_worst = false;
 
-radius = 0.012;
+radius = 0.017;
 use_radius = false; 
 show_spheres = true;
 with_color = false;
@@ -36,7 +36,7 @@ end
 % Find which centroids in points_1 corresponds to which 
 % centroids in points_2 by checking all permutations. Pick the 
 % permutaion with the smallest squared error
-perm = perms(1:num_balls);
+perm = perms(1:num_balls); 
 se = zeros(length(perm),1);
 for ind = 1:length(perm)
     points_1_perm = points_1(perm(ind,:)',:);

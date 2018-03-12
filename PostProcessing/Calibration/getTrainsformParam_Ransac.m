@@ -16,7 +16,7 @@ for rnd = 1:num_combos
     
     mse = mean(err(inds)); 
     
-    if mse < oldmse
+    if (mse < oldmse) && (det(R_r) == 1)
         bestR = R_r;
         bestT = T_r;
         mse = mean(err(inds));
