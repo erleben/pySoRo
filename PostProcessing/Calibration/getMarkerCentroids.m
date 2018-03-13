@@ -1,41 +1,32 @@
-function markers = getMarkerCentroids(path_to_pcs, serial_1, serial_2, fore_1, fore_2, back_1, back_2, postfix, tex_1, tex_2)
+function markers = getMarkerCentroids(settings)
 
 show_all = true;
 with_color = true;
 segment = true;
 
 if nargin == 0
-    serial_1 = '618204002727';
-    serial_2 = '616205005055';
-    path_to_pcs = '../../data/reconstruction/';
-    path_to_calibration = '../../data/calibration/';
+    id = '4';
+    id = strcat('_',id);
+    subid = '4_4';
+    subid = strcat('_',subid);
+    
+    settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
 
-    postfix_calib = '4';
-    postfix_calib = strcat('_',postfix_calib);
-    postfix = '4_4';
-    postfix = strcat('_',postfix);
-
-    fore_1 = strcat(path_to_pcs, serial_1, postfix, 'color_fore.tif');
-    back_1 = strcat(path_to_calibration, serial_1, postfix_calib, 'color_back.tif');
-    fore_2 = strcat(path_to_pcs, serial_2, postfix, 'color_fore.tif');
-    back_2 = strcat(path_to_calibration, serial_2, postfix_calib, 'color_back.tif');
-    tex_1  = strcat(path_to_pcs, serial_1, postfix, 'texture_fore.tif');
-    tex_2  = strcat(path_to_pcs, serial_2, postfix, 'texture_fore.tif');
 end
 
-isObj_1 = getSegments(back_1, fore_1, false, 1);
-isObj_2 = getSegments(back_2, fore_2, false, 1);
+isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 1);
+isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 1);
 
 
 %Get at list of pointclouds of markers in each cloud
 marker_pcs = {};
-PC_from = pcread(strcat(path_to_pcs, serial_1, postfix, '.ply'));
-is_marker = detectMarkers(imread(fore_1), isObj_1{1});
-marker_pcs{1} = getObjPointclouds(is_marker', PC_from, tex_1);
+PC_from = pcread(settings.pc_name_recon{1});
+is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1{1});
+marker_pcs{1} = getObjPointclouds(is_marker', PC_from, settings.tex_name_recon{1});
 
-PC_to = pcread(strcat(path_to_pcs, serial_2, postfix, '.ply'));
-is_marker = detectMarkers(imread(fore_2), isObj_2{1});
-marker_pcs{2} = getObjPointclouds(is_marker', PC_to, tex_2);
+PC_to = pcread(settings.pc_name_recon{2});
+is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2{1});
+marker_pcs{2} = getObjPointclouds(is_marker', PC_to, settings.tex_name_recon{2});
 
 %Find their centroids
 points = {}; 
@@ -83,9 +74,9 @@ end
 
 %Visualize the result of applying the transformation on the two pointclouds
 if segment
-    PC_from = getObjPointclouds(isObj_1, PC_from, tex_1);
+    PC_from = getObjPointclouds(isObj_1, PC_from, settings.tex_name_recon{1});
     PC_from = PC_from{1};
-    PC_to = getObjPointclouds(isObj_2, PC_to, tex_2);
+    PC_to = getObjPointclouds(isObj_2, PC_to, settings.tex_name_recon{2});
     PC_to = PC_to{1};
 end
 

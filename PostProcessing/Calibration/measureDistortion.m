@@ -12,7 +12,7 @@ path_to_calibration = '../../data/calibration/';
 
 postfix_calib = '4';
 postfix_calib = strcat('_',postfix_calib);
-postfix = '5_1';
+postfix = '4_3';
 postfix = strcat('_',postfix);
 
 fore = strcat(path_to_pcs, serial, postfix, 'color_fore.tif');

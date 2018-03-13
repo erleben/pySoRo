@@ -44,14 +44,14 @@ for num = 1:numObj
     isObjList = logical(isObjList(ispoint,:));
     
     % Extract points that belong to the object
-    Loc = pc.Location; 
+    Loc = pc.Location;  
     Loc(~isObjList,:)=[];
     Col = pc.Color;
     Col(~isObjList,:)=[];
      
     % Create a separeate pointcloud for the object
     object_pcs{num} = pointCloud(Loc,'Color',Col);
-end
+end 
  
 
  

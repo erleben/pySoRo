@@ -1,15 +1,10 @@
 
-serial_1 = '618204002727';
-serial_2 = '616205005055';
-directory = '../../data/calibration/';
-postfix = '4';
-postfix = strcat('_', postfix);
-%directory = 'data_6_balls/';
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_4');
 
-just_balls = true;
+segment_balls = false;
 
 N = 1;
-remove_N_worst = false;
+remove_N_worst = true;
 
 radius = 0.017;
 use_radius = false; 
@@ -18,13 +13,13 @@ with_color = false;
 fit_circle = true;
 
 % Get the centroids of the balls
-[points_1, sphere_pcs_1] = getPoints(serial_1, directory, postfix, radius, use_radius, fit_circle);
-[points_2, sphere_pcs_2] = getPoints(serial_2, directory, postfix, radius, use_radius, fit_circle);
+[points_1, sphere_pcs_1] = getPoints(1, settings, radius, use_radius, fit_circle);
+[points_2, sphere_pcs_2] = getPoints(2, settings, radius, use_radius, fit_circle);
 
 [num_balls, ~] = size(points_1);
  
 
-if just_balls
+if segment_balls
     pc_balls_1 = sphere_pcs_1{1};
     pc_balls_2 = sphere_pcs_2{1};
     for num = 2:num_balls
@@ -62,12 +57,12 @@ else
 end
 
 % Read in the pointclouds
-if just_balls
+if segment_balls
     ref_PC = pc_balls_1;
     target_PC = pc_balls_2;
 else
-    ref_PC = pcread(strcat(directory,serial_1, postfix, 'fore.ply'));
-    target_PC = pcread(strcat(directory,serial_2, postfix, 'fore.ply'));
+    ref_PC = pcread(settings.pc_name_calib{1});
+    target_PC = pcread(settings.pc_name_calib{2});
 end
 
 % Apply transformation on ref_PC
@@ -150,8 +145,7 @@ if show_spheres
 end
 
 
-tform_name = strcat(directory, 'tform', postfix,'.mat');
-save(tform_name, 'R', 'T');
+save(settings.tform_name, 'R', 'T');
 
 %TODO:
 %Consider to use ICP to fine tune R and T

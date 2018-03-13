@@ -3,39 +3,22 @@ clear;
 segment = true;
 with_color = true;
 
-serial_1 = '618204002727';
-serial_2 = '616205005055';
-path_to_pcs = '../../data/reconstruction/';
-path_to_calibration = '../../data/calibration/';
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_4', '../../data/reconstruction/', '_4_4');
 
-postfix_calib = '4';
-postfix_calib = strcat('_',postfix_calib);
-postfix = '4_4';
-postfix = strcat('_',postfix);
+PC_from = pcread(settings.pc_name_recon{1});
+PC_to = pcread(settings.pc_name_recon{2});
 
-tform_name = strcat(path_to_calibration, 'tform', postfix_calib, '.mat');
-tform = load(tform_name);
-
-PC_from = pcread(strcat(path_to_pcs, serial_1, postfix, '.ply'));
-PC_to = pcread(strcat(path_to_pcs, serial_2, postfix, '.ply'));
-
-
+tform = load(settings.tform_name);
 
 
 if segment
-    fore_1 = strcat(path_to_pcs, serial_1, postfix, 'color_fore.tif');
-    back_1 = strcat(path_to_calibration, serial_1, postfix_calib, 'color_back.tif');
-    fore_2 = strcat(path_to_pcs, serial_2, postfix, 'color_fore.tif');
-    back_2 = strcat(path_to_calibration, serial_2, postfix_calib, 'color_back.tif');
-    tex_1  = strcat(path_to_pcs, serial_1, postfix, 'texture_fore.tif');
-    tex_2  = strcat(path_to_pcs, serial_2, postfix, 'texture_fore.tif');
     
-    isObj_1 = getSegments(back_1, fore_1, false, 1);
-    isObj_2 = getSegments(back_2, fore_2, false, 1);
+    isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 1);
+    isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 1);
     
-    PC_from = getObjPointclouds(isObj_1, PC_from, tex_1);
+    PC_from = getObjPointclouds(isObj_1, PC_from, settings.tex_name_recon{1});
     PC_from = PC_from{1};
-    PC_to = getObjPointclouds(isObj_2, PC_to, tex_2);
+    PC_to = getObjPointclouds(isObj_2, PC_to, settings.tex_name_recon{2});
     PC_to = PC_to{1};
 end  
 
@@ -85,4 +68,4 @@ tf = affine3d(tform.T);
 pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',140)
 title('Merged pointclouds based on ICP transform');
 
-%getMarkerCentroids(path_to_pcs, serial_1, serial_2, fore_1, fore_2, postfix, isObj_1, isObj_2, tex_1, tex_2)
+getMarkerCentroids(settings)
