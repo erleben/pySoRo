@@ -3,7 +3,7 @@ clear;
 segment = true;
 with_color = true;
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_4', '../../data/reconstruction/', '_4_4');
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_7', '../../data/reconstruction/', '_7_1');
 
 PC_from = pcread(settings.pc_name_recon{1});
 PC_to = pcread(settings.pc_name_recon{2});
@@ -68,4 +68,4 @@ tf = affine3d(tform.T);
 pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',140)
 title('Merged pointclouds based on ICP transform');
 
-getMarkerCentroids(settings)
+%getMarkerCentroids(settings)

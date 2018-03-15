@@ -1,7 +1,7 @@
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_4');
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_7');
 
-segment_balls = false;
+segment_balls = true;
 
 N = 1;
 remove_N_worst = true;

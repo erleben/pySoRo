@@ -1,35 +1,43 @@
 clear;
 method = fem_method();
 
-%Load the mesh of a parfect bar, roughly the same size as the pointcloud
-mesh=load('mesh.mat');
-mesh = mesh.meshh;
-
-
-
-
-% Load the pointcloud
-pc = load('barpc.mat');
-pc = pc.pc;
-pc = pcdownsample(pc,'GridAverage',0.012);
-pc = pcdenoise(pc,'Threshold', 0.3);
-
-
-
-
-% Align pc to mesh bar
-mesh_pc= pointCloud([mesh.x0, mesh.y0, mesh.z0]);
-tform = pcregrigid(pc, mesh_pc);
-pc = pctransform(pc, tform);
-
-pc = pointCloud(pc.Location * 100);
-mesh.x0 = mesh.x0 * 100;
-mesh.y0 = mesh.y0 * 100;
-mesh.z0 = mesh.z0 * 100;
-mesh = method.create_mesh(mesh.T, mesh.x0, mesh.y0, mesh.z0);
+addpath('utils/');
+% %Load the mesh of a parfect bar, roughly the same size as the pointcloud
+% mesh=load('mesh.mat');
+% mesh = mesh.meshh;
+% 
+% 
+% 
+% 
+% % Load the pointcloud
+% pc = load('barpc.mat');
+% pc = pc.pc;
+% pc = pcdownsample(pc,'GridAverage',0.012);
+% pc = pcdenoise(pc,'Threshold', 0.3);
+% 
+% 
+% 
+% 
+% % Align pc to mesh bar
+% mesh_pc= pointCloud([mesh.x0, mesh.y0, mesh.z0]);
+% tform = pcregrigid(pc, mesh_pc);
+% pc = pctransform(pc, tform);
+% 
+% pc = pointCloud(pc.Location * 100);
+% mesh.x0 = mesh.x0 * 100;
+% mesh.y0 = mesh.y0 * 100;
+% mesh.z0 = mesh.z0 * 100;
+%mesh = method.create_mesh(mesh.T, mesh.x0, mesh.y0, mesh.z0);
 %Take only free vertices of the bar
+mesh = load('sponge_bar.mat');
+mesh = method.create_mesh(mesh.T, mesh.p(:,1), mesh.p(:,2), mesh.p(:,3));
 
- 
+pc = load('sponge_pc.mat');
+pc = pc.new_pc;
+pc = pointCloud(pc.Location*1.1);
+pc = pointCloud(pc.Location-[0.009,0.007,0.02]);
+pc = pcdenoise(pc);
+
 profile = true;
 
 params  = create_params('soft');
@@ -43,17 +51,17 @@ oldSumForces = inf;
 for i  = 1:1000
     state          = method.clear_forces(state);
     
-    [traction_info, state]  = add_external_force(state, mesh, pind_pc, gp, 1000000, false);
+    [traction_info, state]  = add_external_force(state, mesh, pind_pc, gp, 100000000, false);
     state          = method.add_surface_traction(state, traction_info);
     state          = method.compute_elastic_forces(mesh, state, params);
-    %moving_bcon    = moving_dirichlet(min(1,i/10), mesh, pind, goal_pos);
+    %moving_bcon    = moving_dirichlet(min(1,i/10), mesh, pind_pc, gp);
     %merged_bcon    = merge_boundary_conditions(bcon, moving_bcon);
     merged_bcon = bcon;
-    [state, conv]  = method.semi_implicit_step(0.0002, state, merged_bcon, profile);
+    [state, conv]  = method.semi_implicit_step(0.00002, state, merged_bcon, profile);
     
     sumForces = sum(sqrt(state.fx.^2+state.fy.^2+state.fz.^2))
     if oldSumForces < sumForces
-        break
+        %break
     end
     oldSumForces = sumForces;
     
@@ -61,7 +69,7 @@ for i  = 1:1000
         hold off;
         drawForce(state, mesh, pc, 1);
         drawnow
-        %[pind_pc, gp] = labelPoints(mesh.T, state, pc);
+        [pind_pc, gp] = labelPoints(mesh.T, state, pc);
 
     end
         

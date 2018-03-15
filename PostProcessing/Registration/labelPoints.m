@@ -18,8 +18,8 @@ pind_pc = unique(pind_pc);
 % For each vertex that is closest to some point, link to its closest point
 gp = [];
 for i = 1:length(pind_pc)
-    p = findNearestNeighbors(pc, tri_free.Points(pind_pc(i),:),1);
-    gp(i,:) = pc.Location(p,:);
+    p = findNearestNeighbors(pc, tri_free.Points(pind_pc(i),:),3);
+    gp(i,:) = mean(pc.Location(p,:),1);
 end
 
 end

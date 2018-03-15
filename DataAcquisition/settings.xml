@@ -34,7 +34,7 @@
                 portname="/dev/cu.usbserial-DN02Z6PY"
                 num_boards="2"
                 distribution_module="uniform.py"
-                module_args="setStartPos,[0 0];setStopPos,[1000 1000];setStepSize,[50 50]"
+                module_args="setStartPos,[0 0];setStopPos,[200 400];setStepSize,[20 10]"
                 
         />
         
