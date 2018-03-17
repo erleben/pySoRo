@@ -5,12 +5,12 @@ dist_mat = pdist2(close_points,points{2});
 
 common_A = [];
 added_A = [];
-common_B = [];
+common_B = []; 
 added_B = [];
 while true
     [i,j]=find(dist_mat==min(dist_mat(:)));
     
-    if dist_mat(i,j) > max_distance
+    if (dist_mat(i(1),j(1)) > max_distance) || isnan(dist_mat(i(1),j(1)))
         break
     end
     
@@ -24,27 +24,33 @@ end
 % dist - the minimum distance between a point in points{1} and points{2}
 % perm - the ordering of points{1} to get the minimum distance
 
-a = points{1}(setdiff(1:length(points{1}),added_A),:); 
-b = points{2}(setdiff(1:length(points{2}),added_B),:);
-
+a = points{1}(setdiff(1:size(points{1},1),added_A),:); 
+b = points{2}(setdiff(1:size(points{2},1),added_B),:);
+c = close_points(setdiff(1:size(points{1},1),added_A),:); 
 [R,T] = getTransformParam(common_A, common_B);
 
 for p = 1:size(common_A,1)
     common_A(p,:)=(R*common_A(p,:)')'+T';
 end
 
+success_flag = abs(det(R)-1)<0.00001;
+
 for p = 1:size(a,1)
     a(p,:)=(R*a(p,:)')'+T';
 end 
 
-for p = 1:size(b,1)
-    b(p,:)=(R*b(p,:)')'+T';
-end
+
 
 common_mid = (common_A + common_B)/2;
 mse = mean(sqrt(sum((common_A-common_B).^2,2)));
 labeled_points.common = common_mid;
+
+if success_flag 
 labeled_points.exclusive = [a; b];
+else
+labeled_points.exclusive = [c; b];
+end
+
 
 tform.R = R;
 tform.T = T;

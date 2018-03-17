@@ -23,7 +23,7 @@ tex_imco = round(tex.*[width,height]);
 for num = 1:numObj
     isObj = objects(num,1);
     isObj = isObj{1};
-    if sum(isObj(:)) < 4
+    if sum(isObj(:)) < 6
         isObj = imdilate(isObj, strel('disk', 1));
     end
     
@@ -51,7 +51,7 @@ for num = 1:numObj
      
     % Create a separeate pointcloud for the object
     object_pcs{num} = pointCloud(Loc,'Color',Col);
-end 
+end
  
 
  

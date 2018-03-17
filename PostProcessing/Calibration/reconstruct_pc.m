@@ -3,7 +3,7 @@ clear;
 segment = true;
 with_color = true;
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_7', '../../data/reconstruction/', '_7_1');
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_8', '../../data/reconstruction/', '_8_9');
 
 PC_from = pcread(settings.pc_name_recon{1});
 PC_to = pcread(settings.pc_name_recon{2});
@@ -20,11 +20,11 @@ if segment
     PC_from = PC_from{1};
     PC_to = getObjPointclouds(isObj_2, PC_to, settings.tex_name_recon{2});
     PC_to = PC_to{1};
-end  
+end
 
 if ~with_color
     PC_from = pointCloud(PC_from.Location);
-    PC_to = pointCloud(PC_to.Location);
+    PC_to = pointCloud(PC_to.Location); 
 end
 
 from_transformed = zeros(PC_from.Count,3);

@@ -27,7 +27,7 @@ if ~fit_circle
 
     elements = bwconncomp(isObject);
     objects = {elements.NumObjects};
-    largest_size = 0; 
+    largest_size = 0;
     % Separete the balls into independent binary images
     for num = 1:min(elements.NumObjects, max_num_obj)
         if num > 1

@@ -1,10 +1,10 @@
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_7');
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_8');
 
 segment_balls = true;
 
 N = 1;
-remove_N_worst = true;
+remove_N_worst = false;
 
 radius = 0.017;
 use_radius = false; 
