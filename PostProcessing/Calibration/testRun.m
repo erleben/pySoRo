@@ -5,7 +5,7 @@ id = strcat('_',id);
 subid = strcat('8_5');
 subid = strcat('_',subid);
 settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
-order_to = getMarkerCentroids(settings);
+[order_to, tform] = getMarkerCentroids(settings);
 order_to.common = [(1:size(order_to.common,1))', order_to.common];
 order_to.exclusive = [(1:size(order_to.exclusive,1))', order_to.exclusive];
 
@@ -20,7 +20,7 @@ for i = 6:9
     subid = strcat('_',subid);
     
     settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
-    order_from = getMarkerCentroids(settings);
+    [order_from, tform] = getMarkerCentroids(settings, tform);
     
     [tracked_common, untracked_common] = order_markers(order_to.common, order_from.common);
     [tracked_exclusive, untracked_exclusive] = order_markers(order_to.exclusive, order_from.exclusive);

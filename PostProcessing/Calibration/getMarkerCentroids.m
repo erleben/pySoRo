@@ -1,17 +1,20 @@
-function labeled_points = getMarkerCentroids(settings)
+function [labeled_points, new_tform] = getMarkerCentroids(settings, tform)
 
+if nargin == 1
+    tform = load(settings.tform_name);
+end
 %TODO: order labeled_markers wrt prev_labeled_markers 
 
 with_color = true;
 segment = false;
 show_pin_seg = false;
 max_distance = 0.05; % Max allowed distance bettween linked markers
-with_pc = false;
+with_pc = true;
 
 if nargin == 0
     id = '8';
     id = strcat('_',id);
-    subid = '8_5';
+    subid = '8_9';
     subid = strcat('_',subid);
     
     settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
@@ -47,7 +50,6 @@ end
 
 
 % Use the calibration to put them in same coordiante system
-tform = load(settings.tform_name);
 close_points = zeros(num_markers,3);
 for i = 1:num_markers
     close_points(i,:)=(tform.R*points{1}(i,:)')'+tform.T';
