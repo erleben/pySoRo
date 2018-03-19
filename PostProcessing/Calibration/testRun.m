@@ -1,4 +1,4 @@
-clear;
+%clear;
 
 id = '8';
 id = strcat('_',id);
@@ -8,11 +8,13 @@ settings = makeSettings(["618204002727", "616205005055"], '../../data/calibratio
 [order_to, tform] = getMarkerCentroids(settings);
 order_to.common = [(1:size(order_to.common,1))', order_to.common];
 order_to.exclusive = [(1:size(order_to.exclusive,1))', order_to.exclusive];
+order_to.all = [(1:size(order_to.all,1))', order_to.all];
 
 ordered = {};
 ordered{1} = order_to;
 
 ind = 2;
+
 for i = 6:9
     id = '8';
     id = strcat('_',id);
@@ -21,13 +23,15 @@ for i = 6:9
     
     settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
     [order_from, tform] = getMarkerCentroids(settings, tform);
-    
-    [tracked_common, untracked_common] = order_markers(order_to.common, order_from.common);
-    [tracked_exclusive, untracked_exclusive] = order_markers(order_to.exclusive, order_from.exclusive);
-
+    order_from.all(3,:)
+    order_from.all(3,:)=[];
+    %[tracked_common, untracked_common] = order_markers(order_to.common, order_from.common);
+    %[tracked_exclusive, untracked_exclusive] = order_markers(order_to.exclusive, order_from.exclusive);
+    [tracked_all, estimated] = order_markers(order_to.all, order_from.all);
+     
     order_from = {};
-    order_from.common = tracked_common;
-    order_from.exclusive = tracked_exclusive;
+    order_from.all = tracked_all;
+    order_from.estimated = estimated;
     ordered{ind} = order_from;
     ind = ind + 1;
     

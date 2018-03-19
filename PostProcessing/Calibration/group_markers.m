@@ -50,6 +50,8 @@ labeled_points.exclusive = [a; b];
 else
 labeled_points.exclusive = [c; b];
 end
+labeled_points.all = [labeled_points.common; labeled_points.exclusive];
+
 
 
 tform.R = R;

@@ -3,7 +3,7 @@ clear;
 segment = true;
 with_color = true;
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_8', '../../data/reconstruction/', '_8_9');
+settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_8', '../../data/reconstruction/', '_8_5');
 
 PC_from = pcread(settings.pc_name_recon{1});
 PC_to = pcread(settings.pc_name_recon{2});

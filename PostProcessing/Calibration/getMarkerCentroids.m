@@ -3,7 +3,6 @@ function [labeled_points, new_tform] = getMarkerCentroids(settings, tform)
 if nargin == 1
     tform = load(settings.tform_name);
 end
-%TODO: order labeled_markers wrt prev_labeled_markers 
 
 with_color = true;
 segment = false;
@@ -21,7 +20,7 @@ if nargin == 0
 
 end
 
-% Get labeled images
+% Get labeled images: foreground/background
 isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 1);
 isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 1);
 
@@ -49,22 +48,23 @@ for i = 1:2
 end 
 
 
-% Use the calibration to put them in same coordiante system
+% Use the calibration estimate to put them in same coordiante system
 close_points = zeros(num_markers,3);
 for i = 1:num_markers
     close_points(i,:)=(tform.R*points{1}(i,:)')'+tform.T';
 end 
  
+% Group the markers into points seen by both cameras and only one of them
+% Find a better transformation
 [labeled_points, new_tform, success_flag, mse] = group_markers(close_points, points, max_distance);
 disp('mse:')
 disp(mse);
 disp('success_flag: ')
 disp(success_flag);
-% For now: If we dont have enough points to make a good alignment,
+% If we dont have enough points to make a good alignment,
 % use the base-calibration
 if ~success_flag
     new_tform = tform;
-    %Setback points too
 end 
  
 if with_pc

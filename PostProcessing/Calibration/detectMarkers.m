@@ -34,7 +34,7 @@ else
     pts = double(pts(:,:,1)).*(B(:,:,1)>0.35);
     pts = imbinarize(pts);
     pts = imclose(pts,strel('disk',3));
-end
+end 
 
 if show_pin_seg
     figure;
