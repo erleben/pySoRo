@@ -1,23 +1,17 @@
 function [labeled_points, new_tform] = getMarkerCentroids(settings, tform)
 
-if nargin == 1
-    tform = load(settings.tform_name);
-end
-
 with_color = true;
-segment = false;
-show_pin_seg = false;
+segment = true;
+show_pin_seg = true;
 max_distance = 0.05; % Max allowed distance bettween linked markers
 with_pc = true;
 
-if nargin == 0
-    id = '8';
-    id = strcat('_',id);
-    subid = '8_9';
-    subid = strcat('_',subid);
-    
-    settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', id, '../../data/reconstruction/', subid);
+if nargin < 1
+    settings = makeSettings('8,8','5');
+end
 
+if nargin < 2
+    tform = load(settings.tform_name);
 end
 
 % Get labeled images: foreground/background

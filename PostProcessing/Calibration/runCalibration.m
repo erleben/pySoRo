@@ -1,5 +1,6 @@
 
-settings = makeSettings(["618204002727", "616205005055"], '../../data/calibration/', '_8');
+settings = makeSettings('8');
+
 
 segment_balls = true;
 
