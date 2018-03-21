@@ -1,4 +1,4 @@
-function [mdist, varper] = findModes(k)
+function [mdist, varper, projected, mn, U] = findModes(k)
 
 points = csvread('datapoints.csv');
 
@@ -18,4 +18,4 @@ end
  
 mdist = err / numel(points)/3;
 
-end
+end 

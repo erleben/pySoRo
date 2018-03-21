@@ -3,7 +3,7 @@ clear;
 segment = true;
 with_color = true;
 
-settings = makeSettings('9,8','5');
+settings = makeSettings('8','5');
 PC_from = pcread(settings.pc_name_recon{1});
 PC_to = pcread(settings.pc_name_recon{2});
 
