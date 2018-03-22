@@ -89,6 +89,20 @@ class Motorcontrol:
         else:
             return self.position
 
+    def setPos(self, pos):
+           
+        self.position = pos
+        positionStr = json.dumps({'position': self.position})
+        self.board_io.write(positionStr.encode('utf-8'))
+        while self.board_io.in_waiting == 0:
+            pass
+
+        msg = self.board_io.readline().decode('utf-8')
+        if msg == '0\r\n':
+            raise RedboardException('Redboard could not read position')
+        else:
+            return self.position
+
 
     def setup(self):
         self.update()
