@@ -1,4 +1,4 @@
-function [ traction_info ] = bend_create_surface_traction_info( time, state, mesh, traction )
+function [ traction_info ] = bend_create_surface_traction_info( time, state, mesh, traction_y, traction_z )
 % Copyright 2011, Kenny Erleben
 
 %--- Find the triangle surfaces where we want to apply the surface --------
@@ -29,11 +29,20 @@ ty = zeros(  size(mesh.y0) );
 tz = zeros(  size(mesh.z0) );
 
 if nargin < 4
-    traction = -5000;
+    traction_y = -5000;
 end
-ty( F(:,1) ) = traction;
-ty( F(:,2) ) = traction;
-ty( F(:,3) ) = traction;
+ty( F(:,1) ) = traction_y;
+ty( F(:,2) ) = traction_y;
+ty( F(:,3) ) = traction_y;
+
+if nargin < 5
+    traction_z = 0;
+end
+
+tz( F(:,1) ) = traction_z;
+tz( F(:,2) ) = traction_z;
+tz( F(:,3) ) = traction_z;
+
 
 %--- Bundle all info into one structure ----------------------------------
 traction_info = struct(...

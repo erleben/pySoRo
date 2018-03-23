@@ -15,11 +15,11 @@ CP = {};
 cpts = {};
 alphas = [];
 for r = 1:10
-        TF = -r*1000;
-        alphas = [alphas, TF];
+        TF_Y = -r*1000;
+        alphas = [alphas, TF_Y];
 
     state = method.create_state(mesh, params);
-    traction_info = bend_create_surface_traction_info(1, state, mesh, TF);
+    traction_info = bend_create_surface_traction_info(1, state, mesh, TF_Y);
     state = method.add_surface_traction(state, traction_info);
     bcon = bend_create_boundary_conditions(1,state,mesh);
     profile = true;
@@ -27,9 +27,11 @@ for r = 1:10
     my = 0;
     mvy = 0;
 
+    
+
     for i  = 1:1500
         state          = method.clear_forces( state );
-        traction_info  = bend_create_surface_traction_info( 1, state, mesh, TF );
+        traction_info  = bend_create_surface_traction_info( 1, state, mesh, TF_Y);
         state          = method.add_surface_traction( state, traction_info );
         state          = method.compute_elastic_forces(mesh, state,params);
         [state, conv]  = method.semi_implicit_step(0.005, state, bcon, profile);
@@ -56,8 +58,9 @@ for r = 1:10
     title('Spatial');
 
     drawForce(state,mesh)
-end
+end 
 
-CP.cpts = states;
+CP.states = cpts;
 CP.mesh = mesh;
 CP.alphas = alphas;
+save('CP_single_param.mat','CP');

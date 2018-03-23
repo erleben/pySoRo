@@ -1,3 +1,7 @@
+%CP = load('CP_single_param.mat');
+CP = load('CP_two_param.mat');
+CP = CP.CP;
+
 num_states = length(CP.alphas);
 tot_num_pts = length(CP.mesh.x0);
 
@@ -12,22 +16,23 @@ end
 
 
 %Keep observation i for testing
-i = 4;
+i = 15;
 T = U(:,i);
 U(:,i)=[];
-A(i) = [];
+AA = A(:,i)
+A(:,i) = [];
 
-J = (A*A')\(U*A');
+J = (A*A')\(U*A')';
 %sum(abs(T-J*(-5100)))
-alpha_est = r
-ound((J'*J)\J'*T)
+alpha_est = round((J*J')\J*T)
+%AA-alpha_est
  
-B = [A, reshape((A'*A/2),1,length(A)^2)]; % 1*(S+S^2)
-BB = repmat(B, numel(U), 1);              % NS * (S+S^2)
-
-UU = reshape(U, numel(U), 1);             % NS*1
-
-JH = (BB'*BB)\(UU'*BB)';
-JJ = JH(1:length(A));
-HH = reshape(JH(length(A)+1:end), length(A), length(A));
+% B = [A, reshape((A'*A/2),1,length(A)^2)]; % 1*(S+S^2)
+% BB = repmat(B, numel(U), 1);              % NS * (S+S^2)
+% 
+% UU = reshape(U, numel(U), 1);             % NS*1
+% 
+% JH = (BB'*BB)\(UU'*BB)';
+% JJ = JH(1:length(A));
+% HH = reshape(JH(length(A)+1:end), length(A), length(A));
 
