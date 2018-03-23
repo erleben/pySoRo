@@ -19,7 +19,8 @@ A(i) = [];
 
 J = (A*A')\(U*A');
 %sum(abs(T-J*(-5100)))
-alpha_est = round((J'*J)\J'*T)
+alpha_est = r
+ound((J'*J)\J'*T)
  
 B = [A, reshape((A'*A/2),1,length(A)^2)]; % 1*(S+S^2)
 BB = repmat(B, numel(U), 1);              % NS * (S+S^2)
