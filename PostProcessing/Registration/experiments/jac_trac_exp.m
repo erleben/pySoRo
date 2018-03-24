@@ -1,5 +1,7 @@
-%CP = load('CP_single_param.mat');
-CP = load('CP_two_param.mat');
+CP = load('CP_single_param.mat');
+%CP = load('CP_two_param.mat');
+%CP = load('CP_two_param.mat');
+
 CP = CP.CP;
 
 num_states = length(CP.alphas);
@@ -16,23 +18,36 @@ end
 
 
 %Keep observation i for testing
-i = 15;
+i = 5;
 T = U(:,i);
 U(:,i)=[];
-AA = A(:,i)
+AA = A(:,i);
 A(:,i) = [];
 
+%Comupte Jacobian
+
 J = (A*A')\(U*A')';
-%sum(abs(T-J*(-5100)))
-alpha_est = round((J*J')\J*T)
-%AA-alpha_est
+alpha_est = round((J*J')\J*T);
+err_j = sqrt(sum((T- J'*alpha_est).^2));
+disp('First order');
+disp('alpha_test:');
+disp(AA);
+disp('alpha_est:');
+disp(alpha_est);
+disp('mse:')
+disp(err_j);
  
-% B = [A, reshape((A'*A/2),1,length(A)^2)]; % 1*(S+S^2)
-% BB = repmat(B, numel(U), 1);              % NS * (S+S^2)
-% 
-% UU = reshape(U, numel(U), 1);             % NS*1
-% 
-% JH = (BB'*BB)\(UU'*BB)';
-% JJ = JH(1:length(A));
-% HH = reshape(JH(length(A)+1:end), length(A), length(A));
+% Include hessian
+
+A = [A; 0.5*A(1,:).^2];
+JK = (A*A')\(U*A')';
+alpha_est = round((JK*JK')\JK*T);
+err_jk = sqrt(sum((T- JK'*alpha_est).^2));
+disp('Second order');
+disp('alpha_test:');
+disp(AA);
+disp('alpha_est:');
+disp(alpha_est);
+disp('mse:')
+disp(err_jk);
 

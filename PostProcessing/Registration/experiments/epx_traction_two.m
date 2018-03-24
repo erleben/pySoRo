@@ -15,8 +15,8 @@ CP = {};
 cpts = {};
 alphas = [];
 ind = 1;
-for r_y = 0:5
-    for r_z  =0:5
+for r_y = 0:0.5:7
+    for r_z  =0:0.5:7
         TF_Y = -r_y*1000;
         TF_Z = -r_z*1000;
         alphas = [alphas, [TF_Y;TF_Z]];
@@ -71,4 +71,4 @@ end
 CP.states = cpts;
 CP.mesh = mesh;
 CP.alphas = alphas;
-save('CP_two_param.mat','CP');
+save('CP_two_param_many.mat','CP');
