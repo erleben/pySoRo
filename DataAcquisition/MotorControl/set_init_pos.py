@@ -1,55 +1,52 @@
-from MotorControl import api as MC
-from matplotlib.pyplot import imshow, show, colorbar
-import matplotlib.pyplot as plt
-from skimage.io import imread
-
 import numpy as np
 
-mc = MC.Motorcontrol()
 
-mc.setup()
-
-def init_pos_binary(mc):
-    mc.setPos([0,0])
+def find_init_pos(pipeline, mc, upper_b):
     frames = pipeline.wait_for_frames()
     color = frames.get_color_frame()
+    non_deformed = np.asanyarray(color.get_data())
+    pos = [0,0]
+    return binarySearch(pipeline, mc, non_deformed, pos, upper_b)
+
     
-    ## Binary search for initial position. Stop search when color-color_i< thresh
+    
+def is_deformed(pipeline, non_deformed, thrs):
+    frames = pipeline.wait_for_frames()
+    color = frames.get_color_frame()
+    pixels = np.asanyarray(color.get_data())
+    II = np.abs(non_deformed.astype(int)-pixels.astype(int))
+    d = II[:,:,1]>100
+    print(np.sum(d))
+    return np.sum(d)>10
     
 
+## Binary search for initial position. Stop search when color-color_i< thresh
 
-pos = [0,0]
-max_pos = [100, 1000]
-
-v = [55,666]
-new_pos = pos
-
-
-
-        
-
-for nr in range(2):
-    h = max_pos[nr]
-    l = pos[nr]
-    while True:
-        
-        mid = np.ceil((h+l)/2)
-        pos[nr] = mid
-        mc.setPos(pos)
-
-        # Stopping condition. 
-        # Look into what happens when solution does not exist
-        if l>=(h-2):
-            break
-        
-        if mid < v[nr]:
-            l = mid
-        if mid > v[nr]:
-            h = mid
-        
-        new_pos[nr] = mid
-        print(mid)
-        
-        
-# np.sum(np.abs(AG.astype(int)-BG.astype(int))>120)
-
+def binarySearch(pipeline, mc, non_deformed, pos, upper_b):
+    for nr in range(1,2):
+        while ~is_deformed(pipeline, non_deformed, 10):
+            pos[nr] += 100
+            mc.setPos(pos)
+            if pos[nr]> upper_b[nr]:
+                break
+            
+        h = pos[nr] + 100
+        l = pos[nr] - 100
+        while True:
+            
+            mid = np.ceil((h+l)/2)
+            pos[nr] = mid
+            mc.setPos(pos)
+    
+            # Stopping condition. 
+            # Look into what happens when solution does not exist
+            if l>=(h-2):
+                break
+            
+            if is_deformed(pipeline, non_deformed, 10):
+                h = mid
+            else:
+                l = mid
+            
+            #print(mid, l, h, pos,is_deformed(pipeline, non_deformed, 10))
+    return pos

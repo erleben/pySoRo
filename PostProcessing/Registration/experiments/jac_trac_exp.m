@@ -20,7 +20,7 @@ end
 %Keep observation i for testing
 i = 5;
 T = U(:,i);
-U(:,i)=[];
+U(:,i)=[]; 
 AA = A(:,i);
 A(:,i) = [];
 

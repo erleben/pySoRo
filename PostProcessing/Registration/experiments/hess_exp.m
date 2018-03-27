@@ -3,7 +3,7 @@ CP = load('CP_two_param_many.mat');
 CP = CP.CP;
 
 num_states = length(CP.alphas);
-
+mesh = CP.mesh;
 tot_num_pts = length(CP.mesh.x0);
 
 sample = 1:tot_num_pts;

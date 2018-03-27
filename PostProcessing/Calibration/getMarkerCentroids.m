@@ -7,7 +7,7 @@ max_distance = 0.05; % Max allowed distance bettween linked markers
 with_pc = true;
 
 if nargin < 1
-    settings = makeSettings('8,8','5');
+    settings = makeSettings('6','2');
 end
 
 if nargin < 2
