@@ -15,8 +15,8 @@ HSV = rgb2hsv(foreground-background);
 if ~fit_circle
     % Since the background is black, we binarize the intensity channel of
     % the HSV image
-     
-    isObject = imbinarize(HSV(:,:,3));
+    isObject = HSV(:,:,3)>20;
+    %isObject = imbinarize(HSV(:,:,3));
 
     % Remove the string of the hagning ball
     isObject = imopen(isObject,strel('disk',3));

@@ -16,7 +16,6 @@ def is_deformed(pipeline, non_deformed, thrs):
     pixels = np.asanyarray(color.get_data())
     II = np.abs(non_deformed.astype(int)-pixels.astype(int))
     d = II[:,:,1]>100
-    print(np.sum(d))
     return np.sum(d)>10
     
 
@@ -48,5 +47,4 @@ def binarySearch(pipeline, mc, non_deformed, pos, upper_b):
             else:
                 l = mid
             
-            #print(mid, l, h, pos,is_deformed(pipeline, non_deformed, 10))
     return pos

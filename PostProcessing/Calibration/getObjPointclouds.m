@@ -9,7 +9,7 @@ function object_pcs = getObjPointclouds(objects, pc, tex_name)
 % coordinates does. Invalid points have the value (0,0) in the texture
 % coordinates
 tex = imread(tex_name);
-
+tex = double(tex);
 % Find valid points
 ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 

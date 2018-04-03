@@ -1,14 +1,14 @@
 
-settings = makeSettings('8');
+settings = makeSettings('10');
 
 
 segment_balls = true;
 
 N = 1;
-remove_N_worst = false;
+remove_N_worst = true;
 
 radius = 0.017;
-use_radius = false; 
+use_radius = true; 
 show_spheres = true;
 with_color = false;
 fit_circle = true;

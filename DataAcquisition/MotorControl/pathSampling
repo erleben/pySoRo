@@ -1,6 +1,6 @@
 import numpy as np
 
-class Uniform:
+class PathSampling:
 
     def __init__(self):
         self.num_boards = 2
@@ -23,6 +23,9 @@ class Uniform:
         
     def setStepSize(self, step_s):
         self.stepsize = step_s
+    
+    def setNumPaths(self, step_s):
+        self.stepsize = step_s
         
         
     def update(self):
@@ -30,7 +33,7 @@ class Uniform:
         
     def getPos(self):
         position = np.multiply(self.counter, self.stepsize).tolist()
-        isDone = (position[0] > self.stoppos[0])
+        isDone = (position[0] >= self.stoppos[0])
         return (position, isDone)
 
     # Increments a odometer where each entry is the position of a motor 

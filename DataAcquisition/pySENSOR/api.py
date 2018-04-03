@@ -3,9 +3,10 @@ import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import numpy as np
-from scipy.misc import imsave
+from skimage.io import imsave
 from OpenGL.GL import *
 import threading
+import csv
 
 
 class RealSenseThread (threading.Thread):
@@ -30,8 +31,15 @@ class RealSenseThread (threading.Thread):
     def run(self):
         try:
 
+            ofile = open(self.prefix_filename + 'alphamap.csv', 'w')
+            writer = csv.writer(ofile)
+            
             print('Real sense thread is starting up')
             pipeline = rs.pipeline()
+            cnt = rs.context()
+            devs = cnt.query_devices()
+            d = devs.front()
+            serial_no = d.get_info(rs.camera_info(1))
 
             config = rs.config()
             config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
@@ -45,8 +53,10 @@ class RealSenseThread (threading.Thread):
 
             if self.motor_control is not None:
                 print('Initializing Arduino board')
+                self.motor_control.pipeline = pipeline
                 self.motor_control.setup()
                 print('Done initializing Arduino board')
+
 
             count = 1
             while True:
@@ -54,7 +64,9 @@ class RealSenseThread (threading.Thread):
                 if self.motor_control is not None:
                     pos = self.motor_control.nextPos()
                     print('Motor 1: ' + str(pos[0]) + ' Motor 2:' + str(pos[1]))
-                    self.motor_filename = 'm1_' + str(pos[0]) + 'm2_' + str(pos[1])
+                    self.motor_filename = str(count) +'_' + serial_no
+                    
+                    writer.writerow([count] + pos)
 
                 frames = pipeline.wait_for_frames()
 
@@ -87,7 +99,7 @@ class RealSenseThread (threading.Thread):
 
                 if self.save_color:
                     imsave(filename + 'color.tif', pixels)
-                    
+
                 if self.save_texture:
                     texture = np.asanyarray(points.get_texture_coordinates_EXT())
                     imsave(filename + 'texture.tif', texture)
@@ -118,6 +130,7 @@ class RealSenseThread (threading.Thread):
         except Exception as e:
             print(e)
             pipeline.stop()
+            ofile.close()
             if self.bot is not None:
                 self.bot.end(e)
             return

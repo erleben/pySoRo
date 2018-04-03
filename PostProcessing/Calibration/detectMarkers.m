@@ -1,12 +1,13 @@
 function is_marker = detectMarkers(foreground, is_obj, show_pin_seg)
 
-method_1 = false;
+method = 3;
 
 % RGB of the object
-U=uint8(foreground.*uint8(imerode(is_obj,strel('disk',4))));
-U(U<50)=255;
 
-if method_1
+
+if method == 1
+    U=uint8(foreground.*uint8(imerode(is_obj,strel('disk',4))));
+    U(U<50)=255;
     A = ~imbinarize(uint8(double(U(:,:,2)).*double(U(:,:,3))/(255^2)));
 
     pts = imbinarize(medfilt2(U(:,:,2),[9,9])-U(:,:,2));
@@ -15,8 +16,9 @@ if method_1
     pts = pts(:,:,1)>200;
     pts = imclose(pts,strel('disk',5));
     pts = imopen(pts,strel('disk',1)); 
-else
-    
+elseif method == 2
+    U=uint8(foreground.*uint8(imerode(is_obj,strel('disk',4))));
+    U(U<50)=255;
     Blobs = blob(U(:,:,2), 2);
     mask=ones(5);
     mask(3,3)=0;
@@ -35,7 +37,11 @@ else
     pts = imbinarize(pts);
     pts = imclose(pts,strel('disk',3));
 
-end 
+else 
+    bw = is_obj.*double(foreground(:,:,2));
+    pts = imopen((imfill(bw,'holes')-bw)>30,strel('disk',1));
+end
+
 
 if show_pin_seg
     figure;

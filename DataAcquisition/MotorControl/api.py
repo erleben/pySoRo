@@ -1,6 +1,7 @@
 import serial
 import time
 import json
+import numpy as np
 
 
 class Motorcontrol:
@@ -11,9 +12,13 @@ class Motorcontrol:
         self.portname = '/dev/cu.usbserial-DN02Z6PY'
         self.board_io = None
         self.positionGenerator = None
+        self.pipeline = None
+        self.offset = [0]*self.num_boards
+        self.upper_b = [300]*self.num_boards
 
     def update(self):
         self.position = [0]*self.num_boards
+        self.offset = [0]*self.num_boards
 
 
 
@@ -52,7 +57,7 @@ class Motorcontrol:
 
     def uploadConfig(self):
         config = self.makeConfig()
-
+        
         self.board_io.write(config.encode('utf-8'))
         while self.board_io.in_waiting == 0:
             pass
@@ -73,9 +78,12 @@ class Motorcontrol:
 
 
     def nextPos(self):
-        (self.position, isDone) = self.positionGenerator.increment()
+        (pos, isDone) = self.positionGenerator.increment()
+        
+        self.position = np.add(pos, self.offset).tolist()
         
         if isDone:
+            self.setPos(self.offset)
             raise RedboardException('Final position reached')
             
         positionStr = json.dumps({'position': self.position})
@@ -87,7 +95,7 @@ class Motorcontrol:
         if msg == '0\r\n':
             raise RedboardException('Redboard could not read position')
         else:
-            return self.position
+            return pos
 
     def setPos(self, pos):
            
@@ -102,6 +110,55 @@ class Motorcontrol:
             raise RedboardException('Redboard could not read position')
         else:
             return self.position
+        
+        
+    def find_init_pos(self):
+        frames = self.pipeline.wait_for_frames()
+        color = frames.get_color_frame()
+        non_deformed = np.asanyarray(color.get_data())
+        pos = [0]*self.num_boards
+        return self.binarySearch(non_deformed, pos)
+
+    
+    
+    def is_deformed(self, non_deformed, thrs):
+        frames = self.pipeline.wait_for_frames()
+        color = frames.get_color_frame()
+        pixels = np.asanyarray(color.get_data())
+        II = np.abs(non_deformed.astype(int)-pixels.astype(int))
+        d = II[:,:,1]>100
+        return np.sum(d)>10
+        
+    
+    ## Binary search for initial position. Stop search when color-color_i< thresh
+    
+    def binarySearch(self, non_deformed, pos):
+        for nr in range(1,2):
+            while ~self.is_deformed(non_deformed, 10):
+                pos[nr] += 100
+                self.setPos(pos)
+                if pos[nr]> self.upper_b[nr]:
+                    break
+                
+            h = pos[nr] + 100
+            l = pos[nr] - 100
+            while True:
+                
+                mid = int(np.ceil((h+l)/2))
+                pos[nr] = mid
+                self.setPos(pos)
+        
+                # Stopping condition. 
+                # Look into what happens when solution does not exist
+                if l>=(h-2):
+                    break
+                
+                if self.is_deformed(non_deformed, 10):
+                    h = mid
+                else:
+                    l = mid
+                
+        return pos
 
 
     def setup(self):
@@ -109,7 +166,8 @@ class Motorcontrol:
         self.establishConnection()
         self.uploadConfig()
         self.sanityCheck()
-
+        if self.pipeline is not None:
+            self.offset = self.find_init_pos()
 
 class RedboardException(Exception):
     pass
