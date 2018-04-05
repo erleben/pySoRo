@@ -19,7 +19,7 @@ if ~fit_circle
     %isObject = imbinarize(HSV(:,:,3));
 
     % Remove the string of the hagning ball
-    isObject = imopen(isObject,strel('disk',3));
+    isObject = imopen(isObject, strel('disk',3));
 
     % If it is so that the point cloud data quality is poor on the edges of the
     % objects, then eroding will remove the outermost points

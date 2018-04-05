@@ -1,4 +1,4 @@
-function [mdist, varper, projected, mn, U] = findModes(k)
+function [mdist, varper, projected, mn, U, back_projected] = findModes(k)
 
 points = csvread('datapoints.csv');
 

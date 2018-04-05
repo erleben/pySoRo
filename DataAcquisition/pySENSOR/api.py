@@ -7,6 +7,7 @@ from skimage.io import imsave
 from OpenGL.GL import *
 import threading
 import csv
+import time
 
 
 class RealSenseThread (threading.Thread):
@@ -46,9 +47,10 @@ class RealSenseThread (threading.Thread):
             config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
 
             pipeline.start(config)
+            print('Camera is warming up')
+            time.sleep(4)
             
             pointcloud = rs.pointcloud()
-            print()
             print('Done initializing real sense pipeline')
 
             if self.motor_control is not None:

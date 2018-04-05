@@ -16,13 +16,15 @@ for alph = 1:num_alph
     S = points{alph}.all;
     for pind = 1:size(S,1)
         P(alph, pind*3-2:pind*3) = S(pind,:);
-        E(alph, points{alph}.estimated') = 1;
+        E(alph, 3*points{alph}.estimated'-2) = 1;
+        E(alph, 3*points{alph}.estimated'-1) = 1;
+        E(alph, 3*points{alph}.estimated') = 1;
     end
 end
 
 %Fill in missing values
 for pind = 1:num_markers
-    last_good = 0;
+    last_good = num_alph;
     for alph = (num_alph:-1:1)
         if isnan(P(alph, pind*3-2))
 
@@ -37,7 +39,7 @@ for pind = 1:num_markers
             ps_this = reshape(P(alph,tracked_in_both), 3, sum(tracked_in_both)/3)';
             new_est = (p/ps_lg)*(ps_this);
             P(alph,pind*3-2:pind*3) = new_est;
-            E(alph, pind) = 1;
+            E(alph, pind*3-2:pind*3) = 1;
         end
         
         last_good = alph;
@@ -45,10 +47,23 @@ for pind = 1:num_markers
     end 
 end
 
-
 % Decide what criteria for keeping estimated data should be. Delete bad
 % points
+P(:,sum(E)>7)=[];
+figure;
+for i = 1:7
+    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i));
+    hold on;
+end
+
 csvwrite('datapoints.csv',P)
 
+[~, ~, ~, ~, ~, P] = findModes(2);
+figure;
+for i = 1:7
+    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i));
+    hold on;
+end
 
+csvwrite('datapoints_pca.csv',P)
 end

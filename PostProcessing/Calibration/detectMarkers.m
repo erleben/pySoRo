@@ -40,6 +40,7 @@ elseif method == 2
 else 
     bw = is_obj.*double(foreground(:,:,2));
     pts = imopen((imfill(bw,'holes')-bw)>30,strel('disk',1));
+    pts = imerode(pts, strel('disk', 1));
 end
 
 
