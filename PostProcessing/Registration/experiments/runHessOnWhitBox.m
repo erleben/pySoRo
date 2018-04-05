@@ -53,4 +53,13 @@ lb = min(A);
 est = fmincon(fun, 150, [], [], [], [], lb, ub);
 real = AA;
 aest = alpha_est(1);
+
+
+TT=reshape((T),numel(T)/3,3);
+JJ=reshape((JK'*alpha_est),numel(T)/3,3);
+
+scatter3(TT(:,1),TT(:,2),TT(:,3),'r');
+hold on;
+scatter3(JJ(:,1),JJ(:,2),JJ(:,3),'b');
+hold on; 
 end

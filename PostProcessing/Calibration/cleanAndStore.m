@@ -26,7 +26,7 @@ end
 for pind = 1:num_markers
     last_good = num_alph;
     for alph = (num_alph:-1:1)
-        if isnan(P(alph, pind*3-2))
+        if isnan(P(alph, pind*3-2)) && (~isnan(P(last_good, pind*3-2)))
 
             p = P(last_good, pind*3-2:pind*3);
             tracked_in_lg = ~isnan(P(last_good,:));
@@ -34,7 +34,9 @@ for pind = 1:num_markers
             tracked_in_this = ~isnan(P(alph,:));
             tracked_in_this = tracked_in_this(1:3:length(tracked_in_this));
             
+
             tracked_in_both = repelem(logical(tracked_in_this.*tracked_in_lg),3);
+            tracked_in_both = logical(~(E(alph,:).*E(last_good,:)).*tracked_in_both);
             ps_lg = reshape(P(last_good,tracked_in_both), 3, sum(tracked_in_both)/3)';
             ps_this = reshape(P(alph,tracked_in_both), 3, sum(tracked_in_both)/3)';
             new_est = (p/ps_lg)*(ps_this);
@@ -44,7 +46,7 @@ for pind = 1:num_markers
         
         last_good = alph;
         
-    end 
+    end
 end
 
 % Decide what criteria for keeping estimated data should be. Delete bad

@@ -4,7 +4,7 @@ with_color = true;
 segment = true;
 show_pin_seg = false;
 max_distance = 0.03; % Max allowed distance bettween linked markers
-with_pc = true;
+with_pc = false;
 
 if nargin < 1
     settings = makeSettings('8','5');
@@ -12,7 +12,8 @@ end
 
 if nargin < 2
     tform = load(settings.tform_name);
-    %tform.T = tform.T ++[0,0.02,0.01]';
+    tform = tform.tform;
+    tform.T = tform.T +[0,0.02,0.01]';
 end
 
 
@@ -114,4 +115,4 @@ if with_pc
     
     %save('../Registration/sponge.mat','PP');
 end
-end 
+end

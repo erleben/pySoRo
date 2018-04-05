@@ -29,6 +29,7 @@ b = points{2}(setdiff(1:size(points{2},1),added_B),:);
 c = close_points(setdiff(1:size(points{1},1),added_A),:); 
 [R,T] = getTransformParam(common_A, common_B);
 
+
 for p = 1:size(common_A,1)
     common_A(p,:)=(R*common_A(p,:)')'+T';
 end
