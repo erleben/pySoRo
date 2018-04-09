@@ -1,14 +1,11 @@
 
 settings = makeSettings('12');
 
-
-segment_balls = false;
-
-N = 1;
-remove_N_worst = true;
+segment_balls = true;
+remove_N_worst = 1;
 
 radius = 0.017;
-use_radius = true; 
+use_radius = true;
 show_spheres = true;
 with_color = true;
 fit_circle = true;
@@ -18,7 +15,7 @@ fit_circle = true;
 [points_2, sphere_pcs_2] = getPoints(2, settings, radius, use_radius, fit_circle);
 
 [num_balls, ~] = size(points_1);
- 
+
 
 if segment_balls
     pc_balls_1 = sphere_pcs_1{1};
@@ -29,10 +26,11 @@ if segment_balls
     end
 end
 
-% Find which centroids in points_1 corresponds to which 
-% centroids in points_2 by checking all permutations. Pick the 
-% permutaion with the smallest squared error
-perm = perms(1:num_balls); 
+% Find which centroids in points_1 corresponds to which
+% centroids in points_2 by checking all permutations. Pick the
+% permutaion with the smallest squared error.
+% NB: Assumes that all balls have been detected
+perm = perms(1:num_balls);
 se = zeros(length(perm),1);
 for ind = 1:length(perm)
     points_1_perm = points_1(perm(ind,:)',:);
@@ -51,11 +49,8 @@ mse=mse/num_balls;
 points_1 = points_1(perm(pind,:)',:);
 
 % Get the transformation for the corresponding points
-if remove_N_worst
-    [R,T, mse, in] = getTrainsformParam_Ransac(points_1, points_2, num_balls-N);
-else
-    [R,T] = getTransformParam(points_1, points_2);
-end
+[R,T, mse, in] = getTransformRansac(points_1, points_2, num_balls-remove_N_worst);
+
 
 % Read in the pointclouds
 if segment_balls
@@ -73,7 +68,6 @@ for i = 1:ref_PC.Count
     ref_transformed(i,:)=(R*ref_points(i,:)')'+T';
 end
 ref_transformed_PC = pointCloud(ref_transformed, 'Color', ref_PC.Color);
-
 
 if ~with_color
     ref_PC = pointCloud(ref_PC.Location);
@@ -99,7 +93,7 @@ zlabel('z');
 title('Point cloud B')
 
 subplot(1,3,3);
-pcshow(ref_transformed_PC); 
+pcshow(ref_transformed_PC);
 view([0 -90])
 xlabel('x');
 ylabel('y');
@@ -111,7 +105,6 @@ pcmerged=pcmerge(ref_transformed_PC, target_PC, 0.001);
 
 hold on;
 figure;
-%pcmerged.Color=pcmerged.Color/2;
 pcshow(pcmerged);
 view([0 -90])
 xlabel('x');
@@ -150,6 +143,6 @@ save(settings.tform_name, 'R', 'T');
 
 %TODO:
 %Consider to use ICP to fine tune R and T
- %[tform, ICP_PC, dist] = pcregrigid(ref_transformed_PC, target_PC,'InlierRatio', 0.001);
- %tf = affine3d(tform.T);
- %pcshow(pcmerge(target_PC, pctransform(ref_transformed_PC,tf),0.001),'Markersize',100)
+%[tform, ICP_PC, dist] = pcregrigid(ref_transformed_PC, target_PC,'InlierRatio', 0.001);
+%tf = affine3d(tform.T);
+%pcshow(pcmerge(target_PC, pctransform(ref_transformed_PC,tf),0.001),'Markersize',100)

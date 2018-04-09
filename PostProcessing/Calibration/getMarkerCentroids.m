@@ -1,4 +1,4 @@
-function [labeled_points, new_tform] = getMarkerCentroids(settings, tform)
+function labeled_points = getMarkerCentroids(settings, tform)
 
 with_color = true;
 segment = true;
@@ -12,8 +12,6 @@ end
 
 if nargin < 2
     tform = load(settings.tform_name);
-    %tform = tform.tform;
-    %tform.T = tform.T +[0,0.02,0.01]';
 end
 
 
@@ -53,17 +51,8 @@ end
   
 % Group the markers into points seen by both cameras and only one of them
 % Find a better transformation
-[labeled_points, new_tform, success_flag, mse] = group_markers(close_points, points, max_distance, tform);
-disp('mse:')
-disp(mse);
-disp('success_flag: ')
-disp(success_flag);
-% If we dont have enough points to make a good alignment,
-% use the base-calibration
-if ~success_flag || 1
-    new_tform = tform;
-end 
- 
+labeled_points = group_markers(close_points, points, max_distance);
+
 disp(size(labeled_points.common));
 
 if with_pc
@@ -100,7 +89,7 @@ if with_pc
     ref_transformed = zeros(P_from.Count,3);
     ref_points = P_from.Location;
     for i = 1:P_from.Count
-        ref_transformed(i,:)=(new_tform.R*ref_points(i,:)')'+new_tform.T';
+        ref_transformed(i,:)=(tform.R*ref_points(i,:)')'+tform.T';
     end
     ref_transformed_PC = pointCloud(ref_transformed, 'Color', P_from.Color);
  
@@ -116,5 +105,5 @@ if with_pc
     
     
     %save('../Registration/sponge.mat','PP');
-end
+end 
 end 

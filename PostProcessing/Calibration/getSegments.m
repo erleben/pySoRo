@@ -1,5 +1,5 @@
 % This funciton takes the path to a foreground and a background color
-% image and returns a cell array of binary images. One for each object.
+% image and returns a cell array of binary images, one for each object.
 % binary(x,y) = 1 if there is a object at x,y in the foreground image.
 function objects = getSegments(back_name, fore_name, fit_circle, max_num_obj)
 
@@ -44,10 +44,14 @@ if ~fit_circle
         end
     end
 else
-    [centers, radii] = imfindcircles(HSV(:,:,3)>100,[15 50]);
+    %Fit circles to the binarized image
+    [centers, radii] = imfindcircles(HSV(:,:,3)>70,[10 30]);
+    sorted = flipud(sortrows([radii, centers]));
+    radii = sorted(:,1);
+    centers = sorted(:,2:end);
     [M,N,~] = size(HSV); 
-    for num = 1:length(radii)
-        [cols rows] = meshgrid(1:M, 1:N);
+    for num = 1:min(length(radii), max_num_obj)
+        [cols, rows] = meshgrid(1:M, 1:N);
         objects{num, 1} = ((rows - centers(num,1)).^2 + (cols - centers(num,2)).^2 <= radii(num).^2)';
     end
 end 

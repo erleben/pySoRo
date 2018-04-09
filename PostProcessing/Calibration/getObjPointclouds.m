@@ -3,7 +3,7 @@ function object_pcs = getObjPointclouds(objects, pc, tex_name)
 [height, width] = size(objects{1});
 
 % Texture coordinates is a mapping from point index in the point cloud to
-% a tuple (u,v) where (u*height, v*width) are  thecoordinates of where the 
+% a tuple (u,v) where (u*height, v*width) are  the coordinates of where the 
 % color is taken from in the color image.
 % Librealsense point clouds do not include invalid points, but texture
 % coordinates does. Invalid points have the value (0,0) in the texture

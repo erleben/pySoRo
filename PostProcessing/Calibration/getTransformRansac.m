@@ -1,8 +1,13 @@
-function [bestR, bestT, oldmse, in] = getTrainsformParam_Ransac(points_1, points_2, min_p)
+function [bestR, bestT, oldmse, in] = getTransformRansac(points_1, points_2, min_p)
+
+% We know which points are corresponding to one another. We can now find the
+% rigid trasformation that minimizes the distance between them.
+% We can remove the points that have the worst contribution to the mse.
 
 [numObs, ~] = size(points_1);
 oldmse = inf;
 in = [];
+% All the combinations of points we cant to keep
 combos = nchoosek(1:numObs,min_p);
 [num_combos, ~] = size(combos);
 for rnd = 1:num_combos
@@ -14,7 +19,7 @@ for rnd = 1:num_combos
         err(i) = err(i) + sqrt(sum((points_2(i,:)-((R_r*points_1(i,:)')'+T_r')).^2));
     end
     
-    mse = mean(err(inds)); 
+    mse = mean(err(inds));
     
     if (mse < oldmse) && abs(det(R_r)-1)<(10^-10)
         bestR = R_r;
@@ -23,7 +28,7 @@ for rnd = 1:num_combos
         in = inds;
         oldmse = mse;
     end
-   
+    
 end
 
 
