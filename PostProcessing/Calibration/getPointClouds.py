@@ -9,7 +9,7 @@ import numpy as np
 
 def main():
     prefix = '../../data/reconstruction/'
-    postfix = '9_1'
+    postfix = '10_1'
     
     (pipelines, serial_numbers) = setup()
     capture(pipelines, serial_numbers, prefix, postfix)

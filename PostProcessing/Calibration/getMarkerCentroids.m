@@ -3,7 +3,7 @@ function [labeled_points, new_tform] = getMarkerCentroids(settings, tform)
 with_color = true;
 segment = true;
 show_pin_seg = false;
-max_distance = 0.03; % Max allowed distance bettween linked markers
+max_distance = 0.013; % Max allowed distance bettween linked markers
 with_pc = false;
 
 if nargin < 1
@@ -12,8 +12,8 @@ end
 
 if nargin < 2
     tform = load(settings.tform_name);
-    tform = tform.tform;
-    tform.T = tform.T +[0,0.02,0.01]';
+    %tform = tform.tform;
+    %tform.T = tform.T +[0,0.02,0.01]';
 end
 
 
@@ -29,7 +29,7 @@ is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1{1}, show_
 marker_pcs{1} = getObjPointclouds(is_marker', PC_from, settings.tex_name_recon{1});
 
 PC_to = pcread(settings.pc_name_recon{2});
-is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2{1}, false);
+is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2{1}, show_pin_seg);
 marker_pcs{2} = getObjPointclouds(is_marker', PC_to, settings.tex_name_recon{2});
   
 %Find their centroids
@@ -50,20 +50,22 @@ close_points = zeros(num_markers,3);
 for i = 1:num_markers
     close_points(i,:)=(tform.R*points{1}(i,:)')'+tform.T';
 end 
- 
+  
 % Group the markers into points seen by both cameras and only one of them
 % Find a better transformation
-[labeled_points, new_tform, success_flag, mse] = group_markers(close_points, points, max_distance);
+[labeled_points, new_tform, success_flag, mse] = group_markers(close_points, points, max_distance, tform);
 disp('mse:')
 disp(mse);
 disp('success_flag: ')
 disp(success_flag);
 % If we dont have enough points to make a good alignment,
 % use the base-calibration
-if ~success_flag
+if ~success_flag || 1
     new_tform = tform;
 end 
  
+disp(size(labeled_points.common));
+
 if with_pc
     % Merge the pointclouds
     pc_balls_1 = marker_pcs{1}{1};
@@ -115,4 +117,4 @@ if with_pc
     
     %save('../Registration/sponge.mat','PP');
 end
-end
+end 

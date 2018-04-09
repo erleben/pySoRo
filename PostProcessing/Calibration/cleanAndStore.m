@@ -10,22 +10,23 @@ function cleanAndStore(points)
 [~, num_alph] = size(points);
 [num_markers, ~] = size(points{num_alph}.all);
 P = nan(num_alph, num_markers*3);
-E = zeros(num_alph, num_markers);
+E = zeros(num_alph, 3*num_markers);
 
 for alph = 1:num_alph
     S = points{alph}.all;
     for pind = 1:size(S,1)
         P(alph, pind*3-2:pind*3) = S(pind,:);
-        E(alph, 3*points{alph}.estimated'-2) = 1;
-        E(alph, 3*points{alph}.estimated'-1) = 1;
-        E(alph, 3*points{alph}.estimated') = 1;
     end
+    E(alph, 3*points{alph}.estimated'-2) = 1;
+    E(alph, 3*points{alph}.estimated'-1) = 1;
+    E(alph, 3*points{alph}.estimated') = 1;
+    E(alph, isnan(P(alph,:))) = 1;
 end
 
 %Fill in missing values
-for pind = 1:num_markers
+for pind = 1:num_markers 
     last_good = num_alph;
-    for alph = (num_alph:-1:1)
+    for alph = (num_alph-1:-1:1)
         if isnan(P(alph, pind*3-2)) && (~isnan(P(last_good, pind*3-2)))
 
             p = P(last_good, pind*3-2:pind*3);
@@ -51,21 +52,27 @@ end
 
 % Decide what criteria for keeping estimated data should be. Delete bad
 % points
-P(:,sum(E)>7)=[];
+sz = 2;
+min_thr = 25;
+P(:,sum(E)>min_thr)=[];
 figure;
-for i = 1:7
-    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i));
+num_good = sum(sum(E)<=min_thr)/3;
+for i = 1:num_good
+    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i), sz);
     hold on;
 end
+pcshow(pcread('../../data/output/1_616205005055.ply'),'MarkerSize',10)
 
 csvwrite('datapoints.csv',P)
 
-[~, ~, ~, ~, ~, P] = findModes(2);
+[~, ~, ~, ~, ~, P] = findModes(4);
 figure;
-for i = 1:7
-    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i));
+
+for i = 1:num_good
+    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i),sz);
     hold on;
 end
+pcshow(pcread('../../data/output/1_616205005055.ply'),'MarkerSize',10)
 
-csvwrite('datapoints_pca.csv',P)
+csvwrite('datapoints_pca.csv',P) 
 end

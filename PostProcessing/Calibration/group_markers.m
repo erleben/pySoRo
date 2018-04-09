@@ -1,4 +1,4 @@
-function [labeled_points, tform, success_flag, mse] =group_markers(close_points, points, max_distance)
+function [labeled_points, tform, success_flag, mse] =group_markers(close_points, points, max_distance, tform)
 
 
 dist_mat = pdist2(close_points,points{2});
@@ -27,8 +27,9 @@ end
 a = points{1}(setdiff(1:size(points{1},1),added_A),:); 
 b = points{2}(setdiff(1:size(points{2},1),added_B),:);
 c = close_points(setdiff(1:size(points{1},1),added_A),:); 
-[R,T] = getTransformParam(common_A, common_B);
-
+%[R,T] = getTransformParam(common_A, common_B);
+R = tform.R;
+T = tform.T;
 
 for p = 1:size(common_A,1)
     common_A(p,:)=(R*common_A(p,:)')'+T';

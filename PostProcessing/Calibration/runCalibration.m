@@ -1,8 +1,8 @@
 
-settings = makeSettings('11');
+settings = makeSettings('12');
 
 
-segment_balls = true;
+segment_balls = false;
 
 N = 1;
 remove_N_worst = true;
@@ -10,7 +10,7 @@ remove_N_worst = true;
 radius = 0.017;
 use_radius = true; 
 show_spheres = true;
-with_color = false;
+with_color = true;
 fit_circle = true;
 
 % Get the centroids of the balls

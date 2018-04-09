@@ -8,16 +8,16 @@ import numpy as np
 
 def main():
     
-    back_then_fore = False
+    back_then_fore = True
     prefix = '../../data/calibration/'
-    postfix = '11'
+    postfix = '12'
     
     (pipelines, serial_numbers) = setup(back_then_fore)
     
     # Get data without foreground
     capture(back_then_fore, pipelines, serial_numbers, True, prefix, postfix)
     # Get images with foreground
-    capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
+    #capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
 
     # Might be neccesary to shut down lasers in between due to interference
     # Shut down sensors

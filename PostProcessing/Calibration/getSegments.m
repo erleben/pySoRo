@@ -12,10 +12,10 @@ foreground = double(imread(fore_name));
 background = double(imread(back_name));
  
 HSV = rgb2hsv(foreground-background);
-if ~fit_circle
+if ~fit_circle 
     % Since the background is black, we binarize the intensity channel of
     % the HSV image
-    isObject = HSV(:,:,3)>20;
+    isObject = HSV(:,:,3)>80;
     %isObject = imbinarize(HSV(:,:,3));
 
     % Remove the string of the hagning ball
@@ -44,7 +44,7 @@ if ~fit_circle
         end
     end
 else
-    [centers, radii] = imfindcircles(HSV(:,:,3),[20 50]);
+    [centers, radii] = imfindcircles(HSV(:,:,3)>100,[15 50]);
     [M,N,~] = size(HSV); 
     for num = 1:length(radii)
         [cols rows] = meshgrid(1:M, 1:N);

@@ -1,10 +1,12 @@
 
 ordered = {};
 
-for i = 1:35
-  
-    settings = makeSettings('10');
-
+for i = 1:100
+    if i == 70
+        i
+    end
+    settings = makeSettings('12');
+    
     settings.pc_name_recon{1}=strcat('../../data/output/',int2str(i),'_618204002727.ply');
     settings.pc_name_recon{2}=strcat('../../data/output/',int2str(i),'_616205005055.ply');
 
@@ -21,7 +23,7 @@ for i = 1:35
 
     else
         [order_from, tform] = getMarkerCentroids(settings, tform);
-    end
+    
 
     [tracked_all, estimated] = order_markers(order_to.all, order_from.all);
 
@@ -31,5 +33,6 @@ for i = 1:35
     ordered{i} = order_from;
 
     order_to = order_from;
+    end
     
 end

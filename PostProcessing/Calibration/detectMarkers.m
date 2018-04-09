@@ -38,9 +38,11 @@ elseif method == 2
     pts = imclose(pts,strel('disk',3));
 
 else 
-    bw = is_obj.*double(foreground(:,:,2));
-    pts = imopen((imfill(bw,'holes')-bw)>30,strel('disk',1));
-    pts = imerode(pts, strel('disk', 1));
+ %   bw = is_obj.*double(foreground(:,:,2));
+ %   pts = imopen((imfill(bw,'holes')-bw)>30,strel('disk',1));
+ %   pts = imerode(pts, strel('disk', 1));
+     HSV = rgb2hsv(foreground);
+     pts = imbinarize(imfill(HSV(:,:,3).*is_obj,'holes')-HSV(:,:,3).*is_obj);
 end
 
 
@@ -48,7 +50,7 @@ if show_pin_seg
     figure;
     imshow(uint8(pts).*foreground);
 end   
-  
+ 
 elements = bwconncomp(pts);
 is_marker = {elements.NumObjects}; 
     % Separete the balls into independent binary images
