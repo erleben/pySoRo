@@ -1,6 +1,6 @@
 function [est, aest, real] = runHessOnWhitBox(num)
 
-P = csvread('../../Calibration/datapoints_pca.csv');
+P = csvread('../../Calibration/datapoints.csv');
 Alphas  = csvread('../../../data/output/alphamap.csv');
 [num_states, num_pts] = size(P);
 
@@ -23,7 +23,7 @@ A = Alphas(2:end,3)';
 U(:,num)=[];
 AA = A(num);
 A(num)=[];
-A_JK = [A; 0.5*(A.^2)];
+A_JK = [A; 0.5*(A.^2) ];
 
 
 % Compute Hessian

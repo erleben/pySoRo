@@ -25,7 +25,7 @@
                 save_color="True"
                 save_texture="True"
                 save_ply="True"
-                prefix="../data/output/"
+                prefix="../data/output_exp/"
                 postfix=""
         />
         
@@ -35,6 +35,7 @@
                 num_boards="2"
                 distribution_module="uniform.py"
                 module_args="setStartPos,[0 0];setStopPos,[0 300];setStepSize,[3 3]"
+                autotighten="False"
                 
         />
         

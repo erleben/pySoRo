@@ -61,18 +61,18 @@ for i = 1:num_good
     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i), sz);
     hold on;
 end
-pcshow(pcread('../../data/output/1_616205005055.ply'),'MarkerSize',10)
+pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
 
-csvwrite('datapoints.csv',P)
+csvwrite('datapoints_exp2.csv',P)
 
-[~, ~, ~, ~, ~, P] = findModes(4);
+[~, ~, ~, ~, ~, P] = findModes(P, 1);
 figure;
 
 for i = 1:num_good
     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i),sz);
     hold on;
 end
-pcshow(pcread('../../data/output/1_616205005055.ply'),'MarkerSize',10)
+pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
 
-csvwrite('datapoints_pca.csv',P) 
+csvwrite('datapoints_pca_exp2.csv',P) 
 end

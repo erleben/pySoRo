@@ -1,6 +1,6 @@
-function [mdist, varper, projected, mn, U, back_projected] = findModes(k)
+function [mdist, varper, projected, mn, U, back_projected] = findModes(points, k)
 
-points = csvread('datapoints.csv');
+
 
 [mn, U, varper] = PCA(points,k);
 

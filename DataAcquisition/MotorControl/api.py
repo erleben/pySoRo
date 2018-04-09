@@ -15,6 +15,7 @@ class Motorcontrol:
         self.pipeline = None
         self.offset = [0]*self.num_boards
         self.upper_b = [300]*self.num_boards
+        self.autotighten = False
 
     def update(self):
         self.position = [0]*self.num_boards
@@ -166,7 +167,8 @@ class Motorcontrol:
         self.establishConnection()
         self.uploadConfig()
         self.sanityCheck()
-        if self.pipeline is not None:
+        if ((self.pipeline is not None) & self.autotighten):
+            print('Finding initial position')
             self.offset = self.find_init_pos()
 
 class RedboardException(Exception):

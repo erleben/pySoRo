@@ -23,7 +23,8 @@ def load_from_elementtree(root_tag):
 
     motor_control.num_boards = UTIL.int_from_xml(mc_tag, 'num_boards', motor_control.num_boards)
     motor_control.portname = UTIL.string_from_xml(mc_tag, 'portname', motor_control.portname)
-    
+    motor_control.autotighten = UTIL.bool_from_xml(mc_tag, 'autotighten', motor_control.autotighten)
+        
     module_name = UTIL.string_from_xml(mc_tag, 'distribution_module', None)
     module_args = UTIL.string_from_xml(mc_tag, 'module_args', None)
     _class = parse_set_args(module_name, module_args)
@@ -55,6 +56,7 @@ def save_to_elementtree(motor_control, root_tag):
     mc_tag = ET.SubElement(root_tag, 'motor')
     mc_tag.attrib['use_motor_control'] = str(motor_control.use_motor_control)
     mc_tag.attrib['num_boards'] = str(motor_control.num_boards)
+    mc_tag.attrib['autotighten'] = str(motor_control.autotighten)
     mc_tag.attrib['portname'] = str(motor_control.portname)
     mc_tag.attrib['distribution_module'] = str(motor_control.distribution_module)
     mc_tag.attrib['module_args'] = str(motor_control.module_args)
