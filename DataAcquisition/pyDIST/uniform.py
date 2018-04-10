@@ -44,5 +44,6 @@ class Uniform:
                 self.counter[bd-1] += 1
                 
     def increment(self):
+        pos = self.getPos()
         self.incrementCounter()
-        return self.getPos()
+        return pos

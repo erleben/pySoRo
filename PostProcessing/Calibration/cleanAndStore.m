@@ -1,4 +1,4 @@
-function cleanAndStore(points)
+function cleanAndStore(points, name)
 
 % P: m*n matrix of m observations and n/3 variables. 
 %    The format is [x, y, z, x, y, z, ...]
@@ -53,7 +53,13 @@ end
 % Decide what criteria for keeping estimated data should be. Delete bad
 % points
 sz = 2;
-min_thr = 25;
+num_markers = 19;
+numE = zeros(1,num_markers);
+for i = 1:num_alph/2
+    numE(i) = sum(sum(E)<=i)/3;
+end
+min_thr = find(numE >= num_markers);
+min_thr = min_thr(1);
 P(:,sum(E)>min_thr)=[];
 figure;
 num_good = sum(sum(E)<=min_thr)/3;
@@ -61,18 +67,18 @@ for i = 1:num_good
     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i), sz);
     hold on;
 end
-pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
+%pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
 
-csvwrite('datapoints_exp2.csv',P)
+csvwrite(strcat('data/points_',name,'.csv'),P)
 
-[~, ~, ~, ~, ~, P] = findModes(P, 1);
+[~, ~, ~, ~, ~, P] = findModes(P, 3);
 figure;
 
 for i = 1:num_good
     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i),sz);
     hold on;
 end
-pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
+%pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
 
-csvwrite('datapoints_pca_exp2.csv',P) 
+csvwrite(strcat('data/points_pca_',name,'.csv'),P)
 end

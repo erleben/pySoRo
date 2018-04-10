@@ -47,7 +47,7 @@ if show_pin_seg
     figure;
     imshow(uint8(pts).*foreground);
 end   
- 
+
 elements = bwconncomp(pts);
 is_marker = {elements.NumObjects}; 
     % Separete the balls into independent binary images

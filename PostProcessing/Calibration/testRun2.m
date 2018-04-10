@@ -1,6 +1,8 @@
 
 ordered = {};
-folder = 'output_exp1/';
+name = 'exp10';
+folder = strcat('experiment_2/output_',name,'/');
+settings = makeSettings('12');
 for i = 1:100
 
     settings = makeSettings('12');
@@ -23,14 +25,16 @@ for i = 1:100
         order_from = getMarkerCentroids(settings);
     
 
-    [tracked_all, estimated] = order_markers(order_to.all, order_from.all);
+        [tracked_all, estimated] = order_markers(order_to.all, order_from.all);
 
-    order_from = {};
-    order_from.all = tracked_all;
-    order_from.estimated = estimated;
-    ordered{i} = order_from;
+        order_from = {};
+        order_from.all = tracked_all;
+        order_from.estimated = estimated;
+        ordered{i} = order_from;
 
-    order_to = order_from;
+        order_to = order_from;
     end
     
+    
 end
+cleanAndStore(ordered, name)

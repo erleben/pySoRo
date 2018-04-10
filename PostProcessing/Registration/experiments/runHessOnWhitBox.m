@@ -1,7 +1,7 @@
 function [est, aest, real] = runHessOnWhitBox(num)
 
-P = csvread('../../Calibration/datapoints.csv');
-Alphas  = csvread('../../../data/output/alphamap.csv');
+P = csvread('../../Calibration/data/datapoints.csv');
+Alphas  = csvread('../../../data/experiment_1/output_exp1/alphamap.csv');
 [num_states, num_pts] = size(P);
 
 pts = zeros(num_pts,num_states);
