@@ -6,11 +6,11 @@ if nargin < 4
     makePlot = false;
 end
 
-Alphas  = csvread(strcat('../../data/experiment_2/output_exp',int2str(n1),'/alphamap.csv'));
+Alphas  = csvread(strcat('../../../data/experiment_2/output_exp',int2str(n1),'/alphamap.csv'));
 
 % Find point correspondances
-P1=load(strcat('data/points_exp',int2str(n1),'.csv'));
-P2=load(strcat('data/points_exp',int2str(n2),'.csv'));
+P1=load(strcat('../data/points_exp',int2str(n1),'.csv'));
+P2=load(strcat('../data/points_exp',int2str(n2),'.csv'));
 Alphas  = Alphas(1:size(P1,1),:);
 
 F1 = [P1(10,1:3:end)',P1(10,2:3:end)',P1(10,3:3:end)'];
@@ -50,20 +50,17 @@ addpath('../../Registration/experiments');
 
 % Train a model on the first dataset
 model = trainModel(P1_N, Alphas, order);
-
-m1 = trainModel(P1_N(1:50,:), Alphas(1:50,:), order);
-m2 = trainModel(P1_N(51:end,:), Alphas(51:end,:), order);
 res = zeros(size(P2_N,2),3);
 
 % Evaluate on train and test data
-for i = 1:size(P2_N,1)-3
+for i = 1:size(P2_N,1)
     pt = [P2_N(i,1:3:end)'; P2_N(i,2:3:end)'; P2_N(i,3:3:end)'];
     alpha_est = model(pt);
     res(i,1) = Alphas(i, 3);
     res(i,2) = alpha_est(1);
 end
 
-for i = 1:size(P2_N,1)-3
+for i = 1:size(P2_N,1)
     pt = [P1_N(i,1:3:end)'; P1_N(i,2:3:end)'; P1_N(i,3:3:end)'];
     alpha_est = model(pt);
     res(i,3) = alpha_est(1);
