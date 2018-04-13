@@ -21,6 +21,7 @@ class RealSenseThread (threading.Thread):
         self.save_color = False
         self.save_texture = False
         self.save_ply = False
+        self.save_depth = False
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
         self.bot = None
@@ -40,17 +41,26 @@ class RealSenseThread (threading.Thread):
             cnt = rs.context()
             devs = cnt.query_devices()
             d = devs.front()
+            print(devs.size())
             serial_no = d.get_info(rs.camera_info(1))
-
+            print(serial_no)
             config = rs.config()
-            config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
-            config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
+            config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
+            config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+            #config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
+            #config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
 
+            time.sleep(1)
             pipeline.start(config)
             print('Camera is warming up')
             time.sleep(4)
             
             pointcloud = rs.pointcloud()
+            
+            #Make an align object. Allows us to align depth to color
+            align_to = rs.stream.color
+            align = rs.align(align_to)
+            
             print('Done initializing real sense pipeline')
 
             if self.motor_control is not None:
@@ -96,6 +106,7 @@ class RealSenseThread (threading.Thread):
                 vertex_array = np.hstack((coords, texs))
 
                 filename = self.prefix_filename + 'frame' + str(count) + self.postfix_filename
+                
                 if self.motor_control is not None:
                     filename = self.prefix_filename + self.motor_filename + self.postfix_filename
 
@@ -108,7 +119,20 @@ class RealSenseThread (threading.Thread):
                     
                 if self.save_ply:
                     points.export_to_ply(filename + '.ply', color)
-
+                    
+                if self.save_depth:
+                    is_aligned = False
+                    while not is_aligned:
+                        aligned_frames = align.process(frames)
+                        try:
+                            aligned_depth_frame = aligned_frames.get_depth_frame() 
+                            depth_image = np.asanyarray(aligned_depth_frame.get_data())
+                            is_aligned = True
+                        except:
+                            pass
+                            
+                    imsave(filename + 'depth.tif', depth_image)
+                    
                 if self.render is not None:
                     self.render.copy_data(
                         vertex_array,

@@ -3,16 +3,16 @@
 clear;
 
 num = 400;
-times = csvread('../../../../data/distortion/times.csv');
+times = csvread('../../../../data/distortion_D415/times.csv');
 t = [0; cumsum(diff(times))];
 t = t(1:end-1);
 
 % Color
-I_C = int16(imread(strcat('../../../../data/distortion/color',int2str(num-1),'.tif')));
+I_C = int16(imread(strcat('../../../../data/distortion_D415/color',int2str(num-1),'.tif')));
 
 C_Stats = zeros(num-1,4);
 for i = 0:num-2
-   img = int16(imread(strcat('../../../../data/distortion/color',int2str(i),'.tif')));
+   img = int16(imread(strcat('../../../../data/distortion_D415/color',int2str(i),'.tif')));
    C_Stats(i+1,1) = sqrt(var(double(I_C(:)-img(:))));
    for ch = 2:4
        channel = I_C(:,:,ch-1)-img(:,:,ch-1);
@@ -30,12 +30,12 @@ title('Color');
 
 
 % Depth
-I_D = int16(imread(strcat('../../../../data/distortion/depth_',int2str(num-1),'.tif')));
+I_D = int16(imread(strcat('../../../../data/distortion_D415/depth_',int2str(num-1),'.tif')));
 is_obj=bwareafilt(imbinarize(I_D),1);
 I_D = I_D(is_obj);
 D_Stats = zeros(num-1,2);
 for i = 0:num-2
-   img = int16(imread(strcat('../../../../data/distortion/depth_',int2str(i),'.tif')));
+   img = int16(imread(strcat('../../../../data/distortion_D415/depth_',int2str(i),'.tif')));
    img = img(is_obj);
    
    D_Stats(i+1,1) = mean(abs(double(I_D(:)-img(:))));

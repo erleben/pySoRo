@@ -17,7 +17,8 @@ else
 end
 
 if nargin < 3
-    settings.serial = ["618204002727", "616205005055"];
+    %settings.serial = ["618204002727", "616205005055"];
+    settings.serial = ["806312060523", "732612060774"];
 else
     settings.serial = serial;
 end

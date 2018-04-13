@@ -10,7 +10,7 @@ end
 
 foreground = double(imread(fore_name));
 background = double(imread(back_name));
- 
+
 HSV = rgb2hsv(foreground-background);
 if ~fit_circle 
     % Since the background is black, we binarize the intensity channel of
@@ -45,7 +45,7 @@ if ~fit_circle
     end
 else
     %Fit circles to the binarized image
-    [centers, radii] = imfindcircles(HSV(:,:,3)>70,[10 30]);
+    [centers, radii] = imfindcircles(HSV(:,:,3)>70,[10 30],'Method','TwoStage');
     sorted = flipud(sortrows([radii, centers]));
     radii = sorted(:,1);
     centers = sorted(:,2:end);
@@ -54,6 +54,22 @@ else
         [cols, rows] = meshgrid(1:M, 1:N);
         objects{num, 1} = ((rows - centers(num,1)).^2 + (cols - centers(num,2)).^2 <= radii(num).^2)';
     end
+    
+    ob = objects;
+    for i = 1:length(radii)-1
+        for j = (i+1):length(radii)
+            if ~isequal(sum((objects{i}+objects{j})>0), sum(objects{i}+objects{j}))
+                ob{j}=[];
+            end
+        end
+    end
+    obs = {}; 
+    for i = 1:length(objects)
+        if ~isempty(ob{i})
+            obs{end+1} = objects{i};        
+        end
+    end
+    objects = obs';
 end 
 
 end

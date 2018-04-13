@@ -25,7 +25,8 @@
                 save_color="True"
                 save_texture="True"
                 save_ply="True"
-                prefix="../data/experiment_2/output_exp10/"
+                save_depth="False"
+                prefix="/Volumes/TOSHIBA/test/"
                 postfix=""
         />
         

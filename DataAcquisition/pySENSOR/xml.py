@@ -19,6 +19,7 @@ def load_from_elementtree(root_tag):
     rs_thread.save_color = UTIL.bool_from_xml(rs_tag, 'save_color', rs_thread.save_color)
     rs_thread.save_texture = UTIL.bool_from_xml(rs_tag, 'save_texture', rs_thread.save_texture)
     rs_thread.save_ply = UTIL.bool_from_xml(rs_tag, 'save_ply', rs_thread.save_ply)
+    rs_thread.save_depth = UTIL.bool_from_xml(rs_tag, 'save_depth', rs_thread.save_depth)
     rs_thread.prefix_filename = UTIL.string_from_xml(rs_tag, 'prefix', rs_thread.prefix_filename)
     rs_thread.postfix_filename = UTIL.string_from_xml(rs_tag, 'postfix', rs_thread.postfix_filename)
 
@@ -47,6 +48,7 @@ def save_to_elementtree(rs_thread, root_tag):
     rs_tag.attrib['save_color'] = str(rs_thread.save_color)
     rs_tag.attrib['save_texture'] = str(rs_thread.save_texture)
     rs_tag.attrib['save_ply'] = str(rs_thread.save_ply)
+    rs_tag.attrib['save_depth'] = str(rs_thread.save_depth)
     rs_tag.attrib['postfix'] = str(rs_thread.postfix)
     rs_tag.attrib['prefix'] = str(rs_thread.prefix)
 

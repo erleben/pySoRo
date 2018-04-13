@@ -1,9 +1,11 @@
+order = 4;
 
-res = zeros(size(exp_local(1,1,1)));
+
+res = zeros(size(exp_local(1,2,1)));
 cnt = 0;
 for i = 1:10
     for j = setdiff(1:10,i)
-        res = res + exp_local(2,i,j);
+        res = res + exp_local(order, i, j);
         cnt = cnt + 1;
     end
 end

@@ -1,8 +1,8 @@
 
-settings = makeSettings('12');
+settings = makeSettings('13');
 
 segment_balls = true;
-remove_N_worst = 1;
+remove_N_worst = 0;
 
 radius = 0.017;
 use_radius = true;
@@ -24,7 +24,7 @@ if segment_balls
         pc_balls_1 = pcmerge(pc_balls_1, sphere_pcs_1{num},0.0001);
         pc_balls_2 = pcmerge(pc_balls_2, sphere_pcs_2{num},0.0001);
     end
-end
+end 
 
 % Find which centroids in points_1 corresponds to which
 % centroids in points_2 by checking all permutations. Pick the

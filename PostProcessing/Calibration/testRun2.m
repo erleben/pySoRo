@@ -1,20 +1,20 @@
 
 ordered = {};
-name = 'exp10';
-folder = strcat('experiment_2/output_',name,'/');
-settings = makeSettings('12');
+name = 'exp1';
+folder = strcat('experiment_3/output_',name,'/');
+settings = makeSettings('13');
 for i = 1:100
 
-    settings = makeSettings('12');
+    settings = makeSettings('13');
     
-    settings.pc_name_recon{1}=strcat('../../data/', folder, int2str(i),'_618204002727.ply');
-    settings.pc_name_recon{2}=strcat('../../data/', folder, int2str(i),'_616205005055.ply');
+    settings.pc_name_recon{1}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(1),'.ply'));
+    settings.pc_name_recon{2}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(2),'.ply'));
 
-    settings.fore_name_recon{1}=strcat('../../data/', folder, int2str(i),'_618204002727color.tif');
-    settings.fore_name_recon{2}=strcat('../../data/', folder, int2str(i),'_616205005055color.tif');
+    settings.fore_name_recon{1}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(1),'color.tif'));
+    settings.fore_name_recon{2}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(2),'color.tif'));
 
-    settings.tex_name_recon{1}=strcat('../../data/', folder, int2str(i),'_618204002727texture.tif');
-    settings.tex_name_recon{2}=strcat('../../data/', folder, int2str(i),'_616205005055texture.tif');
+    settings.tex_name_recon{1}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(1),'texture.tif'));
+    settings.tex_name_recon{2}=char(strcat('../../data/', folder, int2str(i),'_',settings.serial(2),'texture.tif'));
  
     if i == 1
         order_to = getMarkerCentroids(settings);

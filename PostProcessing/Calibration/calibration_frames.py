@@ -8,23 +8,23 @@ import numpy as np
 
 def main():
     
-    back_then_fore = True
+    back_then_fore = False
     prefix = '../../data/calibration/'
-    postfix = '12'
+    postfix = '13'
     
-    (pipelines, serial_numbers) = setup(back_then_fore)
+    (pipelines, serial_numbers) = setup()
     
     # Get data without foreground
     capture(back_then_fore, pipelines, serial_numbers, True, prefix, postfix)
     # Get images with foreground
-    #capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
+    capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
 
     # Might be neccesary to shut down lasers in between due to interference
     # Shut down sensors
     cleanup(pipelines)
 
 
-def setup(back_then_fore):
+def setup():
     context = rs.context()
     
     devices = context.query_devices()
@@ -33,32 +33,40 @@ def setup(back_then_fore):
     configs = []
     serial_numbers = []
     for dev in devices:
+
         camera_name = dev.get_info(rs.camera_info(0))
         print('Camera name:', camera_name)
         if camera_name == 'Platform Camera':
             continue
+        if camera_name != 'Intel RealSense D415':
+            continue
+        #advnc_mode = rs.rs400_advanced_mode(dev)
+        #print("Advanced mode is", "enabled" if advnc_mode.is_enabled() else "disabled")
+        #advnc_mode.toggle_advanced_mode(True)
         serial_number = dev.get_info(rs.camera_info.serial_number)
         print('Serial number:', serial_number)
         serial_numbers.append(serial_number)
         config = rs.config()
         config.enable_device(serial_number)
-        config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
-        config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
+        config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
+        config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
         print('Config set up:', config)
         configs.append(config)
     
     print('Configuration is done for', len(configs), 'devices')
     
     pipelines = []
+    time.sleep(1)
     for cfg in configs:
         pipe = rs.pipeline()
-        pipelines.append(pipe)
+        time.sleep(1)
         pipe.start(cfg)
+        pipelines.append(pipe)
     
     print(len(pipelines), 'Pipelines are started')
     
     print('Camera is warming up')
-    time.sleep(8)
+    #time.sleep(8)
     
     return (pipelines, serial_numbers)
     
@@ -97,6 +105,7 @@ def capture(isBack, pipelines, serial_numbers, isFirst, prefix, postfix):
         
         if isFirst:
             input("Place balls in the box and press enter")
+
 
 
 def cleanup(pipelines):

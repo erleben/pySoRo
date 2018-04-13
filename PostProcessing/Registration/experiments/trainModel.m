@@ -26,5 +26,5 @@ end
 
 % Compute Hessian 
 JK = (A_JK*A_JK')\(U*A_JK')';
-model = @(p) ((JK*JK')\JK*(p-X0)) + Alphas(1,3);
+model = @(p) ((JK*JK')\JK*(p-X0)) + Alphas(1,3); 
 end
