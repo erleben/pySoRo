@@ -1,8 +1,8 @@
-function [test_err, train_err] = exp_rep(order, n1, n2, makePlot)
+function res=exp_single(order, n1, n2, p_num, makePlot)
 
 % The datasets contain 19 unordered points over 100 iterations
 
-if nargin < 4
+if nargin < 5
     makePlot = false;
 end
 
@@ -20,25 +20,26 @@ F2 = [P2(10,1:3:end)',P2(10,2:3:end)',P2(10,3:3:end)'];
 addpath('../../Registration/experiments');
 
 % Train a model on the first dataset
-model = trainModel(P1_N, Alphas, order);
+model = trainSingle(P1_N(:,p_num:18:end), Alphas, order);
 res = zeros(size(P2_N,2),3);
 
 % Evaluate on train and test datas
 for i = 1:size(P2_N,1)
-    pt = [P2_N(i,1:3:end)'; P2_N(i,2:3:end)'; P2_N(i,3:3:end)'];
+    pt = P1_N(i,p_num:18:end);
     alpha_est = model(pt);
     res(i,1) = Alphas(i, 3);
     res(i,2) = alpha_est(1);
 end
 
 for i = 1:size(P2_N,1)
-    pt = [P1_N(i,1:3:end)'; P1_N(i,2:3:end)'; P1_N(i,3:3:end)'];
+    pt = P2_N(i,p_num:18:end);
     alpha_est = model(pt);
     res(i,3) = alpha_est(1);
 end
 
 train_err = mean(abs(res(:,3)-res(:,1)));
 test_err = mean(abs(res(:,2)-res(:,1)));
+
 
 if makePlot
     figure;

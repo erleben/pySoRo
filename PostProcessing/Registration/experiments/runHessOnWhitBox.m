@@ -1,7 +1,8 @@
 function [est, aest, real] = runHessOnWhitBox(num)
 
 P = csvread('../../Calibration/data/points_exp1.csv');
-Alphas  = csvread('../../../data/experiment_3/output_exp1/alphamap.csv');
+Alphas  = csvread('../../../data/experiment_2/output_exp1/alphamap.csv');
+Alphas = Alphas(1:size(P,1),:);
 [num_states, num_pts] = size(P);
 
 pts = zeros(num_pts,num_states);
@@ -42,10 +43,10 @@ disp(err_jk);
 
 
 % Use optimizer
-alpha = @(a) [a(1); 0.5*a(1)^2];
+alpha = @(a) makeAlpha(a,2);
 %fun = @(x) mean(sqrt(sum(reshape(X0 + JK' * alpha(x) - T, length(T)/3,3).^2,2)));
 %fun = @(x) mean(sqrt((X0 + JK' * alpha(x) - T).^2));
-fun = @(x) mean(sqrt(sum(reshape((T- JK'*alpha(x)),numel(T)/3,3).^2,2)));
+fun = @(x) mean(sqrt(sum(reshape((T- JK'*alpha(x)'),numel(T)/3,3).^2,2)));
 
 ub = max(A);
 lb = min(A);

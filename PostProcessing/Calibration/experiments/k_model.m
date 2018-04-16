@@ -1,4 +1,4 @@
-function fun = k_model(P, A, order, K)
+function fun = k_model(P, A, order, K, global_model)
 
 [num_obs, ~] = size(P);
 
@@ -57,5 +57,5 @@ for ii = 1:num_iter
 end
 
 %mean(loss,2)
-fun = @(pt, apl) models{interp1(A(:,3)', assign, apl,'nearest', 'extrap')}(pt); 
+fun = @(pt) models{interp1(A(:,3)', assign, global_model(pt),'nearest', 'extrap')}(pt); 
 end

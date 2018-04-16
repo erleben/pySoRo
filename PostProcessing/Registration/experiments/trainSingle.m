@@ -1,4 +1,5 @@
-function model = trainModel(P, Alphas, order)
+function model = trainSingle(P, Alphas, order)
+
 
 [num_states, num_pts] = size(P);
 pts = zeros(num_pts,num_states);
@@ -26,9 +27,13 @@ end
 
 % Compute Hessian 
 JK = (A_JK*A_JK')\(U*A_JK')';
-fst = @(F) F(1);
-otp = @(J) J(:,1:18:end);
-%model = @(p) fst(((JK*JK')\JK*(p-X0)) + Alphas(1,3)); 
-model = @(p) fst(((otp(JK)*otp(JK)')\otp(JK))*(p(1:18:end)-X0(1:18:end)) + Alphas(1,3)); 
+
+alpha = @(a) makeAlpha(a,order);
+%fun = @(x) @(a) norm(x(11:18:end) - (JK'*alpha(a)')-X0(11:18:end))^2;
+fun = @(x) @(a) norm(x - (JK'*alpha(a)')-X0)^2;
+
+ub = max(A); 
+lb = min(A);
+model = @(x) fmincon(fun(x), 150, [], [], [], [], lb, ub);
 
 end

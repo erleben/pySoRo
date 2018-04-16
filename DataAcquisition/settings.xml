@@ -26,7 +26,7 @@
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="/Volumes/TOSHIBA/test/"
+                prefix="/Volumes/TOSHIBA/experiment1/"
                 postfix=""
         />
         
@@ -35,7 +35,7 @@
                 portname="/dev/cu.usbserial-DN02Z6PY"
                 num_boards="2"
                 distribution_module="uniform.py"
-                module_args="setStartPos,[0 0];setStopPos,[0 300];setStepSize,[3 3]"
+                module_args="setStartPos,[0 0];setStopPos,[0 12];setStepSize,[6 6]"
                 autotighten="False"
                 
         />

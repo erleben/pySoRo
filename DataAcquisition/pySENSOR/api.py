@@ -8,6 +8,7 @@ from OpenGL.GL import *
 import threading
 import csv
 import time
+import set_advanced as advanced
 
 
 class RealSenseThread (threading.Thread):
@@ -37,6 +38,7 @@ class RealSenseThread (threading.Thread):
             writer = csv.writer(ofile)
             
             print('Real sense thread is starting up')
+            advanced.set_adv()
             pipeline = rs.pipeline()
             cnt = rs.context()
             devs = cnt.query_devices()

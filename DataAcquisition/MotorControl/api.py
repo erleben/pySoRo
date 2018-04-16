@@ -114,11 +114,13 @@ class Motorcontrol:
         
         
     def find_init_pos(self):
-        frames = self.pipeline.wait_for_frames()
-        color = frames.get_color_frame()
-        non_deformed = np.asanyarray(color.get_data())
         pos = [0]*self.num_boards
-        return self.binarySearch(non_deformed, pos)
+        for nr in range(self.num_boards):
+            frames = self.pipeline.wait_for_frames()
+            color = frames.get_color_frame()
+            non_deformed = np.asanyarray(color.get_data())
+            pos = self.binarySearch(non_deformed, pos, nr)
+        return pos
 
     
     
@@ -133,31 +135,30 @@ class Motorcontrol:
     
     ## Binary search for initial position. Stop search when color-color_i< thresh
     
-    def binarySearch(self, non_deformed, pos):
-        for nr in range(1,2):
-            while ~self.is_deformed(non_deformed, 10):
-                pos[nr] += 100
-                self.setPos(pos)
-                if pos[nr]> self.upper_b[nr]:
-                    break
-                
-            h = pos[nr] + 100
-            l = pos[nr] - 100
-            while True:
-                
-                mid = int(np.ceil((h+l)/2))
-                pos[nr] = mid
-                self.setPos(pos)
-        
-                # Stopping condition. 
-                # Look into what happens when solution does not exist
-                if l>=(h-2):
-                    break
-                
-                if self.is_deformed(non_deformed, 10):
-                    h = mid
-                else:
-                    l = mid
+    def binarySearch(self, non_deformed, pos, nr):
+        while ~self.is_deformed(non_deformed, 10):
+            pos[nr] += 100
+            self.setPos(pos)
+            if pos[nr]> self.upper_b[nr]:
+                break
+            
+        h = pos[nr] + 100
+        l = pos[nr] - 100
+        while True:
+            
+            mid = int(np.ceil((h+l)/2))
+            pos[nr] = mid
+            self.setPos(pos)
+    
+            # Stopping condition. 
+            # Look into what happens when solution does not exist
+            if l>=(h-2):
+                break
+            
+            if self.is_deformed(non_deformed, 10):
+                h = mid
+            else:
+                l = mid
                 
         return pos
 
