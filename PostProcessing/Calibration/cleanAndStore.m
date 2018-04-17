@@ -22,7 +22,7 @@ for alph = 1:num_alph
     E(alph, 3*points{alph}.estimated') = 1;
     E(alph, isnan(P(alph,:))) = 1;
 end
-
+csvwrite('tabular_p2.m','P');
 %Fill in missing values
 for pind = 1:num_markers 
     last_good = num_alph;
@@ -74,7 +74,7 @@ csvwrite(strcat('data/points_',name,'.csv'),P)
 [~, ~, ~, ~, ~, P] = findModes(P, 3);
 figure;
 
-for i = 1:num_good
+for i = 1:num_good 
     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i),sz);
     hold on;
 end

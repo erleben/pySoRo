@@ -24,11 +24,11 @@ isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false,
 marker_pcs = {};
 PC_from = pcread(settings.pc_name_recon{1});
 is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1{1}, show_pin_seg);
-marker_pcs{1} = getObjPointclouds(is_marker', PC_from, settings.tex_name_recon{1});
+marker_pcs{1} = getObjPointclouds(is_marker, PC_from, settings.tex_name_recon{1});
 
 PC_to = pcread(settings.pc_name_recon{2});
 is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2{1}, show_pin_seg);
-marker_pcs{2} = getObjPointclouds(is_marker', PC_to, settings.tex_name_recon{2});
+marker_pcs{2} = getObjPointclouds(is_marker, PC_to, settings.tex_name_recon{2});
   
 %Find their centroids
 points = {}; 
@@ -53,7 +53,10 @@ end
 % Find a better transformation
 labeled_points = group_markers(close_points, points, max_distance);
 
-disp(size(labeled_points.common));
+disp('Common:')
+disp(size(labeled_points.common,1));
+disp('Exclusive:')
+disp(size(labeled_points.exclusive,1));
 
 if with_pc
     % Merge the pointclouds

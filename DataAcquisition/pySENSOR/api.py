@@ -82,6 +82,7 @@ class RealSenseThread (threading.Thread):
                     
                     writer.writerow([count] + pos)
 
+                
                 frames = pipeline.wait_for_frames()
 
                 depth = frames.get_depth_frame()

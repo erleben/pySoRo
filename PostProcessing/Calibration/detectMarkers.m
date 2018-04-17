@@ -49,18 +49,15 @@ if show_pin_seg
 end   
 
 elements = bwconncomp(pts);
-is_marker = {elements.NumObjects}; 
+is_marker = zeros(size(pts));
     % Separete the balls into independent binary images
     ind = 1;
     for num = 1:elements.NumObjects 
         if numel(elements.PixelIdxList{num})<50
-            obj = zeros(size(pts));
-            obj(elements.PixelIdxList{num}) = 1;
-            is_marker{ind} = obj;
+            is_marker(elements.PixelIdxList{num}) = ind;
             ind = ind +1;
         end
     end
-
 end
 
   

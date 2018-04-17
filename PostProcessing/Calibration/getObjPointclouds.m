@@ -1,6 +1,6 @@
 function object_pcs = getObjPointclouds(objects, pc, tex_name)
 
-[height, width] = size(objects{1});
+[height, width] = size(objects);
 
 % Texture coordinates is a mapping from point index in the point cloud to
 % a tuple (u,v) where (u*height, v*width) are  the coordinates of where the 
@@ -16,13 +16,12 @@ ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 % To get the coordinates, we have to multiply by the width and height of
 % the color image
 tex_imco = round(tex.*[width,height]);
-[numObj, ~] = size(objects);
+numObj = max(objects(:));
 
 % For each object, find the point cloud indices that correspond to points
 % in that object
 for num = 1:numObj
-    isObj = objects(num,1);
-    isObj = isObj{1};
+    isObj = objects==num;
     if sum(isObj(:)) < 6
         isObj = imdilate(isObj, strel('disk', 1));
     end
