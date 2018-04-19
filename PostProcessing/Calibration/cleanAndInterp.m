@@ -1,4 +1,4 @@
-function cleanAndStore(points, name, seq)
+function cleaned = cleanAndInterp(points, num_to_keep)
 
 % P: m*n matrix of m observations and n/3 variables. 
 %    The format is [x, y, z, x, y, z, ...]
@@ -22,11 +22,11 @@ for alph = 1:num_alph
     E(alph, 3*points{alph}.estimated') = 1;
     E(alph, isnan(P(alph,:))) = 1;
 end
-csvwrite('tabular_p2.csv','P');
+
 %Fill in missing values
 for pind = 1:num_markers 
     last_good = num_alph;
-    for alph = seq(num_alph-1:-1:1)
+    for alph = num_alph-1:-1:1
         if isnan(P(alph, pind*3-2)) && (~isnan(P(last_good, pind*3-2)))
 
             p = P(last_good, pind*3-2:pind*3);
@@ -53,32 +53,22 @@ end
 % Decide what criteria for keeping estimated data should be. Delete bad
 % points
 sz = 2;
-num_markers = 19;
-numE = zeros(1,num_markers);
+numE = zeros(1,num_to_keep);
 for i = 1:num_alph/2
     numE(i) = sum(sum(E)<=i)/3;
 end
-min_thr = find(numE >= num_markers);
+min_thr = find(numE >= num_to_keep);
 min_thr = min_thr(1);
 P(:,sum(E)>min_thr)=[];
-figure;
-num_good = sum(sum(E)<=min_thr)/3;
-for i = 1:num_good
-    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i), sz);
-    hold on;
+
+% num_good = sum(sum(E)<=min_thr)/3;
+% for i = 1:num_good
+%     scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i), sz);
+%     hold on;
+% end
+
+cleaned = cell(num_alph,1);
+for i = 1:num_alph
+    cleaned{i} = [P(i,1:3:end)', P(i,2:3:end)', P(i,3:3:end)'];
 end
-%pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
-
-csvwrite(strcat('data/points_',name,'.csv'),P)
-
-[~, ~, ~, ~, ~, P] = findModes(P, 3);
-figure;
-
-for i = 1:num_good 
-    scatter3(P(:,3*i-2),P(:,3*i-1),P(:,3*i),sz);
-    hold on;
-end
-%pcshow(pcread('../../data/output_exp1/1_616205005055.ply'),'MarkerSize',10)
-
-csvwrite(strcat('data/points_pca_',name,'.csv'),P)
 end

@@ -13,11 +13,10 @@ end
 X0 = pts(:,1);
 U = pts-X0;
 
-
-
-A = Alphas(:,3)'-Alphas(1,3)';
-[M,N] = size(A);
-dim = max((((M^(order+1)-1)/(M-1))-1),order);
+A = Alphas'-Alphas(1,:)';
+[~,N] = size(A);
+%dim = max((((M^(order+1)-1)/(M-1))-1),order);
+[dim,~] = size(makeAlpha(A(:,1),order)');
 
 A_JK = zeros(dim, N);
 for i = 1:N 
@@ -26,9 +25,9 @@ end
 
 % Compute Hessian 
 JK = (A_JK*A_JK')\(U*A_JK')';
-fst = @(F) F(1);
-otp = @(J) J(:,1:18:end);
-%model = @(p) fst(((JK*JK')\JK*(p-X0)) + Alphas(1,3)); 
-model = @(p) fst(((otp(JK)*otp(JK)')\otp(JK))*(p(1:18:end)-X0(1:18:end)) + Alphas(1,3)); 
+fst = @(F) F(1:size(Alphas,2));
+%otp = @(J) J(:,1:18:end);
+model = @(p) fst(((JK*JK')\JK*(p-X0))) + Alphas(1,:)'; 
+%model = @(p) fst(((otp(JK)*otp(JK)')\otp(JK))*(p(1:18:end)-X0(1:18:end)) + Alphas(1,3)); 
 
 end

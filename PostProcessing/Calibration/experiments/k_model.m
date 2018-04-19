@@ -1,5 +1,8 @@
 function fun = k_model(P, A, order, K, global_model)
 
+if nargin < 5
+    global_model = trainModel(P, A, order);
+end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
@@ -7,19 +10,14 @@ num_iter = 100;
 Points = {};
 Alphas = {};
 models = {};
-assign = zeros(1,num_obs);
+assign = kmeans(A, K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
 chunk = round(num_obs/K);
 
 for k = 1:K
-    if k == K
-        Points{k} = P((k-1)*chunk+1:end,:);
-        Alphas{k} = A((k-1)*chunk+1:end,:);
-    else
-        Points{k} = P((k-1)*chunk+1:k*chunk,:);
-        Alphas{k} = A((k-1)*chunk+1:k*chunk,:);
-    end
+    Points{k} = P(assign==k,:);
+    Alphas{k} = A(assign==k,:);
 end
 
 % Train K models, each on their own section
@@ -39,7 +37,7 @@ for ii = 1:num_iter
             alp_est = models{k}(pt);
             res(k) = alp_est(1);
         end
-        [err, mdl] = min(abs(res-A(i,3)));
+        [err, mdl] = min(abs(res-A(i)));
         loss(ii,i) = err;
         assign(i) = mdl;
     end
@@ -56,6 +54,15 @@ for ii = 1:num_iter
     old_assign = assign;
 end
 
-%mean(loss,2)
-fun = @(pt) models{interp1(A(:,3)', assign, global_model(pt),'nearest', 'extrap')}(pt); 
+for i = 1:size(P,1)
+    pt = [P(i,1:3:end)'; P(i,2:3:end)'; P(i,3:3:end)'];
+    A(i,:) = global_model(pt)';
+end
+
+    function m = find_assign(global_model, pt,  assign, A)
+        [~, ind] = min(sqrt(sum((A-global_model(pt)').^2,2)));
+        m = assign(ind);
+    end
+mean(loss,2)
+fun = @(pt) models{find_assign(global_model, pt, assign, A)}(pt); 
 end

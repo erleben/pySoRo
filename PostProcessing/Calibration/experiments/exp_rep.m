@@ -11,7 +11,7 @@ Alphas  = csvread(strcat('../../../data/experiment_2/output_exp',int2str(n1),'/a
 % Find point correspondances
 P1=load(strcat('../data/points_exp',int2str(n1),'.csv'));
 P2=load(strcat('../data/points_exp',int2str(n2),'.csv'));
-Alphas  = Alphas(1:size(P1,1),:);
+Alphas  = Alphas(1:size(P1,1),2:end);
 
 F1 = [P1(10,1:3:end)',P1(10,2:3:end)',P1(10,3:3:end)'];
 F2 = [P2(10,1:3:end)',P2(10,2:3:end)',P2(10,3:3:end)'];
@@ -20,14 +20,14 @@ F2 = [P2(10,1:3:end)',P2(10,2:3:end)',P2(10,3:3:end)'];
 addpath('../../Registration/experiments');
 
 % Train a model on the first dataset
-model = trainModel(P1_N, Alphas, order);
+model = trainModel(P1_N, Alphas(:,2), order);
 res = zeros(size(P2_N,2),3);
 
 % Evaluate on train and test datas
 for i = 1:size(P2_N,1)
     pt = [P2_N(i,1:3:end)'; P2_N(i,2:3:end)'; P2_N(i,3:3:end)'];
     alpha_est = model(pt);
-    res(i,1) = Alphas(i, 3);
+    res(i,1) = Alphas(i, 2);
     res(i,2) = alpha_est(1);
 end
 
