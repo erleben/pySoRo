@@ -6,14 +6,13 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 100;
+num_iter = 10;
 Points = {};
 Alphas = {};
 models = {};
 assign = kmeans(A, K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
-chunk = round(num_obs/K);
 
 for k = 1:K
     Points{k} = P(assign==k,:);
@@ -31,13 +30,12 @@ for ii = 1:num_iter
     % Find the best model for each point in each section
     
     for i = 1:size(P,1)
-        res = zeros(1,k);
+        res = zeros(k, size(A,2));
         pt = [P(i,1:3:end)'; P(i,2:3:end)'; P(i,3:3:end)'];
         for k = 1:K
-            alp_est = models{k}(pt);
-            res(k) = alp_est(1);
+            res(k,:) = models{k}(pt)';
         end
-        [err, mdl] = min(abs(res-A(i)));
+        [err, mdl] = min(sqrt(sum((res-A(i,:)).^2,2)));
         loss(ii,i) = err;
         assign(i) = mdl;
     end

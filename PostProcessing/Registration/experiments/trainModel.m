@@ -1,5 +1,8 @@
-function model = trainModel(P, Alphas, order)
+function model = trainModel(P, Alphas, order, use_solver)
 
+if nargin < 4
+    use_solver = true;
+end
 [num_states, num_pts] = size(P);
 pts = zeros(num_pts,num_states);
 
@@ -25,9 +28,13 @@ end
 
 % Compute Hessian 
 JK = (A_JK*A_JK')\(U*A_JK')';
-fst = @(F) F(1:size(Alphas,2));
-%otp = @(J) J(:,1:18:end);
-model = @(p) fst(((JK*JK')\JK*(p-X0))) + Alphas(1,:)'; 
-%model = @(p) fst(((otp(JK)*otp(JK)')\otp(JK))*(p(1:18:end)-X0(1:18:end)) + Alphas(1,3)); 
+
+if use_solver
+    lossfun = @(p)@(a) norm(JK'*makeAlpha(a, order)' - p);
+    model = @(p) fmincon(lossfun(p-X0), mean(A')', [],[],[],[],min(A')', max(A')')+Alphas(1,:)';
+else
+    fst = @(F) F(1:size(Alphas,2));
+    model = @(p) fst(((JK*JK')\JK*(p-X0))) + Alphas(1,:)'; 
+end
 
 end
