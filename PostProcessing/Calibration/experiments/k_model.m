@@ -1,16 +1,16 @@
-function fun = k_model(P, A, order, K, global_model)
+function fun = k_model(P, A, order, K, use_solver, global_model)
 
-if nargin < 5
-    global_model = trainModel(P, A, order);
+if nargin < 6
+    global_model = trainModel(P, A, order, use_solver);
 end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 10;
+num_iter = 0;
 Points = {};
 Alphas = {};
 models = {};
-assign = kmeans(A, K);
+[assign,C] = kmeans(A, K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
 
@@ -20,11 +20,19 @@ for k = 1:K
 end
 
 % Train K models, each on their own section
+JKS = [];
+for k = 1:K
+    [models{k}, JK] = trainModel(Points{k}, Alphas{k}, order, use_solver);
+    JKS(k,:) = reshape(JK,1,numel(JK));
+end
+% K = 16;
+% similar = kmeans(JKS, K);
+% assign = similar(assign);
 
 for ii = 1:num_iter
     
-    for k = 1:K
-        models{k} = trainModel(Points{k}, Alphas{k}, order);
+    for k = 1:K 
+        models{k} = trainModel(Points{k}, Alphas{k}, 1, use_solver);
     end
     
     % Find the best model for each point in each section
@@ -36,10 +44,10 @@ for ii = 1:num_iter
             res(k,:) = models{k}(pt)';
         end
         [err, mdl] = min(sqrt(sum((res-A(i,:)).^2,2)));
-        loss(ii,i) = err;
+        loss(ii,i) = err; 
         assign(i) = mdl;
     end
-    
+ 
     for k = 1:K
         Points{k} = P(assign == k, :);
         Alphas{k} = A(assign == k, :);
@@ -58,7 +66,8 @@ for i = 1:size(P,1)
 end
 
     function m = find_assign(global_model, pt,  assign, A)
-        [~, ind] = min(sqrt(sum((A-global_model(pt)').^2,2)));
+        %[~, ind] = min(sum((A-global_model(pt)').^2,2));
+        [~, ind] = min(sum((A-global_model(pt)').^2,2));
         m = assign(ind);
     end
 mean(loss,2)

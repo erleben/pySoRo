@@ -1,16 +1,29 @@
-function [msTrainE, msValE, model] = exp_twoParam(order, k, gmodel)
+function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, gmodel)
 
-Alphas  = csvread(strcat('alphamap.csv'));
-P=load('../ordered_twoP.csv');
-Alphas  = Alphas(:,2:end);
-do_val = true;
+%Alphas  = csvread(strcat('alphamap.csv'));
+%P=load('../ordered_twoP.csv');
 
+%P(1:7*51,:) = [];
+%Alphas(1:7*51,:)=[];
+%[mdist, varper, projected, mn, U, P] = findModes(P, 18);
+P = load('points.mat');
+P=P.P;
+Alphas = load('alphas.mat');
+Alphas = Alphas.Alphas;
+%Alphas  = Alphas(:,2:end);
+do_val = true; 
+%[P,Alphas] = reduceData(P,Alphas);
+Val = [];
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),2300,'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.8*size(P,1)),'Replace', false);
+    %iii = 1;
+    %Val = (P(iii:51:end,:)+P(iii:51:end,:))/2;
+    %A_val = (Alphas(iii:51:end,:)+Alphas(iii:51:end,:))/2;
+    Val_inds = setdiff(1:size(Alphas,1), Train_inds);
 else
     Train_inds = 1:size(Alphas,1);
 end
-Val_inds = setdiff(1:size(Alphas,1), Train_inds);
+
 
 Train = P(Train_inds,:);
 A_train = Alphas(Train_inds,:);
@@ -22,11 +35,12 @@ addpath('../../Registration/experiments');
 
 % Train a model on the first dataset
 %model = trainModel(P, Alphas, order);
-if nargin < 3
-    model = k_model(Train, A_train, order, k);
-    %model = trainModel(Train, A_train, order, k);
+if nargin < 4
+    model = k_model(Train, A_train, order, k, use_solver);
+    model = k_model(Train, A_train, order, k, use_solver, model);
+    %model = trainModel(Train, A_train, order, use_solver);
 else
-    model = k_model(Train, A_train, order, k, gmodel);
+    model = k_model(Train, A_train, order, k, use_solver, gmodel);
 end
 
 train_err= zeros(size(Train,1),1);
@@ -45,8 +59,9 @@ for i = 1:size(Val,1)
     alpha_real = A_val(i,:)';
     val_err(i) = sqrt(sum((alpha_est-alpha_real).^2));
 end
+ 
 msTrainE=mean(train_err)
-msValE=mean(val_err)
+msValE=mean(val_err) 
 
 
 end

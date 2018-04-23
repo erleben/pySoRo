@@ -1,17 +1,19 @@
-function showConf(P,n)
+function showConf(P,to_draw)
+
+c = 'rgbk';
+figure;
+for t = to_draw
+    for i = 1:51:length(P)
+        plot3(P(i:i+50,t*3-2),P(i:i+50,t*3-1),P(i:i+50,t*3),c(mod(i,length(c))+1));
+        hold on;
+    end
+end
 
 figure;
-X=P(1:3:end,:);
-Y=P(2:3:end,:);
-Z=P(3:3:end,:);
-sz = 1;
-for i = 1:n
-j = i
-p = P(j,:);
-scatter3(p(1:3:end),p(2:3:end),p(3:3:end),sz);
-axis([ min(X(:)) max(X(:)) min(Y(:)) max(Y(:)) min(Z(:)) max(Z(:)) ]);
-
-hold on;
-drawnow;
+for t  = to_draw
+    for i = 1:51
+        plot3(P(i:51:end,t*3-2),P(i:51:end,t*3-1),P(i:51:end,t*3),c(mod(i,length(c))+1));
+        hold on;
+    end
 end
 end

@@ -1,4 +1,4 @@
-function model = trainModel(P, Alphas, order, use_solver)
+function [model, JK] = trainModel(P, Alphas, order, use_solver)
 
 if nargin < 4
     use_solver = true;
@@ -30,11 +30,12 @@ end
 JK = (A_JK*A_JK')\(U*A_JK')';
 
 if use_solver
-    lossfun = @(p)@(a) norm(JK'*makeAlpha(a, order)' - p);
+    %options = optimoptions('fmincon', 'Algorithm','sqp');
+    lossfun = @(p)@(a) norm(JK'*makeAlpha(a, order)' - p)^2;
     model = @(p) fmincon(lossfun(p-X0), mean(A')', [],[],[],[],min(A')', max(A')')+Alphas(1,:)';
 else
     fst = @(F) F(1:size(Alphas,2));
     model = @(p) fst(((JK*JK')\JK*(p-X0))) + Alphas(1,:)'; 
-end
+end 
 
 end
