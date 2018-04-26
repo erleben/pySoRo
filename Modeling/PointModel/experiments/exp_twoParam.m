@@ -16,7 +16,7 @@ do_val = true;
 %[P,Alphas] = reduceData(P,Alphas);
 Val = [];
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),round(0.8*size(P,1)),'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.6*size(P,1)),'Replace', false);
     Val_inds = setdiff(1:size(Alphas,1), Train_inds);
 else
     Train_inds = 1:size(Alphas,1);

@@ -1,4 +1,4 @@
-function spheremodels = getSphereModelsRadius(sphere_pcs, pc, showClouds)
+function spheremodels = getSphereModelsRadius(sphere_pcs, pc, showClouds, radius)
 
 % This function takes the radius into account. It finds the point of the
 % ball that is closest to the camera and projects into the center of it by

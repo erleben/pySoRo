@@ -8,7 +8,7 @@ from OpenGL.GL import *
 import threading
 import csv
 import time
-import set_advanced as advanced
+import pyCALIBRATE.set_advanced as advanced
 
 
 class RealSenseThread (threading.Thread):
@@ -34,8 +34,9 @@ class RealSenseThread (threading.Thread):
     def run(self):
         try:
 
-            ofile = open(self.prefix_filename + 'alphamap.csv', 'w')
-            writer = csv.writer(ofile)
+            if self.motor_control is not None:
+                ofile = open(self.prefix_filename + 'alphamap.csv', 'w')
+                writer = csv.writer(ofile)
             
             print('Real sense thread is starting up')
             advanced.set_adv()

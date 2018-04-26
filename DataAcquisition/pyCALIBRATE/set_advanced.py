@@ -14,6 +14,7 @@ import numpy as np
 import time
 
 def set_adv():
+    print('Setting camera parameters')
     context = rs.context()
     devs = context.query_devices()
     d = devs.front()
@@ -54,7 +55,7 @@ def set_adv():
     curr.vDiameter = 3
     adv.set_census(curr)
 
-    print('D')
+    print('Setting exposure, gain...')
     time.sleep(1)
     for s in d.sensors:
         time.sleep(0.2)

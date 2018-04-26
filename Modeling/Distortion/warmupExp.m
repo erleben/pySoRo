@@ -34,7 +34,7 @@ title('Color');
 % Depth
 I_D = int16(imread(strcat('../../../data/distortion_D415/depth_',int2str(num-1),'.tif')));
 is_obj=bwareafilt(imbinarize(I_D),1);
-I_D = I_D(is_obj);
+I_D = I_D(is_obj); 
 D_Stats = zeros(num-1,2);
 for i = 0:num-2
    img = int16(imread(strcat('../../../data/distortion_D415/depth_',int2str(i),'.tif')));
