@@ -9,8 +9,11 @@ import time
 
 config = rs.config()
 pipeline = rs.pipeline()
-config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
-config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+#config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
+#config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+
+config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
 
 time.sleep(1)
 pipeline.start(config)
@@ -29,8 +32,8 @@ for i in range(400):
     
     fname_d = 'depth_'+str(i)+'.tif'
     fname_c = 'color'+str(i)+'.tif'
-    imsave('../../../data/distortion_D415/'+fname_d, depth)
-    imsave('../../../data/distortion_D415/'+fname_c, color)
+    imsave('../../../data/distortion_SR300/'+fname_d, depth)
+    imsave('../../../data/distortion_SR300/'+fname_c, color)
     
-np.savetxt('../../../data/distortion_D415/times.csv',times,'%10.5f',',')
+np.savetxt('../../../data/distortion_SR300/times.csv',times,'%10.5f',',')
 pipeline.stop()

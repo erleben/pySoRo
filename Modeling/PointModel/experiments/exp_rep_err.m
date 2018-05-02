@@ -8,23 +8,26 @@
 %   -difference in training and testing loss
 
 
-orders = 4;
+orders = 2;
+interv = 1;
+num_o = round(orders/interv);
+train_err = zeros(8,num_o);
+test_err = zeros(8,num_o);
 
-train_err = zeros(8,orders);
-test_err = zeros(8,orders);
-
-for ord = 1:orders
+ind_o = 1;
+for ord = 1:interv:orders
     ind = 1;
-    for i = [2,3,4,5,6,7,8,9,10]
+    for i = [3,4,5,6,7,8,9,10]
         [te, tr] = exp_rep(ord,2,i, false);
-        train_err(ind,ord) = tr;
-        test_err(ind,ord) = te;
+        train_err(ind,ind_o) = tr;
+        test_err(ind,ind_o) = te;
         ind = ind + 1;
     end
+    ind_o = ind_o + 1;
 end
 
 figure;
-plot(test_err(:,1:min(orders,4)))
+plot(test_err(:,1:min(num_o,10)))
 ylabel('Mean alpha error');
 xlabel('time');
 legend('Order 1', 'Order 2', 'Order 3', 'Order 4');
@@ -36,3 +39,9 @@ plot(mean(test_err))
 xlabel('order');
 ylabel('Mean alpha error');
 legend('Train error','Test error');
+
+disp('test_err')
+mean(test_err)
+
+disp('train_err');
+mean(train_err)

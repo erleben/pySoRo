@@ -23,7 +23,7 @@ def set_adv():
     curr = adv.get_depth_table()
     curr.disparityShift=25
     curr.depthUnits = 100
-    curr.depthClampMax = 6500
+    curr.depthClampMax = 8500
     curr.depthClampMin = 5000
     curr.disparityShift
     adv.set_depth_table(curr)

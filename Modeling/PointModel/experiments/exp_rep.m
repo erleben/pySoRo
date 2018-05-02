@@ -18,7 +18,8 @@ F2 = [P2(10,1:3:end)',P2(10,2:3:end)',P2(10,3:3:end)'];
 [P1_N, P2_N] = matchPoints(F1, F2, P1, P2, 0.02);
 
 % Train a model on the first dataset
-model = trainModel(P1_N, Alphas(:,2), order, use_solver);
+%model = trainModel(P1_N, Alphas(:,2), order, use_solver);
+model  = k_model(P1_N, Alphas(:,2), order, 3, use_solver);
 res = zeros(size(P2_N,2),3);
 
 % Evaluate on train and test datas
