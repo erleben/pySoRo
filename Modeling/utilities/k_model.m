@@ -64,7 +64,7 @@ end
         [~, mdl] = min(l);
             
     end
-
+ 
 mean(loss,2) 
 fun = @(pt) models{find_assign(pt, models),1}(pt); 
 end

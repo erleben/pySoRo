@@ -40,6 +40,6 @@ end
 
 if nargout > 0
     fmodel = @(a) X0 + JK'*makeAlpha(a'-Alphas(1,:)',order)';
-end  
+end
 
 end

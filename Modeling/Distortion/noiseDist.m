@@ -3,7 +3,7 @@
 clear;
 
 vthr = 0.02^2;
-cam = 'SR300';
+cam = 'D415';
 do_crop = false;
 num_obs = 400;
 
