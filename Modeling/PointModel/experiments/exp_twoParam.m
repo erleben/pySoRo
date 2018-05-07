@@ -1,4 +1,4 @@
-function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, gmodel)
+function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly)
 % This function trains a order-ordered model, using k local models. 
 % If gmodel is not specified, then a global model is made.
 
@@ -30,13 +30,7 @@ A_val = Alphas(Val_inds,:);
 
 % Train a model on the first dataset
 %model = trainModel(P, Alphas, order);
-if nargin < 4
-    model = k_model(Train, A_train, order, k, use_solver);
-    %model = k_model(Train, A_train, order, k, use_solver, model);
-    %model = trainModel(Train, A_train, order, use_solver);
-else
-    model = k_model(Train, A_train, order, k, use_solver, gmodel);
-end
+model = k_model(Train, A_train, order, k, use_solver, isPoly);
 
 train_err= zeros(size(Train,1),1);
 val_err = zeros(size(Val,1),1);

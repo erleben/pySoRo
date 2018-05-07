@@ -20,7 +20,7 @@ for nr = 1:num_rn
     for r = 1:K
         sigma = sigmas(r);
         noise = normrnd(0,sigma,size(pt,1), size(pt,2));
-        [model, fmodel] = trainModel(pt+noise, A, 2, false);
+        [model, fmodel] = trainModel(pt+noise, A, 2, false, false);
         
         
         for i = 1:length(A)
@@ -28,7 +28,7 @@ for nr = 1:num_rn
             a_pred(i) = model(pt(i,:));
         end
         norml(r)=norml(r)+norm(p_pred-pt);
-        explt(r) = explt(r)+sigma*sqrt(length(A))*(1/min(svd(A-A(1))))*norm(A-A(1));
+        explt(r) = explt(r)+sigma*sqrt(length(A))*(1/min(svd(A-A(1))))*norm(A-A(1)) + sigma/2;
         norma(r) = norma(r) + norm(a_pred-A);
         %explt(r) = explt(r)+norm(noise)*(1/min(svd(A)))*norm(A);
         %expl(r) = expl(r)+norm((noise'*(A*A'\A))*A);

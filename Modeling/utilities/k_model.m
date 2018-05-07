@@ -1,9 +1,13 @@
-function fun = k_model(P, A, order, K, use_solver)
+function fun = k_model(P, A, order, K, use_solver, isPoly)
+
+if nargin < 6
+    isPoly = false;
+end
 
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 5;
+num_iter = 3;
 Points = {};
 Alphas = {};
 models = {};
@@ -20,7 +24,7 @@ end
 % Train K models, each on their own section
 JKS = [];
 for k = 1:K
-    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver);
+    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
 end
 
 for ii = 1:num_iter
@@ -34,7 +38,7 @@ for ii = 1:num_iter
             res(k,:) = models{k,1}(pt)';
         end
         [err, mdl] = min(sqrt(sum((res-A(i,:)).^2,2)));
-        loss(ii,i) = err; 
+        loss(ii,i) = err;
         assign(i) = mdl;
     end
     
@@ -44,7 +48,7 @@ for ii = 1:num_iter
     end
     
     for k = 1:K 
-        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver);
+        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
     end
     
     if isequal(assign, old_assign)

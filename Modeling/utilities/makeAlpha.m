@@ -1,5 +1,8 @@
-function A_JK = makeAlpha(a, order)
+function A_JK = makeAlpha(a, order, isPoly)
 
+if nargin <3
+    isPoly = false;
+end
 %     [M,~] = size(a);
 %     dim = ((M^(order+1)-1)/(M-1))-1;
 %     if isnan(dim)
@@ -43,4 +46,8 @@ for o = 1:order
     end
         
 end
+
+if isPoly
+    A_JK = [1, A_JK];
 end
+end 
