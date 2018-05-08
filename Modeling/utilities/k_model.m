@@ -1,5 +1,8 @@
 function fun = k_model(P, A, order, K, use_solver, isPoly)
 
+% Find the minimum number of configrations needed to solve for kinematics
+min_conf = sum(arrayfun(@(x)nchoosek(size(A,2)+x-1,x),1:order));
+
 if nargin < 6
     isPoly = false;
 end
@@ -7,14 +10,13 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 3;
+num_iter = 0;
 Points = {};
 Alphas = {};
 models = {};
 assign = kmeans(A, K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
-%old_err = inf;
 
 for k = 1:K
     Points{k} = P(assign==k,:);
@@ -22,7 +24,6 @@ for k = 1:K
 end
 
 % Train K models, each on their own section
-JKS = [];
 for k = 1:K
     [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
 end
@@ -48,7 +49,12 @@ for ii = 1:num_iter
     end
     
     for k = 1:K 
+        if sum(assign == k) < min_conf
+            models{k,1} = @(x) inf;
+            models{k,2} = @(x) inf;
+        else
         [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
+        end
     end
     
     if isequal(assign, old_assign)
@@ -69,6 +75,6 @@ end
             
     end
  
-mean(loss,2) 
+mean(loss,2)
 fun = @(pt) models{find_assign(pt, models),1}(pt); 
 end
