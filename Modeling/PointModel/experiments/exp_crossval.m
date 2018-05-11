@@ -1,5 +1,5 @@
 %crossvalidation on number of models 
-folds = 4;
+folds = 5;
 max_order = 8;
 
 %Load data
@@ -26,9 +26,11 @@ res = {};
 for order = 1:max_order
     num_val = (folds-1)*size(Train,1)/folds;
     min_conf = sum(arrayfun(@(x)nchoosek(size(A_train,2)+x-1,x),1:order))+1;
-    max_local = num_val/min_conf;
+    max_local = round(num_val/min_conf);
     
     k_sample = [1:9, 10+(1:round(sqrt(max_local-10))).^2];
+    %k_sample = 1:max_local;
+    
     res{order} = zeros(length(k_sample),4);
     ind = 1;
     for k = k_sample
@@ -47,15 +49,12 @@ for order = 1:max_order
             model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, false, true);
             time = time + toc;
             
-            for v = val_inds
-                pt = [Train(v,1:3:end)'; Train(v,2:3:end)'; Train(v,3:3:end)'];
-                val_loss = val_loss + norm(model(pt)-A_train(v,:)');
-            end
+            alpha_est = model(Train(val_inds,:)');
+            val_loss = val_loss + sum(sqrt(sum((alpha_est-A_train(val_inds,:)).^2,2)));
             
-            for t = tr_inds
-                pt = [Train(t,1:3:end)'; Train(t,2:3:end)'; Train(t,3:3:end)'];
-                tr_loss = tr_loss + norm(model(pt)-A_train(t,:)');
-            end
+            alpha_est = model(Train(tr_inds,:)');
+            tr_loss = tr_loss + sum(sqrt(sum((alpha_est-A_train(tr_inds,:)).^2,2)));
+            
             
         end
         
@@ -65,26 +64,88 @@ for order = 1:max_order
         res{order}(ind,3) = val_loss/(length(val_inds)*folds);
         res{order}(ind,4) = time/folds;
         ind = ind + 1;
-            
+        order,k
     end
+
 end
 
-
-% Train = zeros(length(1:2:140),6);
-% for d = 1:6
-%     Train(round(res{d}(:,1)/2),d) = res{d}(:,2);
-% end
-% Val = zeros(length(1:2:140),6);
-% for d = 1:6
-%     Val(round(res{d}(:,1)/2),d) = res{d}(:,2);
-% end
-% 
-% Time = zeros(length(1:2:140),6);
-% for d = 1:6
-%     Time(round(res{d}(:,1)/2),d) = res{d}(:,2);
-% end
-
+figrue;
 Train = zeros(length(res{1}(:,1)),max_order);
 for d = 1:max_order
     Train(1:numel(res{d}(:,1)),d) = res{d}(:,2);
 end
+cmax = max(Train(:));
+Tr = Train;
+Tr(Train==0)=1000;
+cmin = min(Tr(:));
+imagesc(log(Tr));
+yticks(1:2:length(res{1}));
+yticklabels(int2str(res{1}(1:2:end,1)));
+colormap hot;
+xlabel('order');
+ylabel('local models')
+title('Training');
+hcb = colorbar('FontSize',11,'YTick',log([round(cmin) :10,12:6: cmax]) ,'YTickLabel',[round(cmin) :10,12:6: cmax]);
+caxis(log([cmin cmax-8]));
+colorTitleHandle = get(hcb,'Title');
+set(colorTitleHandle ,'String','Loss');
+
+figure;
+Val = zeros(length(res{1}(:,1)),max_order);
+for d = 1:max_order
+    Val(1:numel(res{d}(:,1)),d) = res{d}(:,3);
+end
+cmax = max(Val(:));
+V = Val;
+V(Val==0)=1000;
+cmin = min(V(:));
+imagesc(log(V));
+yticks(1:2:length(res{1}));
+yticklabels(int2str(res{1}(1:2:end,1)));
+%caxis([cmin cmax]);
+colormap hot;
+xlabel('order');
+ylabel('local models')
+title('Validation');
+hcb = colorbar('FontSize',11,'YTick',log([round(cmin) :2:14,16:6: cmax]) ,'YTickLabel',[round(cmin) :2:14,16:6: cmax]);
+caxis(log([cmin cmax-8]));
+colorTitleHandle = get(hcb,'Title');
+set(colorTitleHandle ,'String','Loss');
+
+figrue;
+Time = zeros(length(res{1}(:,1)),max_order);
+for d = 1:max_order
+    Time(1:numel(res{d}(:,1)),d) = res{d}(:,4);
+end
+
+cmax = max(Time(:));
+cmin = min(Time(:));
+Ti = Time;
+Ti(Ti==0)=1000;
+imagesc(Ti);
+yticks(1:2:length(res{1}));
+yticklabels(int2str(res{1}(1:2:end,1)));
+hcb = colorbar;
+caxis([cmin cmax+0.5]);
+colormap hot;
+xlabel('order');
+ylabel('local models')
+title('Time');
+colorTitleHandle = get(hcb,'Title');
+set(colorTitleHandle ,'String','Time (s)');
+
+% Find best params for validaion:
+[k_ind,d] = find(V==min(V(:)));
+V(k_ind,d)
+k = res{1}(k_ind,1);
+model = k_model(P(Train_inds,:),Alphas(Train_inds,:), d, k, false, true);
+alpha_est = model(P(Test_inds,:)');
+test_loss = sqrt(sum((alpha_est-Alphas(Test_inds,:)).^2,2));
+
+% Find best params training:
+[k_ind,d] = find(Tr==min(Tr(:)));
+Tr(k_ind,d)
+k = res{1}(k_ind,1);
+model = k_model(P(Train_inds,:),Alphas(Train_inds,:), d, k, false, true);
+alpha_est = model(P(Test_inds,:)');
+train_loss = sqrt(sum((alpha_est-Alphas(Test_inds,:)).^2,2));

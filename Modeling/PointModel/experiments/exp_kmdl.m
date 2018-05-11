@@ -27,7 +27,7 @@ res = zeros(size(P2_N,2),3);
 
 % Evaluate on test data
 for i = 1:size(P2_N,1)
-    pt = [P2_N(i,1:3:end)'; P2_N(i,2:3:end)'; P2_N(i,3:3:end)'];
+    pt = P2_N(i,:)';
     res(i,1) = Alphas(i);
     l_est = l_mdl(pt);
     res(i,2) = l_est(1);
@@ -35,7 +35,7 @@ end
 
 % Evaluate on training data
 for i = 1:size(P2_N,1)
-    pt = [P1_N(i,1:3:end)'; P1_N(i,2:3:end)'; P1_N(i,3:3:end)'];
+    pt = P1_N(i,:)';
     l_est = l_mdl(pt);
     res(i,3) = l_est(1);
 end

@@ -12,7 +12,7 @@ foreground = double(imread(fore_name));
 background = double(imread(back_name));
 
 HSV = rgb2hsv(foreground-background);
-if ~fit_circle 
+if ~fit_circle
     % Since the background is black, we binarize the intensity channel of
     % the HSV image
     isObject = HSV(:,:,3)>80;

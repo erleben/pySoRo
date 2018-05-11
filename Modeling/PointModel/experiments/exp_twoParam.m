@@ -7,15 +7,15 @@ addpath('../../utilities/');
 Alphas  = csvread(strcat('../data/alphamap.csv'));
 P=load('../data/ordered_twoP.csv');
 
-P(1:7*51,:) = [];
-Alphas(1:7*51,:)=[];
+P(1:13*51,:) = [];
+Alphas(1:13*51,:)=[];
+
 
 Alphas  = Alphas(:,2:end);
 if nargin < 5
     do_val = true; 
 end
 
-Val = [];
 if do_val
     Train_inds = datasample(1:size(Alphas,1),round(0.7*size(P,1)),'Replace', false);
 else
@@ -30,26 +30,15 @@ Val = P(Val_inds,:);
 A_val = Alphas(Val_inds,:);
 
 % Train a model on the first dataset
-%model = trainModel(P, Alphas, order);
 model = k_model(Train, A_train, order, k, use_solver, isPoly);
 
-train_err= zeros(size(Train,1),1);
-val_err = zeros(size(Val,1),1);
-% Evaluate on Train
-for i = 1:size(Train,1) 
-    pt = [Train(i,1:3:end)'; Train(i,2:3:end)'; Train(i,3:3:end)'];
-    alpha_est = model(pt);
-    alpha_real = A_train(i,:)';
-    train_err(i) = sqrt(sum((alpha_est-alpha_real).^2));
-end
+alpha_est = model(Train');
+train_err = sqrt(sum((alpha_est-A_train).^2,2));
 
-for i = 1:size(Val,1) 
-    pt = [Val(i,1:3:end)'; Val(i,2:3:end)'; Val(i,3:3:end)'];
-    alpha_est = model(pt);
-    alpha_real = A_val(i,:)';
-    val_err(i) = sqrt(sum((alpha_est-alpha_real).^2));
-end
- 
+alpha_est = model(Val');
+val_err = sqrt(sum((alpha_est-A_val).^2,2));
+
+
 msTrainE=mean(train_err)
 msValE=mean(val_err) 
 

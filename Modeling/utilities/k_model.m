@@ -10,13 +10,14 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 0;
+num_iter = 1;
 Points = {};
 Alphas = {};
 models = {};
 assign = kmeans(A, K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
+model_loss = zeros(K, num_obs);
 
 for k = 1:K
     Points{k} = P(assign==k,:);
@@ -32,17 +33,11 @@ for ii = 1:num_iter
     
     % Find the best model for each point in each section
     
-    for i = 1:size(P,1)
-        res = zeros(k, size(A,2));
-        pt = [P(i,1:3:end)'; P(i,2:3:end)'; P(i,3:3:end)'];
-        for k = 1:K
-            res(k,:) = models{k,1}(pt)';
-        end
-        [err, mdl] = min(sqrt(sum((res-A(i,:)).^2,2)));
-        loss(ii,i) = err;
-        assign(i) = mdl;
+    for k = 1:K
+        model_loss(k,:) = sum((models{k,1}(P')-A').^2,1);
     end
-    
+    [min_loss, assign] = min(model_loss);
+    loss(ii,:) = sqrt(min_loss);
     for k = 1:K
         Points{k} = P(assign == k, :);
         Alphas{k} = A(assign == k, :);
@@ -64,17 +59,22 @@ for ii = 1:num_iter
     
 end
 
-    function mdl = find_assign(pt, mods)
+    function res = find_assign(pt, mods)
         KK = size(mods,1);
-        l = zeros(KK,1);
+        l = zeros(KK,size(pt,2));
+        res = zeros(size(pt,2),2);
         for kk = 1:KK
             pred = mods{kk,1}(pt);
-            l(kk,1) = norm(mods{kk,2}(pred') - pt);
+            l(kk,:) = sum((mods{kk,2}(pred') - pt).^2,1);
         end
-        [~, mdl] = min(l);
+        [~, mdl] = min(l,[],1);
+        
+        for kk = unique(mdl)
+            res(mdl == kk,:) = mods{kk,1}(pt(:,mdl == kk))';
+        end
             
     end
  
-mean(loss,2)
-fun = @(pt) models{find_assign(pt, models),1}(pt); 
+%mean(loss,2)
+fun = @(pt)find_assign(pt, models);
 end

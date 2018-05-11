@@ -27,14 +27,14 @@ res = zeros(size(P2_N,2),3);
 
 % Evaluate on train and test data
 for i = 1:size(P2_N,1)
-    pt = [P2_N(i,1:3:end)'; P2_N(i,2:3:end)'; P2_N(i,3:3:end)'];
+    pt = P2_N(i,:)';
     alpha_est = model(pt);
     res(i,1) = Alphas(i);
     res(i,2) = alpha_est(1);
 end
 
 for i = 1:size(P2_N,1)
-    pt = [P1_N(i,1:3:end)'; P1_N(i,2:3:end)'; P1_N(i,3:3:end)'];
+    pt = P1_N(i,:)';
     alpha_est = model(pt);
     res(i,3) = alpha_est(1);
 end
