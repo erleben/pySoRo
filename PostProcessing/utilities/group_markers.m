@@ -5,7 +5,7 @@ dist_mat = pdist2(close_points,points{2});
 
 common_A = [];
 added_A = [];
-common_B = []; 
+common_B = [];
 added_B = [];
 while true
     [i,j]=find(dist_mat==min(dist_mat(:)));

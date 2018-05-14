@@ -4,20 +4,31 @@ function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, 
 
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('../data/alphamap.csv'));
-P=load('../data/ordered_twoP.csv');
+Alphas  = csvread(strcat('alphamap_finger.csv'));
+P=load('../data/ordered_finger2.csv');
 
-P(1:13*51,:) = [];
-Alphas(1:13*51,:)=[];
+%Alphas  = csvread(strcat('../data/alphamap.csv'));
+%P=load('../data/ordered_twoP.csv');
+
+%P(1:13*51,:) = [];
+%Alphas(1:13*51,:)=[];
 
 
-Alphas  = Alphas(:,2:end);
+
+% Alphas  = Alphas(:,2:end);
+% m1=numel(unique(Alphas(:,2)));
+% AA = [];
+% for i  =1:m1
+%     AA = [AA;Alphas(i:m1:end,:)];
+% end
+% Alphas = AA;
 if nargin < 5
     do_val = true; 
 end
 
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),round(0.7*size(P,1)),'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.5*size(P,1)),'Replace', false);
+    %Train_inds = 90:size(Alphas,1)-90;
 else
     Train_inds = 1:size(Alphas,1);
 end

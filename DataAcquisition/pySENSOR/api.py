@@ -56,7 +56,7 @@ class RealSenseThread (threading.Thread):
             time.sleep(1)
             pipeline.start(config)
             print('Camera is warming up')
-            time.sleep(4)
+            time.sleep(6)
             
             pointcloud = rs.pointcloud()
             

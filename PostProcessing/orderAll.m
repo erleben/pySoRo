@@ -8,10 +8,10 @@
 points = load('outputSegment/unordered_points.mat');
 points = points.points;
 
-num_alphas = 2601;
-num_pr_round = 51;
+num_alphas = 736;
+num_pr_round = 16;
 num_rounds = num_alphas/num_pr_round;
-num_markers = 19;
+num_markers = 3;
 
 
 order_to = {};

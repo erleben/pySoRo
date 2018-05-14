@@ -39,7 +39,8 @@ elseif method == 2
 
 else 
      HSV = rgb2hsv(foreground);
-     pts = imbinarize(imfill(HSV(:,:,3).*is_obj,'holes')-HSV(:,:,3).*is_obj);
+     is_obj = imerode(is_obj,strel('disk',5));
+     pts = imbinarize(imfill(HSV(:,:,3).*is_obj,'holes')-HSV(:,:,3).*is_obj)>0;
 end
 
 

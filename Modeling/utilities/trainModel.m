@@ -11,7 +11,7 @@ end
 X0 = P(1,:)';
 U = P'-X0;
 
-A = Alphas'-Alphas(1,:)';
+A = Alphas'-Alphas(1,:)'; 
 [~,N] = size(A);
 
 [dim,~] = size(makeAlpha(A(:,1),order, isPoly)');

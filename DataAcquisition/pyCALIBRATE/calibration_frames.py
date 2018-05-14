@@ -5,12 +5,15 @@ import pyrealsense2 as rs
 import time
 from skimage.io import imsave
 import numpy as np
+import set_advanced as sa
 
 def main():
     
     back_then_fore = False
     prefix = '../../data/calibration/'
-    postfix = '13'
+    postfix = '15'
+    
+    sa.set_adv()
     
     (pipelines, serial_numbers) = setup()
     

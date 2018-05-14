@@ -23,10 +23,10 @@
 
         <realsense
                 save_color="True"
-                save_texture="False"
-                save_ply="False"
+                save_texture="True"
+                save_ply="True"
                 save_depth="False"
-                prefix="/Users/FredrikHolsten/Desktop/Master/pySoRo/data/output"
+                prefix="/Volumes/TOSHIBA/experiment3/"
                 postfix=""
         />
         
@@ -35,8 +35,8 @@
                 portname="/dev/cu.usbserial-DN02Z6PY"
                 num_boards="2"
                 distribution_module="uniform.py"
-                module_args="setStartPos,[0 0];setStopPos,[300 300];setStepSize,[6 6]"
-                autotighten="True"
+                module_args="setStartPos,[0 0];setStopPos,[450 1500];setStepSize,[10 100]"
+                autotighten="False"
                 
         />
         

@@ -21,7 +21,7 @@ def set_adv():
     adv = rs.rs400_advanced_mode(d)
     
     curr = adv.get_depth_table()
-    curr.disparityShift=25
+    curr.disparityShift=35
     curr.depthUnits = 100
     curr.depthClampMax = 8500
     curr.depthClampMin = 5000
