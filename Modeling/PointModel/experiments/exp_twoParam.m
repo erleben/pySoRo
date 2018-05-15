@@ -1,4 +1,4 @@
-function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, do_val)
+function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_solver, isPoly, do_val)
 % This function trains a order-ordered model, using k local models. 
 % If gmodel is not specified, then a global model is made.
 
@@ -23,7 +23,7 @@ P=load('../data/ordered_finger2.csv');
 % end
 % Alphas = AA;
 if nargin < 5
-    do_val = true; 
+    do_val = false; 
 end
 
 if do_val
@@ -41,7 +41,7 @@ Val = P(Val_inds,:);
 A_val = Alphas(Val_inds,:);
 
 % Train a model on the first dataset
-model = k_model(Train, A_train, order, k, use_solver, isPoly);
+[model, model_select] = k_model(Train, A_train, order, k, use_solver, isPoly);
 
 alpha_est = model(Train');
 train_err = sqrt(sum((alpha_est-A_train).^2,2));
@@ -53,5 +53,9 @@ val_err = sqrt(sum((alpha_est-A_val).^2,2));
 msTrainE=mean(train_err)
 msValE=mean(val_err) 
 
-
+I = eye(size(P,2));
+I = I(:,1:3);
+save('model','model');
+model = @(p) model_select(cellfun(@double,cell(p))',I);
+save('../../../RealTime/model.mat','model');
 end

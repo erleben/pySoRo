@@ -1,6 +1,5 @@
-# USAGE
-# python ball_tracking.py --video ball_tracking_example.mp4
-# python ball_tracking.py
+# This script detects balls and finds the xyz coordinate of its center. 
+# Press q to close window, press m to make the robot go to those coorinates
 
 # import the necessary packages
 from collections import deque
@@ -9,14 +8,13 @@ import argparse
 import imutils
 import cv2
 import sys
-# Kenny Add pyrealsense2 library path to current system path
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import time
 from matplotlib.pyplot import axis, colorbar, imshow, show, figure, subplot, title, plot, ylabel, xlabel
+import makeMove as MM
 
-
-
+mm = MM.makeMove()
 pipeline = rs.pipeline()
 cnt = rs.context()
 devs = cnt.query_devices()
@@ -70,20 +68,23 @@ while True:
         m = i[0]
         n = i[1]
         d_ind = n*width + m
-        print(vertices[d_ind])
- 
-
+        pt = np.asanyarray(vertices[d_ind]).tolist()
+        pts = [pt[0], pt[1], pt[2]+0.017]
+        print(pts)
     
     
 
 
-
+    mm.move(pts)
     key = cv2.waitKey(1) & 0xFF
 
 	# if the 'q' key is pressed, stop the loop
     if key == ord("q"):
         break
+    if key == ord("m"):
+        mm.move(pts)
 
 # cleanup the camera and close any open windows
 cv2.destroyAllWindows()
 pipeline.stop()
+mm.end()

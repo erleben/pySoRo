@@ -1,4 +1,6 @@
 import matlab.engine as me
+import sys
+sys.path.append('../DataAcquisition')
 from MotorControl import api as MC
 import numpy as np
 
@@ -21,11 +23,13 @@ class makeMove():
         return conf
     
     
-    def move(self, pos):
+    def move(self, pts):
         alpha = self.getConfig(pts)
+        a = np.round(list(alpha[0])).astype('int')
+        a1 = np.minimum(self.max_pos, a)
+        a2 = np.maximum(self.min_pos, a1).tolist()
+        self.mc.setPos(a2)
         
-        a1 = np.minimum(self.max_pos, alpha)
-        a2 = mp.maximum(self.min_pos, a1)
-        
-        #mc.setpos(a2)
+    def end(self):
+        self.mc.setPos([0,0])
         
