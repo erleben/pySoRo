@@ -10,12 +10,12 @@ addpath('utilities/');
 settings = makeSettings('15');
 
 segment_balls = false;
-remove_N_worst =1;
+remove_N_worst =0;
 
 radius = 0.017;
 use_radius = true;
 show_spheres = true;
-with_color = false;
+with_color = true;
 fit_circle = true;
 
 % Get the centroids of the balls

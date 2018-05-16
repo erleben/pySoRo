@@ -20,6 +20,7 @@ for o = 1:order
 end
 
 if isPoly
-    A_JK = [ones(1,size(A_JK, 2)); A_JK]';
+    A_JK = [ones(1,size(A_JK, 2)); A_JK];
 end
+
 end 

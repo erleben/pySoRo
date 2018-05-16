@@ -10,11 +10,11 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 1;
+num_iter = 0;
 Points = {};
 Alphas = {};
 models = {};
-assign = kmeans(A, K);
+assign = kmeans(A(:,1), K);
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
 model_loss = zeros(K, num_obs);

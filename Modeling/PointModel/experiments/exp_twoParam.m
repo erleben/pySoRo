@@ -1,11 +1,12 @@
 function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_solver, isPoly, do_val)
-% This function trains a order-ordered model, using k local models. 
+% This function trains a order-ordered model, using k local models.
 % If gmodel is not specified, then a global model is made.
 
 
 addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_finger.csv'));
 P=load('../data/ordered_finger2.csv');
+saveModel = true;
 
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P=load('../data/ordered_twoP.csv');
@@ -23,11 +24,11 @@ P=load('../data/ordered_finger2.csv');
 % end
 % Alphas = AA;
 if nargin < 5
-    do_val = false; 
+    do_val = false;
 end
 
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),round(0.5*size(P,1)),'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.4*size(P,1)),'Replace', false);
     %Train_inds = 90:size(Alphas,1)-90;
 else
     Train_inds = 1:size(Alphas,1);
@@ -45,17 +46,22 @@ A_val = Alphas(Val_inds,:);
 
 alpha_est = model(Train');
 train_err = sqrt(sum((alpha_est-A_train).^2,2));
+var(alpha_est-A_train)
 
 alpha_est = model(Val');
 val_err = sqrt(sum((alpha_est-A_val).^2,2));
-
+var(alpha_est-A_val)
 
 msTrainE=mean(train_err)
-msValE=mean(val_err) 
+msValE=mean(val_err)
 
-I = eye(size(P,2));
-I = I(:,1:3);
-save('model','model');
-model = @(p) model_select(cellfun(@double,cell(p))',I);
-save('../../../RealTime/model.mat','model');
+
+I = false(size(P,2),1);
+I(4:6) = true;
+mean(sqrt(sum((model_select(P(:,I)',I)-Alphas).^2,2)))
+
+if saveModel
+    model = @(p) model_select(cellfun(@double,cell(p))',I);
+    save('../../../RealTime/model.mat','model');
+end
 end
