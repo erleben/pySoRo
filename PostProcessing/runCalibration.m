@@ -7,14 +7,14 @@
 
 addpath('utilities/');
 
-settings = makeSettings('15');
+settings = makeSettings('13');
 
 segment_balls = false;
 remove_N_worst =0;
 
 radius = 0.017;
 use_radius = true;
-show_spheres = true;
+show_spheres = true; 
 with_color = true;
 fit_circle = true;
 
@@ -84,6 +84,8 @@ end
 
 % Display the result
 subplot(1,3,1);
+pc_close = findNeighborsInRadius(ref_PC, median(ref_PC.Location), 0.5);
+ref_PC= pointCloud(ref_PC.Location(pc_close,:),'Color', ref_PC.Color(pc_close,:));
 pcshow(ref_PC);
 view([0 -90])
 xlabel('x');
@@ -92,6 +94,8 @@ zlabel('z');
 title('Point cloud A')
 
 subplot(1,3,2);
+pc_close = findNeighborsInRadius(target_PC, median(target_PC.Location), 0.5);
+target_PC= pointCloud(target_PC.Location(pc_close,:),'Color', target_PC.Color(pc_close,:));
 pcshow(target_PC);
 view([0 -90])
 xlabel('x');
@@ -100,6 +104,8 @@ zlabel('z');
 title('Point cloud B')
 
 subplot(1,3,3);
+pc_close = findNeighborsInRadius(ref_transformed_PC, median(ref_transformed_PC.Location), 0.5);
+ref_transformed_PC= pointCloud(ref_transformed_PC.Location(pc_close,:),'Color', ref_transformed_PC.Color(pc_close,:));
 pcshow(ref_transformed_PC);
 view([0 -90])
 xlabel('x');
@@ -114,7 +120,7 @@ hold on;
 figure;
 pcshow(pcmerged);
 view([0 -90])
-xlabel('x');
+xlabel('x'); 
 ylabel('y');
 zlabel('z');
 title('Point cloud A and B merged in same coordinate system')

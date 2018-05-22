@@ -13,6 +13,7 @@ tex = double(tex);
 % Find valid points
 ispoint = logical((tex(:,1)~=0).*(tex(:,2)~=0));
 
+
 % To get the coordinates, we have to multiply by the width and height of
 % the color image
 tex_imco = round(tex.*[width,height]);

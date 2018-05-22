@@ -6,28 +6,16 @@ function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_so
 addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_finger.csv'));
 P=load('../data/ordered_finger2.csv');
-
-%Alphas  = csvread(strcat('../data/alphamap.csv'));
-%P=load('../data/ordered_twoP.csv');
-
-%P(1:13*51,:) = [];
-%Alphas(1:13*51,:)=[];
+P=P(:,4:6);
+saveModel = false;
 
 
-
-% Alphas  = Alphas(:,2:end);
-% m1=numel(unique(Alphas(:,2)));
-% AA = [];
-% for i  =1:m1
-%     AA = [AA;Alphas(i:m1:end,:)];
-% end
-% Alphas = AA;
 if nargin < 5
     do_val = false;
 end
 
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),round(0.4*size(P,1)),'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.8*size(P,1)),'Replace', false);
     %Train_inds = 90:size(Alphas,1)-90;
 else
     Train_inds = 1:size(Alphas,1);
@@ -47,11 +35,17 @@ alpha_est = model(Train');
 train_err = sqrt(sum((alpha_est-A_train).^2,2));
 var(alpha_est-A_train)
 
-alpha_est = model(Val'); 
+alpha_est = model(Val');
 val_err = sqrt(sum((alpha_est-A_val).^2,2));
 var(alpha_est-A_val)
 
 msTrainE=mean(train_err)
 msValE=mean(val_err)
+
+if saveModel
+    model = @(p) model(cellfun(@double,cell(p))',I);
+    save('../../../RealTime/model.mat','model');
+end
+
 
 end

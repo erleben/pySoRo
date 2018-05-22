@@ -23,6 +23,8 @@ for num = 1:num_balls
 end
  
 if showClouds
+    pc_close = findNeighborsInRadius(pc, median(pc.Location), 0.5);
+    pc= pointCloud(pc.Location(pc_close,:),'Color', pc.Color(pc_close,:));
     pcshow(pc);
     hold on;
     for num = 1:num_balls
@@ -32,4 +34,4 @@ if showClouds
 end
 
 
-end
+end 
