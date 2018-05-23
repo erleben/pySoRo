@@ -7,7 +7,7 @@ addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_finger.csv'));
 P=load('../data/ordered_finger2.csv');
 P=P(:,4:6);
-saveModel = false;
+saveModel = true;
 
 
 if nargin < 5
@@ -43,7 +43,7 @@ msTrainE=mean(train_err)
 msValE=mean(val_err)
 
 if saveModel
-    model = @(p) model(cellfun(@double,cell(p))',I);
+    model = @(p) model(cellfun(@double,cell(p))');
     save('../../../RealTime/model.mat','model');
 end
 

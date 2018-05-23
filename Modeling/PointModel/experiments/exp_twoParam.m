@@ -10,8 +10,8 @@ P=load('../data/ordered_finger2.csv');
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P=load('../data/ordered_twoP.csv');
 
-%P(1:13*51,:) = [];
-%Alphas(1:13*51,:)=[];
+P(1:13*51,:) = [];
+Alphas(1:13*51,:)=[];
 
 
 
@@ -27,7 +27,7 @@ if nargin < 5
 end
 
 if do_val
-    Train_inds = datasample(1:size(Alphas,1),round(0.4*size(P,1)),'Replace', false);
+    Train_inds = datasample(1:size(Alphas,1),round(0.7*size(P,1)),'Replace', false);
     %Train_inds = 90:size(Alphas,1)-90;
 else
     Train_inds = 1:size(Alphas,1);
