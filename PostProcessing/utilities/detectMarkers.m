@@ -1,6 +1,8 @@
-function is_marker = detectMarkers(foreground, is_obj, show_pin_seg)
+function is_marker = detectMarkers(foreground, is_obj, show_pin_seg, method)
 
-method = 3;
+if nargin < 4
+    method = 4;
+end
 
 % RGB of the object
 
@@ -37,10 +39,19 @@ elseif method == 2
     pts = imbinarize(pts);
     pts = imclose(pts,strel('disk',3));
 
-else 
+elseif method == 4 
+     is_obj = double(is_obj>0);
+     foreground = double(foreground);
      HSV = rgb2hsv(foreground);
      is_obj = imerode(is_obj,strel('disk',5));
-     pts = imbinarize(imfill(HSV(:,:,3).*is_obj,'holes')-HSV(:,:,3).*is_obj)>0;
+     pts = imfill(HSV(:,:,3).*is_obj,'holes')-(HSV(:,:,3).*is_obj)>30;
+else
+    % Check ration between blue and red. Is high for markers, close to 1 for
+    % background
+    is_obj = double(is_obj>0);
+    foreground = double(foreground);
+    is_obj = imerode(is_obj,strel('disk',2));
+    pts = (foreground(:,:,3)./foreground(:,:,1).*is_obj)>1.2;
 end
 
 

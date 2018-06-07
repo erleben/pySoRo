@@ -54,11 +54,11 @@ end
 % points
 sz = 2;
 numE = zeros(1,num_to_keep);
-for i = 1:num_alph/2
+for i = 1:num_alph
     numE(i) = sum(sum(E)<=i)/3;
 end
 min_thr = find(numE >= num_to_keep);
-min_thr = min_thr(1);
+min_thr = min_thr(1); 
 P(:,sum(E)>min_thr)=[];
 
 % num_good = sum(sum(E)<=min_thr)/3;

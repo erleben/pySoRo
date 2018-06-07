@@ -3,7 +3,7 @@ import numpy as np
 class Uniform:
 
     def __init__(self):
-        self.num_boards = 2
+        self.num_boards = 3
         self.stepsize = [2]*self.num_boards
         self.startpos = [0]*self.num_boards
         self.stoppos = [10]*self.num_boards
@@ -38,7 +38,7 @@ class Uniform:
     def incrementCounter(self):
         self.counter[self.num_boards - 1] += 1
         
-        for bd in range(1, self.num_boards):
+        for bd in range(self.num_boards-1, 0, -1):
             if self.counter[bd]*self.stepsize[bd] > self.stoppos[bd]:
                 self.counter[bd] = self.startpos[bd]
                 self.counter[bd-1] += 1

@@ -1,4 +1,4 @@
-% Finds the rigid transformation [R,T] that maps points in coordinat system
+% Finds the rigid transformation [R,T] that maps points in coordinate system
 % A to coordinate system B. It is assumed that calibration data has been
 % gathered for each of the cameras, (see
 % pySoRo/DataAcqusition/pyCALIBRATE). The settings object contains paths to
@@ -7,7 +7,7 @@
 
 addpath('utilities/');
 
-settings = makeSettings('13');
+settings = makeSettings('16');
 
 segment_balls = false;
 remove_N_worst =0;
@@ -21,7 +21,7 @@ fit_circle = true;
 % Get the centroids of the balls
 [points_1, sphere_pcs_1] = getPoints(1, settings, radius, use_radius, fit_circle);
 [points_2, sphere_pcs_2] = getPoints(2, settings, radius, use_radius, fit_circle);
-
+ 
 [num_balls, ~] = size(points_1);
 
 if segment_balls

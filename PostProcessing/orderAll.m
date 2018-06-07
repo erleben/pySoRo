@@ -5,13 +5,14 @@
 % This script reads in the points, orders them, removes noisy data, interpolates missing
 % values and stores them i a csv file.
 
-points = load('outputSegment/unordered_points.mat');
+points = load('outputSegment/unordered_points_grabber.mat');
 points = points.points;
+points = points(1:29*35);
 
-num_alphas = 736;
-num_pr_round = 16;
+num_alphas = size(points,2);
+num_pr_round = 29;
 num_rounds = num_alphas/num_pr_round;
-num_markers = 3;
+num_markers = 10;
 
 
 order_to = {};
@@ -34,7 +35,7 @@ for i = 1:num_pr_round
     order_to.all = cleaned{1};
     add_new = false;
     
-end
+end 
 
 
 p = [];
@@ -44,4 +45,4 @@ for i = 1:num_pr_round
     end
 end
 
-csvwrite('outputOrder/ordered_twoP.csv',p);
+csvwrite('outputOrder/ordered_grabber.csv',p);

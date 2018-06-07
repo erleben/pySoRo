@@ -35,6 +35,8 @@ time.sleep(3)
 pointcloud = rs.pointcloud()
 time.sleep(2)
 
+isPaused = False
+
 # keep looping
 while True:
 	# grab the current frame
@@ -83,6 +85,15 @@ while True:
         break
     if key == ord("m"):
         mm.move(pts)
+    if key == ord("g"):
+        mm.grab()
+    if key == ord("p"):
+        isPaused = True
+        while isPaused:
+            time.sleep(1)
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("p"):
+                isPaused = False
 
 # cleanup the camera and close any open windows
 cv2.destroyAllWindows()

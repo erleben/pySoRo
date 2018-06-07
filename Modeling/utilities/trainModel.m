@@ -1,4 +1,4 @@
-function [model, fmodel] = trainModel(P, Alphas, order, use_solver, isPoly, regParam)
+function [model, fmodel] = trainModel(P, Alphas, order, use_solver, isPoly)
 
 if nargin < 4
     use_solver = true;
@@ -8,9 +8,6 @@ if nargin < 5
     isPoly = false;
 end
 
-if nargin < 6
-    regParam = 0;
-end
 
 X0 = P(1,:)';
 U = P'-X0;
@@ -27,18 +24,13 @@ A = Alphas'-A0;
 A_JK = makeAlpha(A,order, isPoly);
 
 % Compute Hessian
-if regParam > 0
-    Hat = eye(size(A_JK*A_JK'))*regParam;
-    Hat(1)=~isPoly*regParam;
-    JK = (A_JK*A_JK'+Hat)\(U*A_JK')';
-else
-    JK = (A_JK*A_JK')\(U*A_JK')';
-end
+JK = (A_JK*A_JK')\(U*A_JK')';
 
+ 
 if use_solver
     %options = optimoptions('fmincon', 'Algorithm','sqp');
-    lossfun = @(p)@(a) sum(sum((JK'*makeAlpha(a', order, isPoly)' - p).^2,2));
-    all_model = @(p) fmincon(lossfun(p-X0), mean(A,2), [],[],[],[], min(A, [], 2), max(A, [], 2))+A0;
+    lossfun = @(p)@(a) sum(sum((JK'*makeAlpha(a, order, isPoly) - p).^2,2));
+    model = @(p) all_model(p, X0, A, A0, lossfun, isPoly);
 else
     if isPoly
         fst = @(F) F(1:size(Alphas,2),:);
@@ -59,5 +51,10 @@ end
         a = min(a, max(A,[],1))';
     end
 
-
+    function pred = all_model(p, X0, A, A0, lossfun, isPoly)
+        pred = zeros(size(p,1)-isPoly,size(p,2));
+        for i = 1:size(p,2)
+            pred(:,i) = fmincon(lossfun(p(:,i)-X0), mean(A,2), [],[],[],[], min(A, [], 2), max(A, [], 2))+A0;
+        end        
+    end 
 end

@@ -1,9 +1,9 @@
 function labeled_points = getMarkerCentroids(settings, tform)
 
-with_color = true;
-segment = true;
+with_color = false;
+segment = false;
 show_pin_seg = false;
-max_distance = 0.013; % Max allowed distance bettween linked markers
+max_distance = 0.011; % Max allowed distance bettween linked markers
 with_pc = false;
 
 if nargin < 1
@@ -16,18 +16,18 @@ end
 
 
 % Get labeled images: foreground/background
-isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 1);
-isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 1);
+isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 2)>0;
+isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 2)>0;
 
  
 % Get at list of pointclouds of markers in each cloud
 marker_pcs = {};
 PC_from = pcread(settings.pc_name_recon{1});
-is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1, show_pin_seg);
+is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1, show_pin_seg, 5);
 marker_pcs{1} = getObjPointclouds(is_marker, PC_from, settings.tex_name_recon{1});
 
 PC_to = pcread(settings.pc_name_recon{2});
-is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2, show_pin_seg);
+is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2, show_pin_seg, 4);
 marker_pcs{2} = getObjPointclouds(is_marker, PC_to, settings.tex_name_recon{2});
   
 %Find their centroids
@@ -98,7 +98,7 @@ if with_pc
  
     pc_balls_2 = pointCloud(P_to.Location,'Color', fliplr(P_to.Color));
     PP=pcmerge(ref_transformed_PC,pc_balls_2, 0.0001);
-    pcshow(PP,'MarkerSize',100);
+    pcshow(PP,'MarkerSize',10);
     hold on;
     
     sz = 180;
@@ -109,4 +109,4 @@ if with_pc
     
     %save('../Registration/sponge.mat','PP');
 end 
-end 
+end

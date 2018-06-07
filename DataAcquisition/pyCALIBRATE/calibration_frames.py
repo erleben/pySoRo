@@ -11,7 +11,7 @@ def main():
     
     back_then_fore = False
     prefix = '../../data/calibration/'
-    postfix = '15'
+    postfix = '16'
     
     sa.set_adv()
     
@@ -20,7 +20,7 @@ def main():
     # Get data without foreground
     capture(back_then_fore, pipelines, serial_numbers, True, prefix, postfix)
     # Get images with foreground
-    capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
+    #capture(not back_then_fore, pipelines, serial_numbers, False, prefix, postfix)
 
     # Might be neccesary to shut down lasers in between due to interference
     # Shut down sensors

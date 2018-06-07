@@ -4,9 +4,9 @@ function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_so
 
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('alphamap_finger.csv'));
-P=load('../data/ordered_finger2.csv');
-P=P(:,4:6);
+Alphas  = csvread(strcat('alphamap_grabber.csv'));
+P=csvread('../../../PostProcessing/outputOrder/phantom_grabber.csv');
+%P=P(:,4:6);
 saveModel = true;
 
 

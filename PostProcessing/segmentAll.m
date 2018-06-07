@@ -5,16 +5,19 @@
 % where M is the number of iterations and N = number of markers *
 % dimension of points. 
 ordered = {};
-folder = strcat('/Volumes/TOSHIBA/experiment3/');
-settings = makeSettings('15');
 
-num_alphas = 736;
+
+
+folder = strcat('/Volumes/TOSHIBA/experiment5/');
+settings = makeSettings('16');
+
+%folder = '../data/experiment_3/output_exp1/';
+%settings = makeSettings('13');
+num_alphas = 1189;
 
 
 for i = 1:num_alphas
-    
-    settings = makeSettings('15');
-   
+       
     settings.pc_name_recon{1}=char(strcat(folder, int2str(i),'_',settings.serial(1),'.ply'));
     settings.pc_name_recon{2}=char(strcat(folder, int2str(i),'_',settings.serial(2),'.ply'));
 
@@ -27,5 +30,5 @@ for i = 1:num_alphas
     points{i} = getMarkerCentroids(settings);
     
 end
-save('outputSegment/unordered_points.mat','points');
-save(strcat(folder, 'unordered_points.mat', 'points'));
+%save('outputSegment/unordered_points.mat','points');
+%save(strcat(folder, 'unordered_points.mat', 'points'));

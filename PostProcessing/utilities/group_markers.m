@@ -4,7 +4,7 @@ function labeled_points =group_markers(close_points, points, max_distance)
 dist_mat = pdist2(close_points,points{2});
 
 common_A = [];
-added_A = [];
+added_A = []; 
 common_B = [];
 added_B = [];
 while true

@@ -4,14 +4,14 @@ function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_so
 
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('alphamap_finger.csv'));
-P=load('../data/ordered_finger2.csv');
+Alphas  = csvread(strcat('alphamap_grabber.csv'));
+P=csvread('../../../PostProcessing/outputOrder/phantom_grabber.csv');
 
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P=load('../data/ordered_twoP.csv');
 
-P(1:13*51,:) = [];
-Alphas(1:13*51,:)=[];
+%P(1:13*51,:) = [];
+%Alphas(1:13*51,:)=[];
 
 
 

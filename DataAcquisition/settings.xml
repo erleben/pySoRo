@@ -26,16 +26,16 @@
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="/Volumes/TOSHIBA/experiment3/"
+                prefix="/Volumes/TOSHIBA/experiment5/"
                 postfix=""
         />
         
         <motor
                 use_motor_control="True"
                 portname="/dev/cu.usbserial-DN02Z6PY"
-                num_boards="2"
+                num_boards="3"
                 distribution_module="uniform.py"
-                module_args="setStartPos,[0 0];setStopPos,[450 1500];setStepSize,[10 100]"
+                module_args="setStartPos,[0 0 0];setStopPos,[0 1000 700];setStepSize,[25 25 25]"
                 autotighten="False"
                 
         />

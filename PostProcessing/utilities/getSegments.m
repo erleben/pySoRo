@@ -55,7 +55,8 @@ if ~fit_circle
     objects = obs;
 else
     %Fit circles to the binarized images
-    [centers, radii] = imfindcircles(HSV(:,:,3)>70,[10 30],'Method','TwoStage');
+    HSV = rgb2hsv(foreground);
+    [centers, radii] = imfindcircles(HSV(:,:,3),[20 45],'Method','TwoStage');
     sorted = flipud(sortrows([radii, centers]));
     radii = sorted(:,1);
     centers = sorted(:,2:end);

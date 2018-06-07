@@ -78,7 +78,8 @@ class RealSenseThread (threading.Thread):
 
                 if self.motor_control is not None:
                     pos = self.motor_control.nextPos()
-                    print('Motor 1: ' + str(pos[0]) + ' Motor 2:' + str(pos[1]))
+                    for (m_nr, p) in enumerate(pos):
+                        print('Motor', m_nr,': ', p)
                     self.motor_filename = str(count) +'_' + serial_no
                     
                     writer.writerow([count] + pos)
@@ -152,6 +153,7 @@ class RealSenseThread (threading.Thread):
 
                 if not threading.main_thread().is_alive():
                     print('Main thread is dead, closing down sensor')
+                    ofile.close()
                     pipeline.stop()
                     if self.bot is not None:
                         self.bot.end('')
