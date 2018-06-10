@@ -18,16 +18,18 @@ end
 % Get labeled images: foreground/background
 isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 2)>0;
 isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 2)>0;
-
+ 
  
 % Get at list of pointclouds of markers in each cloud
 marker_pcs = {};
 PC_from = pcread(settings.pc_name_recon{1});
-is_marker = detectMarkers(imread(settings.fore_name_recon{1}), isObj_1, show_pin_seg, 5);
+foreground = imread(settings.fore_name_recon{1});
+is_marker = detectMarkers(foreground, isObj_1, show_pin_seg, 6);
 marker_pcs{1} = getObjPointclouds(is_marker, PC_from, settings.tex_name_recon{1});
 
 PC_to = pcread(settings.pc_name_recon{2});
-is_marker = detectMarkers(imread(settings.fore_name_recon{2}), isObj_2, show_pin_seg, 4);
+foreground = imread(settings.fore_name_recon{2});
+is_marker = detectMarkers(foreground, isObj_2, show_pin_seg, 6);
 marker_pcs{2} = getObjPointclouds(is_marker, PC_to, settings.tex_name_recon{2});
   
 %Find their centroids

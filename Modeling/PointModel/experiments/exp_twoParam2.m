@@ -7,7 +7,7 @@ addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_grabber.csv'));
 P=csvread('../../../PostProcessing/outputOrder/phantom_grabber.csv');
 %P=P(:,4:6);
-saveModel = true;
+saveModel = false;
 
 
 if nargin < 5

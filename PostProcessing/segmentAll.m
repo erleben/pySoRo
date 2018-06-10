@@ -30,5 +30,5 @@ for i = 1:num_alphas
     points{i} = getMarkerCentroids(settings);
     
 end
-%save('outputSegment/unordered_points.mat','points');
-%save(strcat(folder, 'unordered_points.mat', 'points'));
+save('outputSegment/unordered_points_g2.mat','points');
+%save(strcat(folder, 'unordered_points_2.mat', 'points'));

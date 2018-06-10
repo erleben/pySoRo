@@ -5,37 +5,54 @@
 % This script reads in the points, orders them, removes noisy data, interpolates missing
 % values and stores them i a csv file.
 
-points = load('outputSegment/unordered_points_grabber.mat');
+points = load('outputSegment/unordered_points_g2.mat');
 points = points.points;
 points = points(1:29*35);
 
 num_alphas = size(points,2);
 num_pr_round = 29;
 num_rounds = num_alphas/num_pr_round;
-num_markers = 10;
+num_markers = 12;
 
 
-order_to = {};
+
 points  = reshape(points, num_pr_round, num_rounds);
-order_to.all = points{1,1}.all;
-order_to.estimated = [];
+order_to = points{1,1}.all;
 ordered = cell(num_pr_round,num_rounds);
 add_new = true;
+% Find most likely markers
+
+
+
 for i = 1:num_pr_round
+    
+%     for j = 1:num_rounds
+%         [tracked_all, estimated]= order_markers(order_to, points{i,j}.all, add_new);
+%         p={};
+%         p.all = tracked_all;
+%         p.estimated = estimated;
+%         ordered{i,j} = p;
+%         order_to = tracked_all;
+%     end
+% 
+%     cleaned = cleanAndInterp(ordered(i,:),num_markers, false);
+%     points(i,:)=cleaned;
+%     order_to = cleaned{1}; 
+     
     for j = 1:num_rounds
-        [tracked_all, estimated]= order_markers(order_to.all, points{i,j}.all, add_new);
-        p={};
+        [tracked_all, estimated]= order_markers(order_to, points{i,j}.all, add_new);
+        p={}; 
         p.all = tracked_all;
         p.estimated = estimated;
         ordered{i,j} = p;
-        order_to.all = tracked_all;
+        order_to = tracked_all;
     end
-    cleaned = cleanAndInterp(ordered(i,:),num_markers);
+    cleaned = cleanAndInterp(ordered(i,:),num_markers, true);
     ordered(i,:)=cleaned;
-    order_to.all = cleaned{1};
+    order_to = cleaned{1};
     add_new = false;
     
-end 
+end  
 
 
 p = [];
@@ -44,5 +61,5 @@ for i = 1:num_pr_round
         p = [p; reshape(ordered{i,j}',num_markers*3, 1)'];
     end
 end
-
-csvwrite('outputOrder/ordered_grabber.csv',p);
+ 
+csvwrite('outputOrder/ordered_grabber_g2.csv',p);

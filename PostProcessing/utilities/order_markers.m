@@ -1,7 +1,7 @@
 function [tracked_new, estimated] = order_markers(tracked_prev, new, add_new)
 
-max_distance  = 0.02; 
-
+max_distance  = 0.01; 
+ 
 dist_mat = pdist2(tracked_prev, new);
 inds = (1:length(tracked_prev(:,1)))';
 tracked_new = nan(size(tracked_prev));
@@ -38,7 +38,8 @@ ps_new = tracked_new(tracked_in_both,:);
 for i = 1:size(untracked_prev,1)
     ind = un_inds(i);
     p = untracked_prev(i,:);
-    new_est = (p/ps_prev)*(ps_new);
+    %new_est = (p/ps_prev)*(ps_new);
+    new_est = interpolate(p, ps_prev, ps_new);
     tracked_new(ind,:) = new_est;
 end 
 estimated = un_inds;
