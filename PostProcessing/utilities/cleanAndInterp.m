@@ -1,4 +1,4 @@
-function cleaned = cleanAndInterp(points, num_to_keep, fill_missing)
+function [cleaned, E] = cleanAndInterp(points, num_to_keep, fill_missing)
 
 % P: m*n matrix of m observations and n/3 variables.
 %    The format is [x, y, z, x, y, z, ...]
@@ -32,16 +32,14 @@ for pind = 1:num_markers
             
             p = P(last_good, pind*3-2:pind*3);
             tracked_in_lg = ~isnan(P(last_good,:));
-            tracked_in_lg = tracked_in_lg(1:3:length(tracked_in_lg));
             tracked_in_this = ~isnan(P(alph,:));
-            tracked_in_this = tracked_in_this(1:3:length(tracked_in_this));
             
             
-            tracked_in_both = repelem(logical(tracked_in_this.*tracked_in_lg),3);
+            tracked_in_both = logical(tracked_in_this.*tracked_in_lg);
             tracked_in_both = logical(~(E(alph,:).*E(last_good,:)).*tracked_in_both);
-            ps_lg = reshape(P(last_good,tracked_in_both), 3, sum(tracked_in_both)/3)';
-            ps_this = reshape(P(alph,tracked_in_both), 3, sum(tracked_in_both)/3)';
-            new_est = (p/ps_lg)*(ps_this);
+            ps_lg = reshape(P(last_good,tracked_in_both), sum(tracked_in_both)/3, 3);
+            ps_this = reshape(P(alph,tracked_in_both), sum(tracked_in_both)/3, 3);
+            new_est = interpolate(p, ps_lg, ps_this);
             P(alph,pind*3-2:pind*3) = new_est;
             E(alph, pind*3-2:pind*3) = 1;
         end
@@ -60,24 +58,17 @@ for i = 1:num_alph
     numE(i) = sum(sum(E)<=i)/3;
 end
 min_thr = find(numE >= num_to_keep);
-try
-    min_thr = min_thr(1);
-catch
-    i
-end
+min_thr = min_thr(1);
+
 P(:,sum(E)>min_thr)=[];
 E(:,sum(E)>min_thr)=[];
+E = E(:,1:3:end);
 
-E = ~logical(E);
 cleaned = cell(num_alph,1);
-if ~fill_missing
-    for i = 1:num_alph
-        ps = [P(i,1:3:end)', P(i,2:3:end)', P(i,3:3:end)'];
-        cleaned{i} = ps(E(i,1:3:end),:);
-    end
-else
-    for i = 1:num_alph
-        cleaned{i} = [P(i,1:3:end)', P(i,2:3:end)', P(i,3:3:end)'];
-    end
+
+for i = 1:num_alph
+    cleaned{i} = [P(i,1:3:end)', P(i,2:3:end)', P(i,3:3:end)'];
+end
+
     
 end

@@ -99,9 +99,13 @@ class Motorcontrol:
             return pos
 
     def setPos(self, pos):
-           
-        self.position = pos
-        positionStr = json.dumps({'position': self.position})
+        if isinstance(pos[0], list):
+            self.position = pos[-1]
+            positionStr = json.dumps({'path': pos})
+        else:
+            self.position = pos
+            positionStr = json.dumps({'position': self.position})
+            
         self.board_io.write(positionStr.encode('utf-8'))
         while self.board_io.in_waiting == 0:
             pass

@@ -52,26 +52,36 @@ void setup() {
 void loop() {
 
   // Allocate space for and parse the incoming message
-  StaticJsonBuffer<100> jsonBuffer;
+  StaticJsonBuffer<15000> jsonBuffer;
   while (Serial.available() == 0) {}
-  JsonObject& root = jsonBuffer.parse(Serial);
+  JsonObject& root = jsonBuffer.parseObject(Serial);
   
   if (root.success()) {
-  
-    for (int bd = 0; bd <NUM_BOARDS; bd++) {
-        int pos = root["position"][bd];
-        boardIndex[bd]->goTo(pos);
-    }
-    
-    // Wait until all motors have reached their destinations
-    for (int bd = 0; bd <NUM_BOARDS; bd++) {
-        while (boardIndex[bd]->busyCheck()) {}
-    }
+    if (root.containsKey("position")) {
+      for (int bd = 0; bd <NUM_BOARDS; bd++) {
+          int pos = root["position"][bd];
+          boardIndex[bd]->goTo(pos);
+      }
+      
+      // Wait until all motors have reached their destinations
+      for (int bd = 0; bd <NUM_BOARDS; bd++) {
+          while (boardIndex[bd]->busyCheck()) {}
+      }
+      Serial.println(1);}
+    else if (root.containsKey("path")){
+      int s = root["path"].size();
+      for (int i = 0; i< s; i++) {
+        for (int bd = 0; bd < NUM_BOARDS; bd++) {
+          int pos = root["path"][i][bd];
+          boardIndex[bd]->goTo(pos);}
+      for (int bd = 0; bd <NUM_BOARDS; bd++) {
+          while (boardIndex[bd]->busyCheck()) {}
+      }}
+      Serial.println(1);}
+     else { Serial.println(0);}}
+   else {Serial.println(0);}
+   Serial.flush();
 
-    // 1 singals success and 0 failure
-    Serial.println(1); } 
-  else {
-    Serial.println(0);}
 }
 
 

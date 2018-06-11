@@ -5,7 +5,7 @@ function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_so
 
 addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_grabber.csv'));
-P=csvread('../../../PostProcessing/outputOrder/phantom_grabber.csv');
+P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
 
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P=load('../data/ordered_twoP.csv');

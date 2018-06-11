@@ -8,7 +8,7 @@ class makeMove():
 
 
     def __init__(self):
-        self.mod_name = 'model.mat'
+        self.mod_name = 'model_path.mat'
         self.max_pos = [850, 700]
         self.min_pos = [0,0]
         self.engine = me.start_matlab()
@@ -24,6 +24,12 @@ class makeMove():
         conf = np.asanyarray(alpha)
         return conf
     
+    def getConfig_path(self, pts):
+        print(self.model, self.currPos, pts, pts, 0.025)
+        alpha = self.engine.getAlphaPath(self.model, self.currPos, pts, pts, 0.025)
+        conf = np.asanyarray(alpha)
+        return conf
+
     
     def move(self, pts):
         alpha = self.getConfig(pts)
@@ -32,6 +38,22 @@ class makeMove():
         a2 = np.maximum(self.min_pos, a1).tolist()
         self.mc.setPos(self.grabPos+a2)
         self.currPos =  a2
+        
+    def move_path(self, pts):
+        alpha = self.getConfig_path(pts)
+        print(alpha)
+        if alpha != []:
+            a = np.round(list(alpha)).astype('int')
+            a1 = np.minimum(self.max_pos, a)
+            a2 = np.maximum(self.min_pos, a1).tolist()
+            print(a2)
+            self.currPos =  a2[-1]
+            a2 = [self.grabPos + p  for p in a2]
+            print(a2)
+            for i in range(int(np.ceil(len(a2)/6))):
+                self.mc.setPos(a2[i*6:(i+1)*6])
+            
+        
         
     def grab(self):
         

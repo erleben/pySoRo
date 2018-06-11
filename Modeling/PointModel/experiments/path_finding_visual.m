@@ -15,20 +15,20 @@
 % the robot collides with the obstacle
 % Find shortest path between conf and goal_conf via sampled points
 
-function a_0 = path_finding(a_0, s_goal)
+function a_0 = path_finding_visual()
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('alphamap_grabber.csv'));
+Alphas = csvread(strcat('alphamap_grabber.csv'));
 P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_1.csv');
-R=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+R=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 
 num_samples = 1000;
-connectivity = 30;
+connectivity = 10;
 num_obs = 1;
 
 
 a_0 = [0,0];
-s_goal = P(end,:);
+s_goal = P(round(rand*length(P)),:);
 
 [p_model, pf_model] = k_model(P, Alphas, 1, 4, false, true);
 [~, rf_model] = k_model(R, Alphas, 1, 4, false, true);
@@ -42,7 +42,7 @@ obstacle_c = zeros(num_obs, 3);
 obstacle_r = zeros(num_obs, 1);
 
 for i = 1:num_obs
-obstacle_c(i,:) = P(round(rand*length(P)),:);
+obstacle_c(i,:) = s_goal;%P(round(rand*length(P)),:);
 obstacle_r(i) = 0.027;
 end
 
@@ -67,6 +67,8 @@ SSR = SSR(no_collision,:);
 SSP = SSP(no_collision,:);
 sample = sample(no_collision,:);
 
+c = distinguishable_colors(10);
+
 % Create a weighted graph where each node is a configration. Connected to
 % the closest configurations. The weight is the distance between them.
 dist_mat = pdist2(sample,sample);
@@ -80,10 +82,11 @@ dist_mat = -dist_mat;
 G=digraph(dist_mat);
 path = shortestpath(G,1,2);
 conf_path = sample(path,:);
-plot(conf_path(:,1),conf_path(:,2));
+plot(conf_path(:,1),conf_path(:,2),'k','LineWidth',3);
 hold on;
 scatter(sample(:,1),sample(:,2));
-
+scatter(a_0(1),a_0(2),60,'r','f');
+scatter(a_goal(1),a_goal(2),60,'b','f');
 %plot(G)
 
 figure
@@ -94,14 +97,17 @@ end
 scatter3(s_goal(:,1),s_goal(:,2),s_goal(:,3));
 scatter3(s_start(:,1),s_start(:,2),s_start(:,3));
 s_path = SSR(path,:);
-scatter3(s_path(:,1),s_path(:,2),s_path(:,3));
-scatter3(s_path(:,4),s_path(:,5),s_path(:,6));
-plot3(s_path(:,1),s_path(:,2),s_path(:,3));
-plot3(s_path(:,4),s_path(:,5),s_path(:,6));
+for m = 1:num_p
+    scatter3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m));
+    plot3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m));
+
+end
+
+
 
 
 sp_path = SSP(path,:);
 scatter3(sp_path(:,1),sp_path(:,2),sp_path(:,3));
 plot3(sp_path(:,1),sp_path(:,2),sp_path(:,3));
-
+ 
 end

@@ -1,3 +1,0 @@
-Make config a separate file. Possibly in settings.xml
-Make a wiring diagram for correct hardware setup
-
