@@ -49,6 +49,7 @@ end
     function a = clamp(a1, A)
         a = max(a1', min(A,[],1));
         a = min(a, max(A,[],1))';
+        a = a1;
     end
 
     function pred = all_model(p, X0, A, A0, lossfun, isPoly, model)

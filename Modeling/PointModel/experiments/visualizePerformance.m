@@ -5,7 +5,7 @@ A  = csvread(strcat('alphamap_grabber.csv'));
 P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
 
 
-[model, fmod] = k_model(P, A, 1, 5, false, true);
+[model, fmod] = k_model(P, A, 2, 1, false, true);
 
 alpha_est = model(P');
 p_est = fmod(A);
@@ -32,6 +32,7 @@ title('serr(alpha)');
 figure;
 scatter3(P(:,1),P(:,2),P(:,3),4,'f')
 
+figure
 hold on;
 scatter3(p_est(:,1),p_est(:,2), p_est(:,3),4,'f')
 
@@ -41,8 +42,8 @@ p = P(floor(rand(r,1)*1000),:)+ 0.03*(rand(r,size(P,2))-0.3);
 a=model(p');
 p_pred= fmod(a);
 
-for i = 1:r
-pl = [p(i,:);p_pred(i,:)];
-plot3(pl(:,1),pl(:,2),pl(:,3), 'LineWidth', 5);
-end
+%for i = 1:r
+%pl = [p(i,:);p_pred(i,:)];
+%plot3(pl(:,1),pl(:,2),pl(:,3), 'LineWidth', 5);
+%end
 

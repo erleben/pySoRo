@@ -26,7 +26,7 @@ class makeMove():
     
     def getConfig_path(self, pts):
         print(self.model, self.currPos, pts, pts, 0.025)
-        alpha = self.engine.getAlphaPath(self.model, self.currPos, pts, pts, 0.025)
+        alpha = self.engine.getAlphaPath(self.model, self.currPos, pts, pts, 0.03)
         conf = np.asanyarray(alpha)
         return conf
 
@@ -53,7 +53,9 @@ class makeMove():
             for i in range(int(np.ceil(len(a2)/6))):
                 self.mc.setPos(a2[i*6:(i+1)*6])
             
-        
+    def goToStart(self):
+        self.mc.setPos(self.grabPos + [0,0])
+        self.currPos = [0,0]
         
     def grab(self):
         

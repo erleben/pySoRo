@@ -11,13 +11,15 @@ end
 
 % Devide alpha space into k sections
 num_iter = 0;
-Points = {};
-Alphas = {};
-models = {};
-assign = kmeans(A, K);
+
+assign = kmeans(A, K); 
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
 model_loss = zeros(K, num_obs);
+
+Points = cell(1,K);
+Alphas = cell(1,K);
+models = cell(K,2);
 
 for k = 1:K
     Points{k} = P(assign==k,:);
@@ -99,7 +101,6 @@ end
         end
     end
 
-%mean(loss,2)
 fun = @(pt) find_assign(pt, models);
 forward_fun = @(alphas) forward_find_assign(alphas, models);
 end

@@ -31,7 +31,7 @@ for order = 1:max_order
     k_sample = [1:9, 10+(1:round(sqrt(max_local-10))).^2];
     %k_sample = 1:max_local;
     
-    res{order} = zeros(length(k_sample),4);
+    res{order} = zeros(length(k_sample),5);
     ind = 1;
     for k = k_sample
         perm = datasample(1:size(Train,1), size(Train,1), 'Replace', false);
@@ -39,7 +39,8 @@ for order = 1:max_order
         
         val_loss = 0;
         tr_loss = 0;
-        time = 0;
+        train_time = 0;
+        exec_time = 0;
         
         for fold = 1:folds
             val_inds = (fold-1)*pr_fold+1:fold*pr_fold;
@@ -47,9 +48,11 @@ for order = 1:max_order
             
             tic;
             model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, false, true);
-            time = time + toc;
+            train_time = train_time + toc;
             
+            tic;
             alpha_est = model(Train(val_inds,:)');
+            exec_time = exec_time + toc;
             val_loss = val_loss + sum(sqrt(sum((alpha_est-A_train(val_inds,:)).^2,2)));
             
             alpha_est = model(Train(tr_inds,:)');
@@ -62,14 +65,15 @@ for order = 1:max_order
         res{order}(ind,1) = k;
         res{order}(ind,2) = tr_loss/(length(tr_inds)*folds);
         res{order}(ind,3) = val_loss/(length(val_inds)*folds);
-        res{order}(ind,4) = time/folds;
+        res{order}(ind,4) = train_time/folds;
+        res{order}(ind,5) = exec_time/folds;
         ind = ind + 1;
         order,k
     end
 
 end
 
-figrue;
+figure;
 Train = zeros(length(res{1}(:,1)),max_order);
 for d = 1:max_order
     Train(1:numel(res{d}(:,1)),d) = res{d}(:,2);
@@ -112,7 +116,7 @@ caxis(log([cmin cmax-8]));
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Loss');
 
-figrue;
+figure;
 Time = zeros(length(res{1}(:,1)),max_order);
 for d = 1:max_order
     Time(1:numel(res{d}(:,1)),d) = res{d}(:,4);
@@ -133,6 +137,29 @@ ylabel('local models')
 title('Time');
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Time (s)');
+
+
+figure;
+Time = zeros(length(res{1}(:,1)),max_order);
+for d = 1:max_order
+    Time(1:numel(res{d}(:,1)),d) = res{d}(:,5);
+end
+
+cmax = max(Time(:));
+cmin = min(Time(:));
+Ti = Time;
+Ti(Ti==0)=1000;
+imagesc(Ti);
+yticks(1:2:length(res{1}));
+yticklabels(int2str(res{1}(1:2:end,1)));
+hcb = colorbar;
+caxis([cmin cmax+0.5]);
+colormap hot;
+xlabel('order');
+ylabel('local models')
+title('Time');
+colorTitleHandle = get(hcb,'Title');
+set(colorTitleHandle ,'String','ExecutionTime (s)');
 
 % Find best params for validaion:
 [k_ind,d] = find(V==min(V(:)));

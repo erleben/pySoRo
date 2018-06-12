@@ -1,3 +1,4 @@
+% Visualize how the interpolation scheme performs 
 
 [x,y] = meshgrid(0:0.4:2,0:0.4:2);
 u = cos(x).*y;

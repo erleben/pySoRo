@@ -97,6 +97,8 @@ try:
                     isPaused = False
         if key == ord("t"):
             mm.move_path(pts)
+        if key == ord("z"):
+            mm.goToStart()
 
 # cleanup the camera and close any open windows
 finally:
