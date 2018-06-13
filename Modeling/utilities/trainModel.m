@@ -55,7 +55,7 @@ end
     function pred = all_model(p, X0, A, A0, lossfun, model)
         pred = zeros(size(A,1),size(p,2));
         start_p = model(p)-A0;
-        for i = 1:size(p,2)
+        parfor i = 1:size(p,2)
             pred(:,i) = fmincon(lossfun(p(:,i)-X0), start_p(:,i), [],[],[],[], min(A, [], 2), max(A, [], 2))+A0;
         end        
     end

@@ -26,7 +26,7 @@ res = {};
 use_solver = false;
 
 for order = 1:max_order
-    if order > 1
+    if order > 10
         use_solver = true;
     end
     num_val = (folds-1)*size(Train,1)/folds;

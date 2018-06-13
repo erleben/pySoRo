@@ -1,16 +1,16 @@
 
 
 addpath('../../utilities/');
-%A  = csvread(strcat('alphamap_grabber.csv'));
-%P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+A  = csvread(strcat('alphamap_grabber.csv'));
+P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
 
-A  = csvread(strcat('../data/alphamap.csv'));
-A = A(:,2:end);
-P = csvread('../data/ordered_twoP.csv');
-m = 51;
-n = 51;
+%A  = csvread(strcat('../data/alphamap.csv'));
+%A = A(:,2:end);
+%P = csvread('../data/ordered_twoP.csv');
+m = 35;
+n = 29;
 
-[model, fmod] = k_model(P, A, 2, 1, false, true);
+[model, fmod] = k_model(P, A, 6, 10, true, true);
 
 alpha_est = model(P');
 p_est = fmod(A);

@@ -12,7 +12,7 @@ end
 % Devide alpha space into k sections
 num_iter = 0;
 
-assign = kmeans(A, K); 
+[assign, cent] = kmeans(A, K); 
 old_assign = assign;
 loss = zeros(num_iter,num_obs);
 model_loss = zeros(K, num_obs);
@@ -66,7 +66,7 @@ for ii = 1:num_iter
     
 end
 
-    function res = find_assign(pt, mods, use_solver)
+    function res = find_assign_QP(pt, mods)
         KK = size(mods,1);
         if KK == 1
             res = mods{1,1}(pt)';
@@ -74,16 +74,10 @@ end
             l = zeros(KK,size(pt,2));
             res = zeros(size(pt,2),2);
             pred = cell(size(pt,2),1);
-            if use_solver
-                parfor kk = 1:KK
-                    pred{kk} = mods{kk,1}(pt);
-                    l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
-                end
-            else
-                for kk = 1:KK
-                    pred{kk} = mods{kk,1}(pt);
-                    l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
-                end
+
+            for kk = 1:KK
+                pred{kk} = mods{kk,1}(pt);
+                l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
             end
             [~, mdl] = min(l,[],1);
             
@@ -93,32 +87,40 @@ end
         end
     end
 
-    function res = forward_find_assign(alphas, mods, use_solver)
+    function res = find_assign(pt, mods, cent)
         KK = size(mods,1);
+        res = zeros(size(pt,2),2);
         if KK == 1
-            res = mods{1,2}(alphas)';
+            res = mods{1,1}(pt)';
         else
-            l = zeros(KK,size(alphas,1));
-            res = zeros(size(alphas, 1), size(P,2));
-            if use_solver
-                parfor kk = 1:KK
-                    pred = mods{kk,2}(alphas);
-                    l(kk,:) = sum((mods{kk,1}(pred)' - alphas).^2,2);
-                end
-            else
-                for kk = 1:KK
-                    pred = mods{kk,2}(alphas);
-                    l(kk,:) = sum((mods{kk,1}(pred)' - alphas).^2,2);
-                end
-            end
-            [~, mdl] = min(l,[],1);
+            s_cent = forward_find_assign(cent, mods, cent);
+            [~, mdl] = min(pdist2(pt', s_cent),[],2);
             
-            for kk = unique(mdl)
-                res(mdl == kk,:) = mods{kk,2}(alphas(mdl == kk,:))';
+            for kk = unique(mdl)'
+                res(mdl == kk,:) = mods{kk,1}(pt(:,mdl == kk))';
             end
         end
     end
 
-fun = @(pt) find_assign(pt, models, use_solver);
-forward_fun = @(alphas) forward_find_assign(alphas, models, use_solver);
+    function res = forward_find_assign(alphas, mods, cent)
+        KK = size(mods,1);
+        if KK == 1
+            res = mods{1,2}(alphas)';
+        else
+            res = zeros(size(alphas, 1), size(P,2));
+            [~, mdl] = min(pdist2(alphas, cent),[],2);
+            
+            for kk = unique(mdl)'
+                res(mdl == kk,:) = mods{kk,2}(alphas(mdl == kk,:))';
+            end
+        end
+
+    end
+
+if use_solver
+    fun = @(pt) find_assign(pt, models, cent);
+else
+    fun = @(pt) find_assign_QP(pt, models);
+end
+
 end
