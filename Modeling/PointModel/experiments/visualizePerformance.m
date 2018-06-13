@@ -1,9 +1,14 @@
 
 
 addpath('../../utilities/');
-A  = csvread(strcat('alphamap_grabber.csv'));
-P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+%A  = csvread(strcat('alphamap_grabber.csv'));
+%P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
 
+A  = csvread(strcat('../data/alphamap.csv'));
+A = A(:,2:end);
+P = csvread('../data/ordered_twoP.csv');
+m = 51;
+n = 51;
 
 [model, fmod] = k_model(P, A, 2, 1, false, true);
 
@@ -23,19 +28,24 @@ scatter3(A(:,1), A(:,2), s_err);
 title('serr(alpha)');
 
 subplot(2,2,3);
-imagesc(reshape(err,35,29))
+imagesc(reshape(err,m,n))
 
 subplot(2,2,4);
-imagesc(reshape(s_err,35,29));
+imagesc(reshape(s_err,m,n));
 title('serr(alpha)');
 
+num_p = size(P,2)/3;
+
 figure;
-scatter3(P(:,1),P(:,2),P(:,3),4,'f')
+hold on;
+for i  =1:num_p
+    scatter3(P(:,i*3-2),P(:,i*3-1),P(:,i*3),4,'f')
+end
 
 figure
-hold on;
-scatter3(p_est(:,1),p_est(:,2), p_est(:,3),4,'f')
-
+for i  =1:num_p
+    scatter3(p_est(:,i*3-2),p_est(:,i*3-1),p_est(:,i*3),4,'f')
+end
 r = 20;
 
 p = P(floor(rand(r,1)*1000),:)+ 0.03*(rand(r,size(P,2))-0.3);

@@ -1,6 +1,7 @@
 %crossvalidation on number of models 
 folds = 5;
 max_order = 8;
+gcp
 
 %Load data
 Alphas  = csvread(strcat('../data/alphamap.csv'));
@@ -12,7 +13,7 @@ Alphas(1:7*51,:)=[];
 Alphas  = Alphas(:,2:end);
 
 %Partition into train and test
-Train_inds = datasample(1:size(Alphas,1),round(0.75*size(P,1)),'Replace', false);
+Train_inds = datasample(1:size(Alphas,1),round(0.70*size(P,1)),'Replace', false);
 Test_inds = setdiff(1:size(Alphas,1), Train_inds);
 
 Train = P(Train_inds,:);
@@ -22,8 +23,12 @@ Test = P(Test_inds,:);
 A_Test = Alphas(Test_inds,:);
 
 res = {};
+use_solver = false;
 
 for order = 1:max_order
+    if order > 1
+        use_solver = true;
+    end
     num_val = (folds-1)*size(Train,1)/folds;
     min_conf = sum(arrayfun(@(x)nchoosek(size(A_train,2)+x-1,x),1:order))+1;
     max_local = round(num_val/min_conf);
@@ -47,7 +52,7 @@ for order = 1:max_order
             tr_inds = setdiff(perm, val_inds);
             
             tic;
-            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, false, true);
+            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, use_solver, true);
             train_time = train_time + toc;
             
             tic;
@@ -70,7 +75,7 @@ for order = 1:max_order
         ind = ind + 1;
         order,k
     end
-
+    save('res.mat','res');
 end
 
 figure;

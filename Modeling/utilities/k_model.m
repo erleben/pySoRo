@@ -28,7 +28,12 @@ end
 
 % Train K models, each on their own section
 for k = 1:K
-    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
+    if sum(assign == k) <= min_conf
+        models{k,1} = @(x) inf;
+        models{k,2} = @(x) inf;
+    else
+        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
+    end
 end
 
 for ii = 1:num_iter
@@ -49,8 +54,6 @@ for ii = 1:num_iter
         if sum(assign == k) < min_conf
             models{k,1} = @(x) inf;
             models{k,2} = @(x) inf;
-            models{k,3} = @(x,y) inf;
-            models{k,4} = @(x,y) inf;
         else
             [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
         end
@@ -63,35 +66,50 @@ for ii = 1:num_iter
     
 end
 
-    function res = find_assign(pt, mods)
+    function res = find_assign(pt, mods, use_solver)
         KK = size(mods,1);
         if KK == 1
             res = mods{1,1}(pt)';
         else
             l = zeros(KK,size(pt,2));
             res = zeros(size(pt,2),2);
-            for kk = 1:KK
-                pred = mods{kk,1}(pt);
-                l(kk,:) = sum((mods{kk,2}(pred') - pt).^2,1);
+            pred = cell(size(pt,2),1);
+            if use_solver
+                parfor kk = 1:KK
+                    pred{kk} = mods{kk,1}(pt);
+                    l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
+                end
+            else
+                for kk = 1:KK
+                    pred{kk} = mods{kk,1}(pt);
+                    l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
+                end
             end
             [~, mdl] = min(l,[],1);
             
             for kk = unique(mdl)
-                res(mdl == kk,:) = mods{kk,1}(pt(:,mdl == kk))';
+                res(mdl == kk,:) = pred{kk}(:,mdl==kk)';
             end
         end
     end
 
-    function res = forward_find_assign(alphas, mods)
+    function res = forward_find_assign(alphas, mods, use_solver)
         KK = size(mods,1);
         if KK == 1
             res = mods{1,2}(alphas)';
         else
             l = zeros(KK,size(alphas,1));
             res = zeros(size(alphas, 1), size(P,2));
-            for kk = 1:KK
-                pred = mods{kk,2}(alphas);
-                l(kk,:) = sum((mods{kk,1}(pred)' - alphas).^2,2);
+            if use_solver
+                parfor kk = 1:KK
+                    pred = mods{kk,2}(alphas);
+                    l(kk,:) = sum((mods{kk,1}(pred)' - alphas).^2,2);
+                end
+            else
+                for kk = 1:KK
+                    pred = mods{kk,2}(alphas);
+                    l(kk,:) = sum((mods{kk,1}(pred)' - alphas).^2,2);
+                end
             end
             [~, mdl] = min(l,[],1);
             
@@ -101,6 +119,6 @@ end
         end
     end
 
-fun = @(pt) find_assign(pt, models);
-forward_fun = @(alphas) forward_find_assign(alphas, models);
+fun = @(pt) find_assign(pt, models, use_solver);
+forward_fun = @(alphas) forward_find_assign(alphas, models, use_solver);
 end
