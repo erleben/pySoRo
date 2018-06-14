@@ -10,7 +10,7 @@ A = {};
 A.max = max(Alphas);
 A.min = min(Alphas);
 
-[p_model, pf_model] = k_model(P, Alphas, 1, 4, false, true);
+[p_model, pf_model] = k_model(P, Alphas, 1, 20, false, true);
 [~, rf_model] = k_model(R, Alphas, 1, 4, false, true);
 
 %model = @(a,s,oc,or) get_path(cellfun(@double,cell(a)), cellfun(@double,cell(s)), cellfun(@double,cell(oc)), cellfun(@double,cell(or)), p_model, pf_model, rf_model, A);

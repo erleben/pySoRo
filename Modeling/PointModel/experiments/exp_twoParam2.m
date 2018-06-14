@@ -4,9 +4,16 @@ function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_so
 
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('alphamap_grabber.csv'));
-P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+%Alphas  = csvread(strcat('alphamap_grabber.csv'));
+%P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+
+Alphas  = csvread(strcat('../data/alphamap.csv'));
+Alphas = Alphas(:,2:3);
+P=csvread('../data/ordered_twoP.csv');
+P(1:7*51,:) = [];
+Alphas(1:7*51,:)=[];
 %P=P(:,4:6);
+
 saveModel = false;
 
 

@@ -10,7 +10,7 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 0;
+num_iter = 1;
 
 [assign, cent] = kmeans(A, K); 
 old_assign = assign;
@@ -43,7 +43,7 @@ for ii = 1:num_iter
     for k = 1:K
         model_loss(k,:) = sum((models{k,1}(P')-A').^2,1);
     end
-    [min_loss, assign] = min(model_loss);
+    [min_loss, assign] = min(model_loss, [], 1);
     loss(ii,:) = sqrt(min_loss);
     for k = 1:K
         Points{k} = P(assign == k, :);
@@ -116,6 +116,8 @@ end
         end
 
     end
+
+forward_fun = @(alpha) forward_find_assign(alpha, models, cent);
 
 if use_solver
     fun = @(pt) find_assign(pt, models, cent);

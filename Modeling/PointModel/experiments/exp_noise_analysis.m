@@ -22,11 +22,9 @@ for nr = 1:num_rn
         noise = normrnd(0,sigma,size(pt,1), size(pt,2));
         [model, fmodel] = trainModel(pt+noise, A, 2, false, false);
         
-        
-        for i = 1:length(A)
-            p_pred(i,:) = fmodel(A(i));
-            a_pred(i) = model(pt(i,:));
-        end
+ 
+        p_pred = fmodel(A)';
+        a_pred = model(pt');
         norml(r)=norml(r)+norm(p_pred-pt);
         explt(r) = explt(r)+sigma*sqrt(length(A))*(1/min(svd(A-A(1))))*norm(A-A(1)) + sigma/2;
         norma(r) = norma(r) + norm(a_pred-A);

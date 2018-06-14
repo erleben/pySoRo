@@ -26,7 +26,7 @@ A_JK = makeAlpha(A,order, isPoly);
 % Compute Hessian
 JK = (A_JK*A_JK')\(U*A_JK')';
 
- 
+
 if isPoly
     fst = @(F) F(1:size(Alphas,2),:);
     model = @(p) clamp(fst((JK(2:end,:)*JK(2:end,:)')\JK(2:end,:)*(p-X0-JK(1,:)')), Alphas);
