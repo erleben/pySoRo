@@ -1,4 +1,4 @@
-function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_solver, isPoly, do_val)
+function [msTrainE, msValE, model] = exp_twoParam2(order, k, use_solver, isPoly, do_val)
 % This function trains a order-ordered model, using k local models.
 % If gmodel is not specified, then a global model is made.
 
@@ -10,8 +10,8 @@ addpath('../../utilities/');
 Alphas  = csvread(strcat('../data/alphamap.csv'));
 Alphas = Alphas(:,2:3);
 P=csvread('../data/ordered_twoP.csv');
-P(1:7*51,:) = [];
-Alphas(1:7*51,:)=[];
+P(1:13*51,:) = [];
+Alphas(1:13*51,:)=[];
 %P=P(:,4:6);
 
 saveModel = false;

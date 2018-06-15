@@ -10,7 +10,7 @@ end
 [num_obs, ~] = size(P);
 
 % Devide alpha space into k sections
-num_iter = 1;
+num_iter = 0;
 
 [assign, cent] = kmeans(A, K); 
 old_assign = assign;
@@ -21,6 +21,16 @@ Points = cell(1,K);
 Alphas = cell(1,K);
 models = cell(K,2);
 
+% for k = 1:K
+%    if sum(assign == k) <= min_conf-1
+%         dist = pdist2(cent(k,:),cent);
+%         dist(k) = inf;
+%         [~, ind] = min(dist);
+%         assign(assign==k)=ind;
+%     
+%    end
+% end
+
 for k = 1:K
     Points{k} = P(assign==k,:);
     Alphas{k} = A(assign==k,:);
@@ -28,13 +38,8 @@ end
 
 % Train K models, each on their own section
 for k = 1:K
-    if sum(assign == k) <= min_conf
-        models{k,1} = @(x) inf;
-        models{k,2} = @(x) inf;
-    else
-        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
-    end
-end
+    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly); 
+end 
 
 for ii = 1:num_iter
     
@@ -51,12 +56,12 @@ for ii = 1:num_iter
     end
     
     for k = 1:K
-        if sum(assign == k) < min_conf
-            models{k,1} = @(x) inf;
-            models{k,2} = @(x) inf;
-        else
-            [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
-        end
+         if sum(assign == k) < min_conf
+             models{k,1} = @(x) inf;
+             models{k,2} = @(x) inf;
+         else
+          [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
+         end
     end
     
     if isequal(assign, old_assign)

@@ -14,6 +14,7 @@ for o = 1:order
     denom = factorial(o);
     for t = 1:terms
         C = multiNom(exponentials(t,:));
+        %A_JK(ind,:)=C*prod(a'.^exponentials(t,:),2)/prod(denom.^exponentials(t,:),2);
         A_JK(ind,:)=C*prod(a'.^exponentials(t,:),2)/denom;
         ind = ind + 1;
     end

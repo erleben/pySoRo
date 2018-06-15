@@ -1,7 +1,7 @@
 %crossvalidation on number of models 
-folds = 4;
+folds = 5;
 max_order = 6;
-gcp
+%gcp
 
 %Load data
 Alphas  = csvread(strcat('../data/alphamap.csv'));
@@ -13,7 +13,7 @@ Alphas(1:13*51,:)=[];
 Alphas  = Alphas(:,2:end);
 
 %Partition into train and test
-Train_inds = datasample(1:size(Alphas,1),round(0.50*size(P,1)),'Replace', false);
+Train_inds = datasample(1:size(Alphas,1),round(0.7*size(P,1)),'Replace', false);
 Test_inds = setdiff(1:size(Alphas,1), Train_inds);
 
 Train = P(Train_inds,:);
@@ -22,11 +22,11 @@ A_train = Alphas(Train_inds,:);
 Test = P(Test_inds,:);
 A_Test = Alphas(Test_inds,:);
 
-res = {};
-use_solver = false;
-
-parfor order = 1:max_order
-
+res = cell(max_order,1);
+use_solver = true(max_order,1);
+use_solver(1) = false;
+for order = 1:max_order
+    
     num_val = (folds-1)*size(Train,1)/folds;
     min_conf = sum(arrayfun(@(x)nchoosek(size(A_train,2)+x-1,x),1:order))+1;
     max_local = round(num_val/min_conf);
@@ -50,7 +50,7 @@ parfor order = 1:max_order
             tr_inds = setdiff(perm, val_inds);
             
             tic;
-            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, use_solver, true);
+            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, use_solver(order), true);
             train_time = train_time + toc;
             
             tic;
@@ -58,15 +58,16 @@ parfor order = 1:max_order
             exec_time = exec_time + toc;
             val_loss = val_loss + sum(sqrt(sum((alpha_est-A_train(val_inds,:)).^2,2)));
             
-            alpha_est = model(Train(tr_inds,:)');
-            tr_loss = tr_loss + sum(sqrt(sum((alpha_est-A_train(tr_inds,:)).^2,2)));
+            train_test_inds = datasample(tr_inds, length(val_inds), 'Replace', false);
+            alpha_est = model(Train(train_test_inds,:)');
+            tr_loss = tr_loss + sum(sqrt(sum((alpha_est-A_train(train_test_inds,:)).^2,2)));
             
             
         end
         
 
         res{order}(ind,1) = k;
-        res{order}(ind,2) = tr_loss/(length(tr_inds)*folds);
+        res{order}(ind,2) = tr_loss/(length(val_inds)*folds);
         res{order}(ind,3) = val_loss/(length(val_inds)*folds);
         res{order}(ind,4) = train_time/folds;
         res{order}(ind,5) = exec_time/folds;
@@ -75,7 +76,7 @@ parfor order = 1:max_order
     end
    
 end
-save('res2.mat','res');
+save('res_hope.mat','res');
 figure;
 Train = zeros(length(res{1}(:,1)),max_order);
 for d = 1:max_order

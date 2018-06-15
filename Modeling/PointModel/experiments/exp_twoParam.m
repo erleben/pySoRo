@@ -1,4 +1,4 @@
-function [msTrainE, msValE, model, model_select] = exp_twoParam(order, k, use_solver, isPoly, do_val)
+function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, do_val)
 % This function trains a order-ordered model, using k local models.
 % If gmodel is not specified, then a global model is made.
 
