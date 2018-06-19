@@ -1,35 +1,43 @@
-num = 300;
-order = 3;
-rn = 1000;
-tres = zeros(num,rn);
-pres = zeros(num,rn);
-res = zeros(rn,2);
+loss = zeros(1,10);
+losss = loss;
+noise = rand(100,1)*10000;
+noise(datasample(1:length(noise),1,'Replace',false)) = 0;
+for o = 1:10
 
-A = (1:num)';
+num = 100;
+order = o;
 
-for r = 1:rn
-noise = normrnd(0,0.01,num,1);
+res = zeros(1,2);
+
+A = ((1:num)+ rand(1,num)*0)';
+X = (A-num/2).^2;
 
 
-[~,tay] = trainModel(noise,A,order,false,false);
-[~,poly] = trainModel(noise,A,order,false,true);
 
-for i = 1:num
-    tres(i,r) = tay(A(i));
-    pres(i,r) = poly(A(i));
+noise = noise + X;
+
+%[~,tay] = trainModel(noise,A,order,0,false);
+[~,poly1] = trainModel(noise,A,order,1,true);
+
+%[~,tay] = k_model(noise,A,order,1,1,0,false);
+[~,poly] = k_model(noise,A,order,6,1,1,true);
+
+
+tres = poly1(A);
+pres = poly(A)';
+
+loss(o) = mean((noise-pres').^2);
+losss(o) =mean((noise-tres').^2);
 end
 
-end
 
-for r = 1:rn
-    res(r, 1) = norm(tres(:,r));
-    res(r, 2) = norm(pres(:,r));
-end
 
-mean(res)
-% plot(A,res);
-% hold on
-% plot(A,noise);
-% legend('Taylor approximation', 'Polynomial regression', 'Training data');
-% xlabel('\Delta \alpha');
-% ylabel('s(\alpha)');
+plot(A,tres);
+hold on
+plot(A,pres);
+
+plot(A,noise);
+legend('Taylor approximation', 'Polynomial regression', 'Training data');
+xlabel('\Delta \alpha');
+ylabel('s(\alpha)');
+

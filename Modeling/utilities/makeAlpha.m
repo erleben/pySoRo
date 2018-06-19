@@ -21,6 +21,8 @@ for o = 1:order
         
 end
 
+%A_JK = [ones(1,size(A_JK,2))./(A_JK(1,:)+1); A_JK];
+
 if isPoly
     A_JK = [ones(1,size(A_JK, 2)); A_JK];
 end

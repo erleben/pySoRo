@@ -42,8 +42,8 @@ obstacle_c = zeros(num_obs, 3);
 obstacle_r = zeros(num_obs, 1);
 
 for i = 1:num_obs
-obstacle_c(i,:) = s_goal;%P(round(rand*length(P)),:);
-obstacle_r(i) = 0.027;
+obstacle_c(i,:) = s_goal
+obstacle_r(i) = 0.027
 end
 
 

@@ -5,9 +5,9 @@
 %   -difference in training and testing loss
 
 E = [];
-order  =4;
+order  =1;
 
-for r = 1:10
+for r = 1:5
     ind = 1;
     for sigma = fliplr(2:0.2:6)
         E(r,ind)=exp_noise(order,1,1,10^(-sigma), false);

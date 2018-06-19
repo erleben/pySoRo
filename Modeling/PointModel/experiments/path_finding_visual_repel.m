@@ -29,7 +29,7 @@ num_obs = 1;
 
 
 a_0 = [0,0];
-s_goal = P(round(rand*length(P)),:);
+s_goal = [-0.1406,0.0012, 0.5487];
 
 [p_model, pf_model] = k_model(P, Alphas, 1, 8, false, true);
 [~, rf_model] = k_model(R, Alphas, 1, 4, false, true);
@@ -42,7 +42,7 @@ obstacle_r = zeros(num_obs, 1);
 
 for i = 1:num_obs
     obstacle_c(i,:) = s_goal;%P(round(rand*length(P)),:);
-    obstacle_r(i) = 0.03;
+    obstacle_r(i) = 0.027;
 end
 
 

@@ -4,7 +4,7 @@ P = P.points;
 figure;
 
 hold on;
-for i = 1:1043
+for i = 1:1015
     p = P{i}.all;
     scatter3(p(:,1),p(:,2),p(:,3),2);
     %drawnow;
