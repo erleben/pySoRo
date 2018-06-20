@@ -53,15 +53,15 @@ A_JK = makeAlpha(A,order, isPoly);
 %JK = (A_JK*A_JK'+I*normrnd(0,0.01).*diag(diag(A_JK*A_JK')))\(U*A_JK')';
 JK = (A_JK*A_JK')\(U*A_JK')';
 
-
+fst = @(F) F(1:size(Alphas,2),:);
 if isPoly
-    fst = @(F) F(1:size(Alphas,2),:);
-    model = @(p) clamp(fst((JK(2:end,:)*JK(2:end,:)')\JK(2:end,:)*(p-X0-JK(1,:)')), lb, ub);
-    %model = @(p) fst((JK(2:end,:)*JK(2:end,:)')\JK(2:end,:)*(p-X0-JK(1,:)'));
+    W = (JK(2:end,:)*JK(2:end,:)')\JK(2:end,:);
+    b = X0 + JK(1,:)';
 else
-    fst = @(F) F(1:size(Alphas,2),:);
-    model = @(p) fst(((JK*JK')\JK*(p-X0))) + A0;
+    W = JK*JK'\JK;
+    b = X0;
 end
+model = @(p) clamp(fst(W*(p-b)), lb, ub);
 
 if use_solver
     lossfun = @(p)@(a) sum(sum((JK'*makeAlpha(a, order, isPoly) - p).^2,2));

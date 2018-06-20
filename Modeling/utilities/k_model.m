@@ -13,7 +13,7 @@ end
 % Devide alpha space into k sections
 [assign, cent] = kmeans(A, K); 
 assign_mod = fitctree(P,assign);
-mean(assign_mod.predict(P)==assign);
+mean(assign_mod.predict(P)==assign)
 
 Points = cell(1,K);
 Alphas = cell(1,K);
@@ -54,11 +54,7 @@ end
 
             for kk = 1:KK
                 pred{kk} = mods{kk,1}(pt);
-                try
                 l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
-                catch
-                l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
-                end
             end
             [~, mdl] = min(l,[],1);
             
@@ -101,7 +97,7 @@ end
 forward_fun = @(alpha) forward_find_assign(alpha, models, cent);
 
 
-if use_solver
+if false
     fun = @(pt) find_assign(pt, models, assign_mod);
 else
     fun = @(pt) find_assign_QP(pt, models);
