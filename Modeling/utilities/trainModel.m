@@ -51,14 +51,18 @@ A_JK = makeAlpha(A,order, isPoly);
 %I(1) = 0;
 % Compute Hessian
 %JK = (A_JK*A_JK'+I*normrnd(0,0.01).*diag(diag(A_JK*A_JK')))\(U*A_JK')';
-JK = (A_JK*A_JK')\(U*A_JK')';
+%JK = (A_JK*A_JK')\(U*A_JK')';
 
+JK = pinv(A_JK)'*U';
+rcond(A_JK*A_JK')
+norm(JK)
+norm(U)
 fst = @(F) F(1:size(Alphas,2),:);
-if isPoly
-    W = (JK(2:end,:)*JK(2:end,:)')\JK(2:end,:);
+if isPoly 
+    W = pinv(JK(2:end,:)');
     b = X0 + JK(1,:)';
 else
-    W = JK*JK'\JK;
+    W = pinv(JK');
     b = X0;
 end
 model = @(p) clamp(fst(W*(p-b)), lb, ub);

@@ -49,7 +49,7 @@ end
             res = mods{1,1}(pt)';
         else
             l = zeros(KK,size(pt,2));
-            res = zeros(size(pt,2),2);
+            res = zeros(size(pt,2),size(A,2));
             pred = cell(size(pt,2),1);
 
             for kk = 1:KK
@@ -66,7 +66,7 @@ end
 
     function res = find_assign(pt, mods, assign_mod)
         KK = size(mods,1);
-        res = zeros(size(pt,2),2);
+        res = zeros(size(pt,2),size(A,2));
         if KK == 1
             res = mods{1,1}(pt)';
         else
@@ -97,7 +97,7 @@ end
 forward_fun = @(alpha) forward_find_assign(alpha, models, cent);
 
 
-if false
+if use_solver
     fun = @(pt) find_assign(pt, models, assign_mod);
 else
     fun = @(pt) find_assign_QP(pt, models);
