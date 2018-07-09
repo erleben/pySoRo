@@ -9,16 +9,15 @@ figure;
 %pc2 = pcread('/Volumes/TOSHIBA/experiment5/1_806312060523.ply');
 %pcwrite(pc, 'pc1.ply');
 %pcwrite(pc2, 'pc2.ply');
-pc2 = pcread('pc1.ply');
-pc = pcread('pc2.ply');
+pc = pcread('pc1.ply');
+pc2 = pcread('pc2.ply');
 
 settings= makeSettings('16');
 tform  = load(strcat('../', settings.tform_name));
 
 loc = pc2.Location;
-for i = 1:length(loc)
-    loc(i,:) = (tform.R*loc(i,:)' + tform.T);
-end
+loc = loc*tform.R + tform.T';
+
 
 pc2 = pointCloud(loc, 'Color', pc2.Color);
 merged = pcmerge(pc,pc2,0.0005);

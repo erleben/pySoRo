@@ -8,7 +8,7 @@ end
 
 addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_grabber.csv'));
-P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
+P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 P = P(:,4:end);
 
 %P =csvread('../../../PostProcessing/outputOrder/ordered_finger.csv');
@@ -33,7 +33,7 @@ P = P(:,4:end);
 
 
 saveModel = false;
-
+ 
 
 if nargin < 5
     do_val = false;
@@ -85,3 +85,4 @@ end
 
 
 end
+ 

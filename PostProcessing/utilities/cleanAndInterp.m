@@ -1,4 +1,4 @@
-function [cleaned, E] = cleanAndInterp(points, num_to_keep, fill_missing)
+function [cleaned, E] = cleanAndInterp(points, num_to_keep)
 
 % P: m*n matrix of m observations and n/3 variables.
 %    The format is [x, y, z, x, y, z, ...]
@@ -60,8 +60,10 @@ end
 min_thr = find(numE >= num_to_keep);
 min_thr = min_thr(1);
 
-P(:,sum(E)>min_thr)=[];
-E(:,sum(E)>min_thr)=[];
+to_keep = sum(E)>min_thr;
+
+P(:,to_keep)=[];
+E(:,to_keep)=[];
 E = E(:,1:3:end);
 
 cleaned = cell(num_alph,1);
@@ -70,5 +72,4 @@ for i = 1:num_alph
     cleaned{i} = [P(i,1:3:end)', P(i,2:3:end)', P(i,3:3:end)'];
 end
 
-    
 end

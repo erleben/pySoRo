@@ -1,7 +1,7 @@
-function [fun, forward_fun] = k_model(P, A, order, K, use_solver, isPoly, bound)
+function [fun, forward_fun] = k_model(P, A, order, K, use_solver, isPoly, use_regtree)
 
 if nargin < 7
-    bound = -1;
+    use_regtree = use_solver;
 end
 % Find the minimum number of configrations needed to solve for kinematics
 min_conf = sum(arrayfun(@(x)nchoosek(size(A,2)+x-1,x),1:order));
@@ -10,7 +10,7 @@ if nargin < 6
     isPoly = false;
 end
 
-% Devide alpha space into k sections
+% Divide alpha space into k sections
 [assign, cent] = kmeans(A, K); 
 assign_mod = fitctree(P,assign);
 mean(assign_mod.predict(P)==assign)
@@ -38,7 +38,7 @@ for k = 1:K
         models{k,1} = @(pt) repmat(cent(k,:)',1,size(pt,2));
         models{k,2} = @(a)  repmat(mean(P(assign==k,:))',size(a,2),1);
     else
-        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly, bound); 
+        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly); 
     end
 end
  
@@ -77,7 +77,7 @@ end
                 res(mdl == kk,:) = mods{kk,1}(pt(:,mdl == kk))';
             end
         end
-    end 
+    end
 
     function res = forward_find_assign(alphas, mods, cent)
         KK = size(mods,1);
@@ -97,7 +97,7 @@ end
 forward_fun = @(alpha) forward_find_assign(alpha, models, cent);
 
 
-if use_solver
+if use_regtree
     fun = @(pt) find_assign(pt, models, assign_mod);
 else
     fun = @(pt) find_assign_QP(pt, models);
