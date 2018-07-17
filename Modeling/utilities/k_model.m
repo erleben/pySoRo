@@ -11,7 +11,7 @@ if nargin < 6
 end
 
 % Divide alpha space into k sections
-[assign, cent] = kmeans(A, K); 
+[assign, cent] = kmeans(A, K);
 assign_mod = fitctree(P,assign);
 mean(assign_mod.predict(P)==assign)
 
@@ -48,13 +48,13 @@ end
         if KK == 1
             res = mods{1,1}(pt)';
         else
-            l = zeros(KK,size(pt,2));
-            res = zeros(size(pt,2),size(A,2));
+            l = zeros(KK,size(pt,1));
+            res = zeros(size(pt,1),size(A,2));
             pred = cell(size(pt,2),1);
 
             for kk = 1:KK
                 pred{kk} = mods{kk,1}(pt);
-                l(kk,:) = sum((mods{kk,2}(pred{kk}) - pt).^2,1);
+                l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt').^2,1);
             end
             [~, mdl] = min(l,[],1);
             
@@ -72,9 +72,9 @@ end
         else
             %s_cent = forward_find_assign(cent, mods, cent);
             %[~, mdl] = min(pdist2(pt(1:6,:)', s_cent(:,1:6)),[],2);
-            mdl=assign_mod.predict(pt');
+            mdl=assign_mod.predict(pt);
             for kk = unique(mdl)'
-                res(mdl == kk,:) = mods{kk,1}(pt(:,mdl == kk))';
+                res(mdl == kk,:) = mods{kk,1}(pt(mdl == kk,:))';
             end
         end
     end
@@ -85,10 +85,10 @@ end
             res = mods{1,2}(alphas)';
         else
             res = zeros(size(alphas, 1), size(P,2));
-            [~, mdl] = min(pdist2(alphas', cent),[],2);
+            [~, mdl] = min(pdist2(alphas, cent),[],2);
             
             for kk = unique(mdl)'
-                res(mdl == kk,:) = mods{kk,2}(alphas(:,mdl == kk))';
+                res(mdl == kk,:) = mods{kk,2}(alphas(mdl == kk,:))';
             end
         end
 

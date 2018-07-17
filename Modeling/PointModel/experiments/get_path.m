@@ -1,4 +1,4 @@
-function path = get_path(a_0, s_goal, obstacle_c, obstacle_r, p_model, pf_model, rf_model, A)
+function path = get_path(a_0, s_goal, obstacle_c, obstacle_r, p_model, rf_model, A)
 
 num_samples = 1000;     % Resolution
 connectivity = 30;      % Allows shorcuts

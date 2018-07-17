@@ -1,35 +1,34 @@
+% Fit a curve to noisy data with and without regularization
+
 order = 7;
 lam = 0.001;
-for i = 1:1
-X = datasample(1:0.01:10,20,'Replace',false);
-XR = X;
-minX = min(X);
-X = X-minX;
-maxX = max(X);
-X = X/maxX;
 
-XX = makeAlpha(X,order,true);
-Z = (XR -7+ normrnd(0,0.5,1,length(X))).^2 + 5;
+A = datasample(1:0.01:10,20,'Replace',false);
+A_orig = A;
+minA = min(A);
+A = A-minA;
+maxA = max(A);
+A = A/maxA;
+
+A_JK = makeAlpha(A,order,true);
+X = (A_orig -7+ normrnd(0,0.5,1,length(A))).^2 + 5;
 
 
-scatter(XR,Z);
+scatter(A_orig,X);
 
-w_noreg = (XX*XX')\(Z*XX')';
+w_noreg = (A_JK*A_JK')\(X*A_JK')';
 
-IL = eye(size(XX*XX'))*lam;
+IL = eye(size(A_JK*A_JK'))*lam;
 IL(1)=0;
-ww_wreg = (XX*XX'+IL)\(Z*XX')';
-w_real = (XX*XX')\(((X-7).^2)*XX')';
+w_reg = (A_JK*A_JK'+IL)\(X*A_JK')';
 
-xxx = linspace(min(X),max(X),100);
-xx = makeAlpha(xxx,order,true);
-yy = xx'*w_noreg;
+a_sample = linspace(min(A),max(A),100);
+a_JK = makeAlpha(a_sample,order,true);
+yy = a_JK'*w_noreg;
 hold on;
-xxx = (xxx*maxX)+minX;
-plot(xxx,yy,'r'); 
+a_sample = (a_sample*maxA)+minA;
+plot(a_sample,yy,'r'); 
 
-plot(xxx,xx'*ww_wreg,'b');
+plot(a_sample,a_JK'*w_reg,'b');
 
-%plot(xxx,xx'*w_real);
-end
 legend('Data','Without reg', 'With reg');

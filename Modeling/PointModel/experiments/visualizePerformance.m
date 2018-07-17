@@ -13,7 +13,7 @@ n = 29;
 
 [model, fmod] = k_model(P, A, 2,1, 0, 1);
 
-alpha_est = model(P');
+alpha_est = model(P);
 p_est = fmod(A);
 
 
@@ -50,18 +50,13 @@ for i  =num_p
     scatter3(p_est(:,i*3-2),p_est(:,i*3-1),p_est(:,i*3),4,'f')
 end
 r = 5;
+p = P(datasample(1:100,10,'Replace',false),:);
 
-p = P(floor(rand(r,1)*1000),:)+plane.Normal*0.01;%+ 0.04*(rand(r,size(P,2))-0.3);
-
-a=model(p');
+a=model(p);
 p_pred= fmod(a);
-
+ 
 for i = 1:r
 pl = [p(i,:);p_pred(i,:)];
 plot3(pl(:,1),pl(:,2),pl(:,3), 'LineWidth', 5);
 end
 
-pc = pointCloud(p_est);
-plane = pcfitplane(pc,0.01);
-%plot(plane);
-rad2deg(acos(sum((p-p_pred).*plane.Normal,2)./n1))

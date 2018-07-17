@@ -33,7 +33,7 @@ s_goal = P(round(rand*length(P)),:);
 [p_model, pf_model] = k_model(P, Alphas, 1, 4, false, true);
 [~, rf_model] = k_model(R, Alphas, 1, 4, false, true);
 
-a_goal = p_model(s_goal');
+a_goal = p_model(s_goal);
 s_start = pf_model(a_0);
 
 %obstacle_c = median(P);
