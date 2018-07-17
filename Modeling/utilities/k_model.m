@@ -54,7 +54,7 @@ end
 
             for kk = 1:KK
                 pred{kk} = mods{kk,1}(pt);
-                l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt).^2,1);
+                l(kk,:) = sum((mods{kk,2}(pred{kk}) - pt).^2,1);
             end
             [~, mdl] = min(l,[],1);
             
@@ -85,10 +85,10 @@ end
             res = mods{1,2}(alphas)';
         else
             res = zeros(size(alphas, 1), size(P,2));
-            [~, mdl] = min(pdist2(alphas, cent),[],2);
+            [~, mdl] = min(pdist2(alphas', cent),[],2);
             
             for kk = unique(mdl)'
-                res(mdl == kk,:) = mods{kk,2}(alphas(mdl == kk,:))';
+                res(mdl == kk,:) = mods{kk,2}(alphas(:,mdl == kk))';
             end
         end
 

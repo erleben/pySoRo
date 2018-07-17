@@ -6,7 +6,7 @@ function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, 
 addpath('../../utilities/');
 Alphas  = csvread(strcat('alphamap_grabber.csv'));
 P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
-
+P=P(:,1);
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P=load('../data/ordered_twoP.csv');
 

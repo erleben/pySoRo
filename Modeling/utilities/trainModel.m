@@ -13,7 +13,7 @@ if nargin < 6
 end
 
 if nargin < 7
-    doNormalize = true;
+    doNormalize = false;
 end
 
 
@@ -65,6 +65,7 @@ else
     W = pinv(JK');
     b = X0;
 end
+
 model = @(p) clamp(fst(W*(p-b)), lb, ub);
 
 if use_solver
@@ -74,7 +75,7 @@ if use_solver
 end
 
 if nargout > 1
-    fmodel = @(a) (X0 + JK'*makeAlpha(a'-A0,order, isPoly));
+    fmodel = @(a) (X0 + JK'*makeAlpha(a-A0,order, isPoly));
     if doNormalize
         fmodel = @(a) denormalize(fmodel(normalize(a, a_std, a_mean)), p_std', p_mean');
     end
@@ -97,7 +98,7 @@ end
         for i = 1:size(p,2)
             x = fmincon(lossfun(p(:,i)-X0), start_p(:,i), [],[],[],[], lb'-A0, ub'-A0,[], options);
             pred(:,i) = x+A0;
-        end
+        end 
     end
 
     function X = denormalize(X, s, m)
