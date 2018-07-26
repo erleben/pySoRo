@@ -79,27 +79,27 @@ Here is the code that is causing the bad performance
   
 
     def update(self, coordinates, uvs):  
-    vertex_data = []  
-    index_data = []  
-    index = 0  
-    for i in range(len(coordinates)):  
-    if fabs(coordinates[i][2]) > 0.0:  
-    vertex_data.append(coordinates[i][0])  
-    vertex_data.append(coordinates[i][1])  
-    vertex_data.append(coordinates[i][2])  
-    vertex_data.append(uvs[i][0])  
-    vertex_data.append(uvs[i][1])  
-    index_data.append(index)  
-    index += 1  
-    vertex_array = np.array(vertex_data, dtype=np.float32)  
-    index_array = np.array(index_data, dtype=np.uint32)  
-      
-    self.count = index  
-      
-    glBindBuffer(GL_ARRAY_BUFFER, self.vbo)  
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)  
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)  
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)  
+        vertex_data = []  
+        index_data = []  
+        index = 0  
+        for i in range(len(coordinates)):  
+        if fabs(coordinates[i][2]) > 0.0:  
+        vertex_data.append(coordinates[i][0])  
+        vertex_data.append(coordinates[i][1])  
+        vertex_data.append(coordinates[i][2])  
+        vertex_data.append(uvs[i][0])  
+        vertex_data.append(uvs[i][1])  
+        index_data.append(index)  
+        index += 1  
+        vertex_array = np.array(vertex_data, dtype=np.float32)  
+        index_array = np.array(index_data, dtype=np.uint32)  
+          
+        self.count = index  
+          
+        glBindBuffer(GL_ARRAY_BUFFER, self.vbo)  
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)  
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)  
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)  
 
   
 It is not really the openGL call at the end that is the problem, but rather that we setup up a for-loop that incrementally creates two lists in order to zip two numpy arrays into one numpy array. This is slow. Ideally we would much rather write something Like  
