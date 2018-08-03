@@ -1,7 +1,7 @@
 function [fun, forward_fun] = k_model(P, A, order, K, use_solver, isPoly, use_regtree)
 
 % P         M*N matrix. N dimentioinal shape for M configurations
-% A         M*P matrix. P dimentional configuration vector for M 
+% A         M*P matrix. P dimentional configuration vector for M
 %           configurations
 % order     The order of the models
 % K         The number of local models
@@ -45,9 +45,9 @@ end
 
 % Train K models, each on their own section
 for k = 1:K
-    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly); 
+    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly);
 end
- 
+
 
     function res = find_assign_QP(pt, mods)
         KK = size(mods,1);
@@ -57,7 +57,7 @@ end
             l = zeros(KK,size(pt,1));
             res = zeros(size(pt,1),size(A,2));
             pred = cell(size(pt,2),1);
-
+            
             for kk = 1:KK
                 pred{kk} = mods{kk,1}(pt);
                 l(kk,:) = sum((mods{kk,2}(pred{kk}') - pt').^2,1);
@@ -95,7 +95,7 @@ end
                 res(mdl == kk,:) = mods{kk,2}(alphas(mdl == kk,:))';
             end
         end
-
+        
     end
 
 forward_fun = @(alpha) forward_find_assign(alpha, models, cent);
@@ -106,5 +106,5 @@ if use_regtree
 else
     fun = @(pt) find_assign_QP(pt, models);
 end
- 
+
 end

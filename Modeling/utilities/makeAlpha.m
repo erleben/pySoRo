@@ -18,7 +18,7 @@ for o = 1:order
         A_JK(ind,:)=C*prod(a'.^exponentials(t,:),2);
         ind = ind + 1;
     end
-         
+    
 end
 
 if isPoly

@@ -13,7 +13,7 @@
 
 % Approach: Sample the configuration space. Remove configurations for which
 % the robot collides with the obstacle. Resample, such that the density of
-% samples is smaller far away from the obstacles. 
+% samples is smaller far away from the obstacles.
 % Find shortest path between conf and goal_conf via sampled points
 
 function path = path_finding_visual_repel()
@@ -77,10 +77,10 @@ pun = pun/max(pun);
 pun = pun*0.7;
 pun = pun +0.3;
 if importanceSampling
-
-for i  =1:length(to_remove)
-    to_remove(i) = binornd(1,pun(i));
-end
+    
+    for i  =1:length(to_remove)
+        to_remove(i) = binornd(1,pun(i));
+    end
 else
     to_remove = zeros(size(to_remove));
 end
@@ -117,7 +117,7 @@ path = shortestpath(G,1,2);
 
 no_col_sample =sample(no_collision,:);
 col_sample = sam(coll,:);
- 
+
 conf_path = sample(path,:);
 plot(conf_path(:,1),conf_path(:,2),'k','LineWidth',3);
 hold on;
@@ -135,7 +135,7 @@ hold on
 for o = 1:num_obs
     hc = plot(sphereModel([obstacle_c(o,:),obstacle_r(o)]));
     set(hc,'FaceColor','w')
-end 
+end
 scatter3(s_goal(:,1),s_goal(:,2),s_goal(:,3),2,'r','f');
 scatter3(s_start(:,1),s_start(:,2),s_start(:,3),2,'r','f');
 s_path = SSR(path,:);

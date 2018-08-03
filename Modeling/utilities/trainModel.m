@@ -19,10 +19,10 @@ if doNormalize
 end
 
 
-lb = min(Alphas,[],1); 
+lb = min(Alphas,[],1);
 ub = max(Alphas, [], 1);
 
-Plb = min(P,[],1); 
+Plb = min(P,[],1);
 Pub = max(P, [], 1);
 
 X0 = P(1,:)';
@@ -34,13 +34,13 @@ else
     A0 = Alphas(1,:)';
 end
 
-A = Alphas'-A0; 
+A = Alphas'-A0;
 
 A_JK = makeAlpha(A,order, isPoly);
 JK = lsqminnorm(A_JK',U');
 
 fst = @(F) F(1:size(Alphas,2),:);
-if isPoly 
+if isPoly
     W = pinv(JK(2:end,:)');
     b = X0 + JK(1,:)';
 else
@@ -90,8 +90,8 @@ end
 
     function [X, s, m] = normalize(X,s,m)
         if nargin == 1
-        m = mean(X);
-        s = std(X-m);
+            m = mean(X);
+            s = std(X-m);
         end
         s(s==0)=1;
         X = (X-m)./s;
