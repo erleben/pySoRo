@@ -1,3 +1,5 @@
+## This is the MotorControl class, which allows you to control each actuator without having to worry about the underlying communication protocols. 
+
 import serial
 import time
 import json
@@ -137,7 +139,8 @@ class Motorcontrol:
         return np.sum(d)>10
         
     
-    ## Binary search for initial position. Stop search when color-color_i< thresh
+    ## Binary search for initial position, such that there is no slack on the cables.
+    ## Stop search when color-color_i< thresh
     
     def binarySearch(self, non_deformed, pos, nr):
         while ~self.is_deformed(non_deformed, 10):
@@ -155,7 +158,6 @@ class Motorcontrol:
             self.setPos(pos)
     
             # Stopping condition. 
-            # Look into what happens when solution does not exist
             if l>=(h-2):
                 break
             

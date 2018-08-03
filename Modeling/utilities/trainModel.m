@@ -1,4 +1,4 @@
-function [model, fmodel] = trainModel(P, Alphas, order, use_solver, isPoly, pm, doNormalize)
+function [model, fmodel] = trainModel(P, Alphas, order, use_solver, isPoly, doNormalize)
 
 if nargin < 4
     use_solver = true;
@@ -6,10 +6,6 @@ end
 
 if nargin < 5
     isPoly = true;
-end
-
-if nargin < 6
-    pm = 0;
 end
 
 if nargin < 7
@@ -22,17 +18,12 @@ if doNormalize
     [Alphas, a_std, a_mean] = normalize(Alphas);
 end
 
-if pm == -1
-    pm = 0;
-end
 
-lb = min(Alphas,[],1) - pm; 
-ub = max(Alphas, [], 1) + pm;
+lb = min(Alphas,[],1); 
+ub = max(Alphas, [], 1);
 
-P_lb = min(P,[],1);
-P_ub = max(P, [], 1);
-
-
+Plb = min(P,[],1); 
+Pub = max(P, [], 1);
 
 X0 = P(1,:)';
 U = P'-X0;
@@ -43,29 +34,21 @@ else
     A0 = Alphas(1,:)';
 end
 
-
 A = Alphas'-A0; 
 
 A_JK = makeAlpha(A,order, isPoly);
-%I = ones(size(A_JK*A_JK'));
-%I(1) = 0;
-% Compute Hessian
-%JK = (A_JK*A_JK'+I*normrnd(0,0.01).*diag(diag(A_JK*A_JK')))\(U*A_JK')';
-%JK = (A_JK*A_JK')\(U*A_JK')';
-%JK = pinv(A_JK)'*U';
-
 JK = lsqminnorm(A_JK',U');
 
 fst = @(F) F(1:size(Alphas,2),:);
 if isPoly 
     W = pinv(JK(2:end,:)');
-    %W=JK(2:end,:).*JK(2:end,:)'\JK(2:end,:);
     b = X0 + JK(1,:)';
 else
     W = pinv(JK');
     b = X0;
 end
 
+% Naive first order appriximation
 model = @(p) clamp(fst(W*(p'-b)), lb, ub);
 
 if use_solver
@@ -75,7 +58,7 @@ if use_solver
 end
 
 if nargout > 1
-    fmodel = @(a) (X0 + JK'*makeAlpha(a'-A0,order, isPoly));
+    fmodel = @(a) clamp((X0 + JK'*makeAlpha(a'-A0,order, isPoly)),Plb,Pub);
     if doNormalize
         fmodel = @(a) denormalize(fmodel(normalize(a, a_std, a_mean)), p_std', p_mean');
     end
@@ -110,6 +93,7 @@ end
         m = mean(X);
         s = std(X-m);
         end
+        s(s==0)=1;
         X = (X-m)./s;
     end
 end

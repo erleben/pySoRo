@@ -25,6 +25,8 @@ R=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 
 num_samples = 1000;
 connectivity = 30;
+c = 5000;
+importanceSampling = true;
 num_obs = 1;
 
 
@@ -41,7 +43,7 @@ obstacle_c = zeros(num_obs, 3);
 obstacle_r = zeros(num_obs, 1);
 
 for i = 1:num_obs
-    obstacle_c(i,:) = s_goal;%P(round(rand*length(P)),:);
+    obstacle_c(i,:) = s_goal; %P(round(rand*length(P)),:);
     obstacle_r(i) = 0.027;
 end
 
@@ -62,8 +64,11 @@ end
 no_collision(1:2) = true;
 no_collision = logical(no_collision);
 
+%no_collision = ones(size(no_collision));
 COL = sample(~no_collision,:);
-c = 15000;
+sam = sample;
+coll = ~no_collision;
+
 pun=c./min(pdist2(sample,COL),[],2);
 
 to_remove = pun;
@@ -71,8 +76,13 @@ pun = 1./pun;
 pun = pun/max(pun);
 pun = pun*0.7;
 pun = pun +0.3;
+if importanceSampling
+
 for i  =1:length(to_remove)
     to_remove(i) = binornd(1,pun(i));
+end
+else
+    to_remove = zeros(size(to_remove));
 end
 to_keep = logical(~logical(to_remove).*logical(no_collision));
 to_keep(1:2)=true;
@@ -105,33 +115,41 @@ G.Edges.Weight = W;
 
 path = shortestpath(G,1,2);
 
-no_col_sample = sample(no_collision,:);
+no_col_sample =sample(no_collision,:);
+col_sample = sam(coll,:);
  
-
 conf_path = sample(path,:);
 plot(conf_path(:,1),conf_path(:,2),'k','LineWidth',3);
 hold on;
-scatter(no_col_sample(:,1),no_col_sample(:,2));
+scatter(no_col_sample(:,1),no_col_sample(:,2),15,'f','k');
+scatter(col_sample(:,1),col_sample(:,2),15,'f','c');
 scatter(a_0(1),a_0(2),60,'r','f');
-scatter(a_goal(1),a_goal(2),60,'b','f');
+scatter(a_goal(1),a_goal(2),60,'g','f');
 %plot(G)
+legend('Path Chosen','Sampled Configurations', 'Collision Configurations', 'Start Configuration', 'Goal Configuration');
+xlabel('\alpha_1')
+ylabel('\alpha_2')
 
 figure
 hold on
 for o = 1:num_obs
-    plot(sphereModel([obstacle_c(o,:),obstacle_r(o)]));
-end
-scatter3(s_goal(:,1),s_goal(:,2),s_goal(:,3));
-scatter3(s_start(:,1),s_start(:,2),s_start(:,3));
+    hc = plot(sphereModel([obstacle_c(o,:),obstacle_r(o)]));
+    set(hc,'FaceColor','w')
+end 
+scatter3(s_goal(:,1),s_goal(:,2),s_goal(:,3),2,'r','f');
+scatter3(s_start(:,1),s_start(:,2),s_start(:,3),2,'r','f');
 s_path = SSR(path,:);
 for m = 1:num_p
-    scatter3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m));
-    plot3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m));
+    scatter3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m),4,'r','f');
+    plot3(s_path(:,3*m-2),s_path(:,3*m-1),s_path(:,3*m),'Color','r','LineWidth',2);
     
 end
 
 sp_path = SSP(path,:);
-scatter3(sp_path(:,1),sp_path(:,2),sp_path(:,3));
-plot3(sp_path(:,1),sp_path(:,2),sp_path(:,3));
+scatter3(sp_path(:,1),sp_path(:,2),sp_path(:,3),4,'b','y');
+plot3(sp_path(:,1),sp_path(:,2),sp_path(:,3),'Color','y','LineWidth',2);
 
+p = pcread('../../../PostProcessing/visualization/pc1.ply');
+pcshow(p);
+set(gca,'color','k');
 end

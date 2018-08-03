@@ -1,16 +1,15 @@
-%res = load('res_hope.mat');
-%res = load('res_same.mat');
-%res = load('res_same_sun_bound.mat');
-%res = load('res_same_bound30.mat');
-%res = load('res_same_tree.mat','res');
-res = load('res_6f_norm_long.mat');
+% Visualize the results from the crossvalidation
+%res = load('res_6f_norm_long.mat');
+%res = load('res_5f_qp.mat');
+%res = load('res_5f_allqp.mat');
+res = load('res_5f_allreg.mat')
 cmax = 18;
 cmin = 4;
 sz  =16;
-tsz = 18;
+tsz = 20;
 ssz = 14;
 res = res.res;
-max_order = 6;
+max_order = 5;
 figure;
 
 Train = zeros(length(res{1}(:,1)),max_order);
@@ -27,7 +26,7 @@ xticks(1:max_order);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Training loss','FontSize',tsz);
+%title('Training loss','FontSize',tsz);
 %hcb = colorbar('FontSize',11,'YTick',log([round(cmin) :10,12:6: cmax]) ,'YTickLabel',[round(cmin) :10,12:6: cmax]);
 hcb=colorbar;
 caxis([cmin, cmax]);
@@ -50,7 +49,7 @@ caxis([cmin, cmax]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Validation loss','FontSize',tsz);
+%title('Validation loss','FontSize',tsz);
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Loss','FontSize',ssz);
 
@@ -74,7 +73,7 @@ caxis([0, 1.8]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Training time','FontSize',tsz);
+%title('Training time','FontSize',tsz)
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Time (s)','FontSize',ssz);
 
@@ -98,7 +97,7 @@ caxis([cmin cmax+0.5]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Execution time','FontSize',tsz);
+%title('Execution time','FontSize',tsz);
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Time (s)','FontSize',ssz);
 
@@ -129,7 +128,7 @@ caxis([1,500]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Memory: coefficients learned relative to l = 1, o = 1', 'FontSize',tsz);
+%title('Memory: coefficients learned relative to l = 1, o = 1', 'FontSize',tsz);
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String', 'l * |W|_k','FontSize',ssz);
     

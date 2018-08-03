@@ -1,4 +1,4 @@
-function [msTrainE, msValE, model] = exp_twoParam2(order, k, use_solver, isPoly, do_val)
+function [msTrainE, msValE, model] = exp_twoParam2(order, k, use_solver, isPoly, do_val, use_regtree)
 % This function creates and saves an IK-model for the given data set
 
 saveModel = false;
@@ -31,6 +31,10 @@ if nargin < 5
     do_val = false;
 end
 
+if nargin < 6
+    use_regtree = false;
+end
+
 if do_val
     Train_inds = datasample(1:size(Alphas,1),round(0.8*size(P,1)),'Replace', false);
 else
@@ -47,7 +51,7 @@ A_val = Alphas(Val_inds,:);
 
 
 % Train a model on the first dataset
-[model, ~] = k_model(Train, A_train, order, k, use_solver, isPoly, 0);
+[model, ~] = k_model(Train, A_train, order, k, use_solver, isPoly, use_regtree );
 
 
 alpha_est = model(Train);

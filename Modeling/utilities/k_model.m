@@ -1,5 +1,15 @@
 function [fun, forward_fun] = k_model(P, A, order, K, use_solver, isPoly, use_regtree)
 
+% P         M*N matrix. N dimentioinal shape for M configurations
+% A         M*P matrix. P dimentional configuration vector for M 
+%           configurations
+% order     The order of the models
+% K         The number of local models
+% useSolver To use solver or to solve as QP problem
+%           To use minimum deviaiton method (slow but accurate) or
+%           regression tree method (fast but inaccurate) for model
+%           selection
+
 if nargin < 7
     use_regtree = use_solver;
 end
@@ -13,7 +23,7 @@ end
 % Divide alpha space into k sections
 [assign, cent] = kmeans(A, K);
 assign_mod = fitctree(P,assign);
-mean(assign_mod.predict(P)==assign)
+%mean(assign_mod.predict(P)==assign)
 
 Points = cell(1,K);
 Alphas = cell(1,K);
@@ -21,25 +31,21 @@ models = cell(K,2);
 
 dist_mat = pdist2(cent,A);
 num_in_local = assign;
+
+% Regions wirt to few points borrow from neighbors
 for k = 1:K
     num = sum(assign == k);
     nn=round(sqrt(num)+1)^2;
+    nn = max(nn, min_conf);
     [~, inds] = mink(dist_mat(k,:),nn);
     Points{k} = P(inds,:);
     Alphas{k} = A(inds,:);
     num_in_local(k) = nn;
-    %Points{k} = P(assign==k,:);
-    %Alphas{k} = A(assign==k,:);
 end
 
 % Train K models, each on their own section
 for k = 1:K
-    if num_in_local(k)<min_conf
-        models{k,1} = @(pt) repmat(cent(k,:)',1,size(pt,2));
-        models{k,2} = @(a)  repmat(mean(P(assign==k,:))',size(a,2),1);
-    else
-        [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly); 
-    end
+    [models{k,1}, models{k,2}] = trainModel(Points{k}, Alphas{k}, order, use_solver, isPoly); 
 end
  
 
@@ -70,8 +76,6 @@ end
         if KK == 1
             res = mods{1,1}(pt)';
         else
-            %s_cent = forward_find_assign(cent, mods, cent);
-            %[~, mdl] = min(pdist2(pt(1:6,:)', s_cent(:,1:6)),[],2);
             mdl=assign_mod.predict(pt);
             for kk = unique(mdl)'
                 res(mdl == kk,:) = mods{kk,1}(pt(mdl == kk,:))';

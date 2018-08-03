@@ -1,3 +1,6 @@
+% Visualize the dirrenece of one or two local lower ordered models vs one
+% higher ordered model
+
 x = (-100:0.1:100)';
 y = (x-50).*(x+50).*x;
 

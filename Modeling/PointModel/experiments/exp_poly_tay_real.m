@@ -1,12 +1,14 @@
+% Comparison of Taylor appriximation and polynomial regression of real
+% data, repeated
 
 tres = zeros(30,2);
 pres = zeros(30,2);
 
 for i = 1:30
-    [tr, val] = exp_twoParam(1,70,false,false);
+    [tr, val] = exp_twoParam(1,70,false,false,true);
     tres(i,1)=tr;
     tres(i,2)=val;
-    [tr, val] = exp_twoParam(1,70,false,true);
+    [tr, val] = exp_twoParam(1,70,false,true,true);
     pres(i,1)=tr;
     pres(i,2)=val;
 end

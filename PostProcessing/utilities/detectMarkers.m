@@ -1,10 +1,13 @@
 function is_marker = detectMarkers(foreground, is_obj, show_pin_seg, method)
 
 if nargin < 4
-    method = 4;
+    method = 5;
 end
 
-% RGB of the object
+% There is no best way to segment images. Light conditions and size and 
+% color of robot and markers influence the results.
+% Chose between the five methods bellow to find one that works well for
+% your robot.
 
 
 if method == 1
@@ -39,13 +42,13 @@ elseif method == 2
     pts = imbinarize(pts);
     pts = imclose(pts,strel('disk',3));
 
-elseif method == 4 
+elseif method == 3
      is_obj = double(is_obj>0);
      foreground = double(foreground);
      HSV = rgb2hsv(foreground);
      is_obj = imerode(is_obj,strel('disk',2));
      pts = imfill(HSV(:,:,3).*is_obj,'holes')-(HSV(:,:,3).*is_obj)>30;
-elseif method == 5
+elseif method == 4
     % Check ration between blue and red. Is high for markers, close to 1 for
     % background
     is_obj = double(is_obj>0);
@@ -68,7 +71,7 @@ end
 
 elements = bwconncomp(pts);
 is_marker = zeros(size(pts));
-    % Separete the balls into independent binary images
+    % Enumerate balls
     ind = 1;
     for num = 1:elements.NumObjects 
         if numel(elements.PixelIdxList{num})<50

@@ -1,4 +1,5 @@
-%crossvalidation on number of models 
+% n-fold crossvalidation on number of local models vs number model order
+% Warning: Takes a lot of time
 folds = 5;
 max_order = 6;
 %gcp
@@ -6,6 +7,8 @@ max_order = 6;
 %Load data
 %Alphas  = csvread(strcat('../data/alphamap.csv'));
 %P = load('../data/ordered_twoP.csv');
+%P = P(:,19:21);
+
 
 P = csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 Alphas = csvread('alphamap_grabber.csv');
@@ -28,13 +31,13 @@ A_Test = Alphas(Test_inds,:);
 res = cell(max_order,1);
 use_solver = true(max_order,1);
 use_solver(1) = false;
-parfor order = 4:max_order
+for order = 1:max_order
     
     num_val = (folds-1)*size(Train,1)/folds;
     min_conf = sum(arrayfun(@(x)nchoosek(size(A_train,2)+x-1,x),1:order))+1;
-    max_local = round(num_val/min_conf);
+    max_local = round(num_val*0.5/min_conf);
     
-    k_sample = round([1:9, 10+(1:round(nthroot(max_local-10,2))).^2]);
+    k_sample = round([1:2:9, 12+(1:round(nthroot(max_local-12,2.2))).^2.2]);
     %k_sample = k_sample(1:2:end);
     %k_sample = 1:max_local;
     
@@ -59,12 +62,12 @@ parfor order = 4:max_order
             train_time = train_time + toc;
             
             tic;
-            alpha_est = model(Train(val_inds,:)');
+            alpha_est = model(Train(val_inds,:));
             exec_time = exec_time + toc;
-            val_loss = val_loss + sum(sqrt(sum((alpha_est-A_train(val_inds,:)).^2,2)))
-            
+            val_loss = val_loss + sum(sqrt(sum((alpha_est-A_train(val_inds,:)).^2,2)));
+             
             train_test_inds = datasample(tr_inds, length(val_inds), 'Replace', false);
-            alpha_est = model(Train(train_test_inds,:)');
+            alpha_est = model(Train(train_test_inds,:));
             tr_loss = tr_loss + sum(sqrt(sum((alpha_est-A_train(train_test_inds,:)).^2,2)));
 
             
@@ -79,111 +82,8 @@ parfor order = 4:max_order
         res{order}(ind,5) = exec_time/folds;
 
         ind = ind + 1;
-        order,k
+        [order,k]
     end
    
 end
-save('res_5f_norm_long.mat','res');
-figure;
-Train = zeros(length(res{1}(:,1)),max_order);
-for d = 1:max_order
-    Train(1:numel(res{d}(:,1)),d) = res{d}(:,2);
-end
-cmax = max(Train(:));
-Tr = Train;
-Tr(Train==0)=1000;
-cmin = min(Tr(:));
-imagesc(log(Tr));
-yticks(1:2:length(res{1}));
-yticklabels(int2str(res{1}(1:2:end,1)));
-colormap hot;
-xlabel('order');
-ylabel('local models')
-title('Training');
-hcb = colorbar('FontSize',11,'YTick',log([round(cmin) :10,12:6: cmax]) ,'YTickLabel',[round(cmin) :10,12:6: cmax]);
-caxis(log([cmin cmax-8]));
-colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','Loss');
-
-figure;
-Val = zeros(length(res{1}(:,1)),max_order);
-for d = 1:max_order
-    Val(1:numel(res{d}(:,1)),d) = res{d}(:,3);
-end
-cmax = max(Val(:));
-V = Val;
-V(Val==0)=1000;
-cmin = min(V(:));
-imagesc(log(V));
-yticks(1:2:length(res{1}));
-yticklabels(int2str(res{1}(1:2:end,1)));
-%caxis([cmin cmax]);
-colormap hot;
-xlabel('order');
-ylabel('local models')
-title('Validation');
-hcb = colorbar('FontSize',11,'YTick',log([round(cmin) :2:14,16:6: cmax]) ,'YTickLabel',[round(cmin) :2:14,16:6: cmax]);
-caxis(log([cmin cmax-8]));
-colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','Loss');
-
-figure;
-Time = zeros(length(res{1}(:,1)),max_order);
-for d = 1:max_order
-    Time(1:numel(res{d}(:,1)),d) = res{d}(:,4);
-end
-
-cmax = max(Time(:));
-cmin = min(Time(:));
-Ti = Time;
-Ti(Ti==0)=1000;
-imagesc(Ti);
-yticks(1:2:length(res{1}));
-yticklabels(int2str(res{1}(1:2:end,1)));
-hcb = colorbar;
-caxis([cmin cmax+0.5]);
-colormap hot;
-xlabel('order');
-ylabel('local models')
-title('Time');
-colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','Time (s)');
-
-
-figure;
-Time = zeros(length(res{1}(:,1)),max_order);
-for d = 1:max_order
-    Time(1:numel(res{d}(:,1)),d) = res{d}(:,5);
-end
-
-cmax = max(Time(:));
-cmin = min(Time(:));
-Ti = Time;
-Ti(Ti==0)=1000;
-imagesc(Ti);
-yticks(1:2:length(res{1}));
-yticklabels(int2str(res{1}(1:2:end,1)));
-hcb = colorbar;
-caxis([cmin cmax+0.5]);
-colormap hot;
-xlabel('order');
-ylabel('local models')
-title('Time');
-colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','ExecutionTime (s)');
-
-% Find best params for validaion:
-[k_ind,d] = find(V==min(V(:)));
-V(k_ind,d)
-k = res{1}(k_ind,1);
-model = k_model(P(Train_inds,:),Alphas(Train_inds,:), d, k, false, true);
-alpha_est = model(P(Test_inds,:)');
-test_loss = sqrt(sum((alpha_est-Alphas(Test_inds,:)).^2,2));
-
-% Find best params training:
-[k_ind,d] = find(Tr==min(Tr(:)));
-Tr(k_ind,d)
-k = res{1}(k_ind,1);
-model = k_model(P(Train_inds,:),Alphas(Train_inds,:), d, k, false, true);
-alpha_est = model(P(Test_inds,:)');
-train_loss = sqrt(sum((alpha_est-Alphas(Test_inds,:)).^2,2));
+save('res_5f_two_p.mat','res');

@@ -23,21 +23,14 @@ P2_N = P2_N + normrnd(0, sigma, size(P2_N));
 
 % Train a model on the first dataset
 model = trainModel(P1_N, Alphas, order, use_solver);
-res = zeros(size(P2_N,2),3);
+res = zeros(size(P2_N,1),3);
 
 % Evaluate on train and test data
-for i = 1:size(P2_N,1)
-    pt = P2_N(i,:)';
-    alpha_est = model(pt);
-    res(i,1) = Alphas(i);
-    res(i,2) = alpha_est(1);
-end
 
-for i = 1:size(P2_N,1)
-    pt = P1_N(i,:)';
-    alpha_est = model(pt);
-    res(i,3) = alpha_est(1);
-end
+res(:,1) = Alphas';
+res(:,2) = model(P1_N)';
+res(:,3) = model(P2_N)';
+
 
 train_err = mean(abs(res(:,3)-res(:,1)));
 test_err = mean(abs(res(:,2)-res(:,1)));

@@ -1,14 +1,10 @@
 
 # pySoRo
 
-This software is for creating data of moving soft robots. The
-software uses multiple intel real sensors to capture the current
-state of a soft robot.
+
 
 ## Intel Real Sense
-
-In this project we use the librealsense python API. One can clone a git repository from here
-
+To communicate with depth sensors from Intel, we use the librealsense python API. One can clone a git repository from here
 https://github.com/IntelRealSense/librealsense
 
 We did encounter a few mac-specific challenges when working with this library.
@@ -186,7 +182,7 @@ const_cast<rs2::texture_coordinate*>(self.get_texture_coordinates())
 
 This gave us the desired shape of the numpy arrays and increased performance.
 
-## Profiling Notes
+### Profiling Notes
 
 First one installs snakeviz
 
@@ -202,8 +198,8 @@ $/opt/local/Library/Frameworks/Python.framework/Versions/3.5/bin/snakeviz stats.
 
 The long path is due to using Macport for installing python.
 
-## MotorCom
-For this project, we are using a redboard to controll a chain of motor drivers. The redboard is programmed with arduino and runs a simplified version of C++. We use the serial interface (usb) between the computer and the redboard to synchronize the camera capture and the motor positions.
+## MotorControl
+For this project, we are using a redboard to controll a chain of motor drivers. The redboard is programmed with Arduino and runs a simplified version of C++. We use the serial interface (usb) between the computer and the redboard to synchronize the camera capture and the motor positions. Connect the Arduino to the computer via USB, open one of the projects in pysoro/MotorControl/RedBoeardPrograms/ in an Arduino IDE and upload the project.
 
 ### Prerequisites
 ```
@@ -229,33 +225,52 @@ The boards are then confugured and a simple sanity check is performed whether th
 One loop goes as follows. The redboard reads a string for the serial interface which contains the desired motor positions. Then it increments the motors and sends a signal over the serial to tell the client that the object is ready for capture.
  
  ### Computer side
-Client is the program that runs on the user side. 
-The user can modify the configuration data that will be sent as a json sting to the redboard in config.txt.
+pysoro/MotorControl/api.py contains a class that lets you connect to the Arduino and control the motors. 
+```
+from MotorControl import api as MC
+mc = MC.MotorControl()
 
+```
 Assuming correct harware setup, there are only two functions the user needs to know.
 ```
-ser=setup()
+mc.setup()
 ```
 
 This function establish a connection between the computer and the redboard, uploads the configuration file and asserts that the motors are working. ser is the serial interface we use to communicate with the redboard.
     
 ```
-msg = nextPos()
+ mc.setPos([p1,p2,...pn])
 ```
-Increments the positions of the motors. msg is a string containing the motor positions
+Increments the positions of the motors.
 
 ### In settings.xml:
 The positions are generated in a separate module. You can specify the module in settings.xml.
 Here you have to put in the name of the port the arduino is connected to. This can by found in Tools -> Port in the Arduino IDE while the redboard is connected. It should read something like "/dev/cu.usbserial-DN02Z6PY".
 
-## TODO:
-How to:
-Data acqusition
-Camera calibration
-Extracting shape data
-Ordering and cleaning data
-Use data to train model
-Evaluate model
-Realtime interaction
+## Data Acqusition
+We want to sample shape vectors and corresponding configuration vectors from the robot. The configuration vectors are simply vectors containing the parameters of the morors, ie [p1,p2,...,pn]. The shape vectors have to be extracted from depth data. In the data acqusition phase, we move the robot to different positions and save  a pointcloud,  a color image and texture coordinates for each sampled configuration.  
+
+### In settings.xml:
+Specify the path to data storage, the number of motors to use, which sampling module to use and how many configrations to sample. 
+Set up sensors and actuators. Run main.py
+
+## Post Processing
+Once the data is collected, the shape vectors can be extracted. 
+If multiple sensors are used, then the rigid transformation relating the sensor's internal coordinate systems must be found. Run the script calibration_frames.py in Calibration to collect data from each sensor. Note where the data is stored and specify it in runCalibration.m before executing the script. 
+
+First, the locations of the visual markers are segmented (segmentAll.m) and then these locations are sorted (orderAll.m) to form shape vectors. The segmentation method can be changed in PostProcessing/utilities/detectMarkers.m. 
+
+## Use extracted shape data to train a model
+In pySoRo/Modeling/ you find code to fit a model to the extracted shape data. 
+[IKmodel, shape_model] = k_model(P, A, order, numLocal, useSolver, isPoly)
+IKmodel - An inverse model. f(shape) -> configuraiton
+shapeModel - f(configuration) -> shape
+
+P - A matrix containing all the shape vectors
+A - A  matrix containig all corresponding configurations
+order - The order of the Taylor approximation/polynomial regression
+useSolver - if false, then the IKmodel solves the problem as a QP problem. Else, a numerical method is used.
+isPoly - Wheter to use Taylor approximaton or polynomial regression. 
+
 
 

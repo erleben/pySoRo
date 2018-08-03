@@ -1,3 +1,5 @@
+## This class allows you to monitor the data acqusition phase from a mobile device, using the telegram app.
+
 import threading
 import json 
 import requests

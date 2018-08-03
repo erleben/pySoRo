@@ -5,7 +5,7 @@ y = (x-5).*(x+5).*x;
 y = y+normrnd(0,100,size(y,1),size(y,2));
 
 
-[mod, fmod] = k_model(y,x,6,1,1,1);
+[mod, fmod] = k_model(y,x,3,1,1,1);
 
 y_estt=fmod(x);
 plot(x,y_estt);

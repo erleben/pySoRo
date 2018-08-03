@@ -8,20 +8,21 @@
 %   -difference in training and testing loss
 
 
-order = 1;
-train_err = zeros(8,1);
-test_err = zeros(8,1);
+order = 2;
+K = 1;
+train_err = zeros(2,1);
+test_err = zeros(2,1);
 ind = 1;
 
-for i = [2,3,4,5,7,8,9,10]
-    [te, tr] = exp_rep(order ,6 ,i, false, true, 3);
+for i = [2,3,4,6,7,8,9,10]
+    [te, tr] = exp_rep(2 ,i, order, K, true, true);
     train_err(ind) = tr;
     test_err(ind) = te;
     ind = ind + 1;
 end
 
 figure;
-plot([2:9],test_err)
+plot(1:length(test_err),test_err)
 ylabel('Mean configuration error');
 xlabel('Data set number');
 legend('Predicted configuration error');
