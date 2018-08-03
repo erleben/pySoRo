@@ -18,10 +18,9 @@ if doNormalize
     [Alphas, a_std, a_mean] = normalize(Alphas);
 end
 
-
+% Linear constraints
 lb = min(Alphas,[],1);
 ub = max(Alphas, [], 1);
-
 Plb = min(P,[],1);
 Pub = max(P, [], 1);
 

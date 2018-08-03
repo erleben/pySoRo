@@ -1,25 +1,19 @@
 function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, do_val)
 % This function trains a order-ordered model, using k local models.
 
+% Save the model for real time applications
+saveModel = false;
+name = '../../../RealTime/model.mat';
+
 addpath('../../utilities/');
-%Alphas  = csvread(strcat('alphamap_grabber.csv'));
-%P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_2.csv');
-%P=P(:,1:end);
 Alphas  = csvread(strcat('../data/alphamap.csv'));
 P=load('../data/ordered_twoP.csv');
 
 P(1:13*51,:) = [];
 Alphas(1:13*51,:)=[];
 
-
-
 Alphas  = Alphas(:,2:end);
-% m1=numel(unique(Alphas(:,2)));
-% AA = [];
-% for i  =1:m1
-%     AA = [AA;Alphas(i:m1:end,:)];
-% end
-% Alphas = AA;
+
 if nargin < 5
     do_val = false;
 end
@@ -37,7 +31,7 @@ A_train = Alphas(Train_inds,:);
 Val = P(Val_inds,:);
 A_val = Alphas(Val_inds,:);
 
-% Train a model on the first dataset
+% Train a model on the training data
 model = k_model(Train, A_train, order, k, use_solver, isPoly,1);
 
 alpha_est = model(Train);
@@ -45,14 +39,19 @@ train_err = sqrt(sum((alpha_est-A_train).^2,2));
 var(alpha_est-A_train)
 
 if do_val
-alpha_est = model(Val);
-val_err = sqrt(sum((alpha_est-A_val).^2,2));
-var(alpha_est-A_val)
-msValE=mean(val_err)
+    alpha_est = model(Val);
+    val_err = sqrt(sum((alpha_est-A_val).^2,2));
+    var(alpha_est-A_val)
+    msValE=mean(val_err)
 else
     msValE = -1;
 end
 
 msTrainE=mean(train_err)
+
+if saveModel
+    model = @(p) model(cellfun(@double,cell(p))');
+    save(name,'model');
+end
 
 end

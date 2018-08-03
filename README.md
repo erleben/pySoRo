@@ -232,18 +232,8 @@ In the Arduino IDE package manager, add Arduino json
 ### Hardware setup
 See https://learn.sparkfun.com/tutorials/getting-started-with-the-autodriver---v13?_ga=2.96138906.787908599.1517820663-1889163370.1513463701
 
-### Redboard side
-RedboardProgram is the program that will run on the redboard.
-Arduino programs consist of two parts: setup(), which will only be run once, and loop() which will run forever. In the setup part, the redboard constructs the nercessary variables for MAX_BOARDS number of boards. Then it sets up the serial interface and waits for a ready signal from the computer. Then it starts listening for a json file from the serial interface.
 
-The json file contains the following information:
-NUM_BOARDS: The number of boards that are set up in a chain
-
-The boards are then confugured and a simple sanity check is performed whether the configuration was successful. 
-
-One loop goes as follows. The redboard reads a string for the serial interface which contains the desired motor positions. Then it increments the motors and sends a signal over the serial to tell the client that the object is ready for capture.
- 
- ### Computer side
+ ### How to use
 pysoro/MotorControl/api.py contains a class that lets you connect to the Arduino and control the motors. 
 ```
 from MotorControl import api as MC
@@ -281,6 +271,7 @@ First, the locations of the visual markers are segmented (segmentAll.m) and then
 
 ## Use extracted shape data to train a model
 In pySoRo/Modeling/ you find code to fit a model to the extracted shape data. 
+
 ```[IKmodel, shape_model] = k_model(P, A, order, numLocal, useSolver, isPoly)```
 
 IKmodel - An inverse model. f(shape) -> configuraiton
