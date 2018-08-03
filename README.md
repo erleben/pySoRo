@@ -282,13 +282,19 @@ First, the locations of the visual markers are segmented (segmentAll.m) and then
 ## Use extracted shape data to train a model
 In pySoRo/Modeling/ you find code to fit a model to the extracted shape data. 
 ```[IKmodel, shape_model] = k_model(P, A, order, numLocal, useSolver, isPoly)```
+
 IKmodel - An inverse model. f(shape) -> configuraiton
+
 shapeModel - f(configuration) -> shape
 
 P - A matrix containing all the shape vectors
+
 A - A  matrix containig all corresponding configurations
+
 order - The order of the Taylor approximation/polynomial regression
+
 useSolver - if false, then the IKmodel solves the problem as a QP problem. Else, a numerical method is used.
-isPoly - Wheter to use Taylor approximaton or polynomial regression. 
+
+isPoly - Whether to use Taylor approximaton or polynomial regression. 
 
 

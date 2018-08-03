@@ -26,7 +26,7 @@ R=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 num_samples = 1000;
 connectivity = 30;
 c = 5000;
-importanceSampling = true;
+importanceSampling = false;
 num_obs = 1;
 
 
