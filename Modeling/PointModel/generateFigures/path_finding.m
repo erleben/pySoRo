@@ -16,12 +16,12 @@
 % samples is smaller far away from the obstacles.
 % Find shortest path between conf and goal_conf via sampled points
 
-function path = path_finding_visual_repel(num_samples, connectivity, penalty, importSam)
+function path = path_finding(num_samples, connectivity, penalty, importSam)
 
 addpath('../../utilities/');
-Alphas = csvread('alphamap_grabber.csv');
-P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2_1.csv');
-R=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
+Alphas = csvread('data_files/alphamap_grabber.csv');
+P=csvread('data_files/ordered_grabber_g2_1.csv');
+R=csvread('data_files/ordered_grabber_g2.csv');
 
 if nargin < 1
     num_samples = 1000;

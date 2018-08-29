@@ -1,5 +1,5 @@
-A = csvread('../data/alphamap.csv');
-P=csvread('../data/ordered_twoP.csv');
+A = csvread('data_files/alphamap.csv');
+P=csvread('data_files/ordered_twoP.csv');
 
 A(:,1) = [];
 P(1:13*51,:) = [];
@@ -34,10 +34,10 @@ h.String(2)=[];
 % Scatter plot one of the visual markers
 figure;
 for n = 9
-for i  = 1:K
-    hold on;
-    scatter3(P(a==i,n*3-2),P(a==i,n*3-1),P(a==i,n*3),5,col(i,:),'filled')
-end
+    for i  = 1:K
+        hold on;
+        scatter3(P(a==i,n*3-2),P(a==i,n*3-1),P(a==i,n*3),5,col(i,:),'filled')
+    end
 end
 
 view([10,20])

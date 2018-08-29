@@ -1,7 +1,11 @@
 % n-fold crossvalidation on number of local models vs number model order
 % Warning: Takes a lot of time
+C=clock;
+C(end-2:end)
+for runn = 1:3
+runn
 folds = 5;
-max_order = 6;
+max_order = 5;
 %gcp
 
 %Load data
@@ -31,11 +35,11 @@ A_Test = Alphas(Test_inds,:);
 res = cell(max_order,1);
 use_solver = true(max_order,1);
 use_solver(1) = false;
-for order = 1:max_order
+parfor order = 1:max_order
     
     num_val = (folds-1)*size(Train,1)/folds;
     min_conf = sum(arrayfun(@(x)nchoosek(size(A_train,2)+x-1,x),1:order))+1;
-    max_local = round(num_val*0.5/min_conf);
+    max_local = round(num_val*0.8/min_conf);
     
     k_sample = round([1:2:9, 12+(1:round(nthroot(max_local-12,2.2))).^2.2]);
     %k_sample = k_sample(1:2:end);
@@ -58,7 +62,7 @@ for order = 1:max_order
             tr_inds = setdiff(perm, val_inds);
             v = fold;
             tic;
-            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, use_solver(order), true);
+            model = k_model(Train(tr_inds,:),A_train(tr_inds,:), order, k, use_solver(order), true, false);
             train_time = train_time + toc;
             
             tic;
@@ -86,4 +90,10 @@ for order = 1:max_order
     end
    
 end
-save('res_5f_two_p.mat','res');
+name = strcat('allqp5f',int2str(runn),'.mat');
+save(name,'res');
+C=clock
+C(end-2:end)
+runn
+
+end

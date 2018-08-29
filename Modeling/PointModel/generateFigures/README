@@ -1,0 +1,4 @@
+Run each of the scripts for generating the figures used in the article.
+NB: In fig8, you have to specify which figure to make. This is explained in the code.
+
+NB: The result of the path finding method is random. The paths generated may look different from time to time

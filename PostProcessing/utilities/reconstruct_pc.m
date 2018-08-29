@@ -1,9 +1,10 @@
 clear;
 
-segment = true;
+segment = false;
 with_color = true;
 
-settings = makeSettings('8','5');
+settings = makeSettings('4','1');
+settings.path_to_pcs = '../../data/reconstruction/';
 PC_from = pcread(settings.pc_name_recon{1});
 PC_to = pcread(settings.pc_name_recon{2});
 
@@ -64,7 +65,16 @@ view([0 -90])
 
 figure;
 tf = affine3d(tform.T);
-pcshow(pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001),'Markersize',140)
+PC = pcmerge(PC_to, pctransform(from_transformed_PC,tf),0.001);
+pcshow(PC,'Markersize',140)
 title('Merged pointclouds based on ICP transform');
+
+
+inds = PC_merged.findNeighborsInRadius(median(PC_merged.Location),0.19);
+locs=PC_merged.Location(inds,:);
+cols = PC_merged.Color(inds,:);
+newpc = pointCloud(locs,'Color',cols);
+pcshow(newpc)
+pcwrite(newpc,'complete')
 
 %getMarkerCentroids(settings)

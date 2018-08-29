@@ -5,10 +5,10 @@ addpath('../../utilities/');
 A  = csvread(strcat('alphamap_grabber.csv'));
 P=csvread('../../../PostProcessing/outputOrder/ordered_grabber_g2.csv');
 
-n = 2
+n = 2;
 P = P(:,3*n-2:3*n);
 
-maxO = 20;
+maxO = 18;
 rnds = 10;
 frac = 0.7;
 t_err = zeros(maxO, rnds);
@@ -48,14 +48,14 @@ plot(mean(t_err,2),'b')
 hold on;
 plot(mean(v_err,2),'g');
 
-h1=fill([1:size(t_err,1), size(t_err,1):-1:1],[mean(t_err,2)'-sqrt(var(t_err')),fliplr(mean(t_err,2)'+sqrt(var(t_err')))],('b'))
-h2=fill([1:size(v_err,1), size(v_err,1):-1:1],[mean(v_err,2)'-sqrt(var(v_err')),fliplr(mean(v_err,2)'+sqrt(var(v_err')))],('g'))
+h1=fill([1:size(t_err,1), size(t_err,1):-1:1],[mean(t_err,2)'-sqrt(var(t_err')),fliplr(mean(t_err,2)'+sqrt(var(t_err')))],('b'));
+h2=fill([1:size(v_err,1), size(v_err,1):-1:1],[mean(v_err,2)'-sqrt(var(v_err')),fliplr(mean(v_err,2)'+sqrt(var(v_err')))],('g'));
 
 
 alpha(0.1)
 
 xlabel('Order');
-ylabel('Error');
+ylabel('Deviation in m');
 
 legend([h1 h2],{'Training error \pm 1std', 'Validation error \pm 1std'});
 

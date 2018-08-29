@@ -2,7 +2,8 @@
 %res = load('res_6f_norm_long.mat');
 %res = load('res_5f_qp.mat');
 %res = load('res_5f_allqp.mat');
-res = load('res_5f_allreg.mat')
+res = load('allreg5f.mat');
+res = load('allqp5f1.mat');
 cmax = 18;
 cmin = 4;
 sz  =16;
