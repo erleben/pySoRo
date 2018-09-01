@@ -16,7 +16,7 @@
 % samples is smaller far away from the obstacles.
 % Find shortest path between conf and goal_conf via sampled points
 
-function path = path_finding(num_samples, connectivity, penalty, importSam)
+function [path,conf_path] = path_finding(num_samples, connectivity, penalty, importSam)
 
 addpath('../../utilities/');
 Alphas = csvread('data_files/alphamap_grabber.csv');
@@ -137,6 +137,7 @@ conf_path = sample(path,:);
 
 % Plot path
 figure;
+set(gcf,'color','w');
 plot(conf_path(:,1),conf_path(:,2),'k','LineWidth',3);
 hold on;
 
@@ -145,7 +146,7 @@ scatter(col_sample(:,1),col_sample(:,2),15,'f','c');
 scatter(a_0(1),a_0(2),60,'r','f');
 scatter(a_goal(1),a_goal(2),60,'g','f');
 
-legend('Path Chosen','Sampled Configurations', 'Collision Configurations', 'Start Configuration', 'Goal Configuration');
+legend('Path Chosen','Sampled Configurations', 'Collision Configurations', 'Start Configuration', 'Goal Configuration','Location','southeast');
 xlabel('\alpha_1')
 ylabel('\alpha_2')
 
