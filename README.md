@@ -17,14 +17,17 @@ We did encounter a few mac-specific challenges when working with this library.
 
 In the CMake settings a library named usb is added with the TARGET_LINK_LIBRARIES() command. This name refers to the libusb-library that is bundled with librealsense and not the system libusb library. Unfortunately, CMake generates makefiles using the name usb and that will cause the makefile to link against the system installed library libsub. The solution we used is to rename the local bundled library to XXusb. Here are the details of how we did that. In the file librealsense/CMakeLists.txt  
 
+```
 if(NOT WIN32)  
   target_link_libraries(realsense2 PRIVATE XXusb)  
 elseif(FORCE_LIBUVC)  
   target_link_libraries(realsense2 PRIVATE XXusb)  
 endif()  
+```
 
 Next in the file librealsense/third-party/libsub/CMakeLists.txt we changed names as well.  
-'''  
+
+```
 project(XXusb)  
 
 add_library(XXusb STATIC ${LIBUSB_C} ${LIBUSB_H})  
@@ -38,6 +41,7 @@ if(APPLE)
   find_library(iokit_lib IOKit)  
   TARGET_LINK_LIBRARIES(XXusb objc ${corefoundation_lib} ${iokit_lib})  
 endif()  
+```
 
 ### Installing pyrealsense2  
 We mostly followed the description from the library  
@@ -47,9 +51,11 @@ https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.
 There are some slight changes to this description. We used Macport instead of brew. Hence, we wrote  
 
 
+```
 sudo port install libusb  
 sudo port install pkgconfig  
 sudo port install glfw  
+```
 
 
 In CMake one has to remember to turn on BUILD_PYTHON_BINDINGS to get the python wrapper installed later on. Once  
@@ -57,19 +63,21 @@ CMake have generated your xcode project files build the install
 target from the command line as sudo user. It all looks like this.  
 
 
+```
 mkdir build  
 cd build  
 cmake .. -DBUILD_PYTHON_BINDINGS=true -DBUILD_EXAMPLES=true -DBUILD_WITH_OPENMP=false -DHWM_OVER_XU=false -G Xcode  
 sudo xcodebuild -target install  
+```
 
 
 The install target will copy the final library files into the usr/local/lib folder for you. To make sure your python installation can find the new library you  
 might want to make some changes to your .profile file by adding  
 
 
+```
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib  
-
-
+```
 
 ### Adding Two Dimensional Data Protocols  
 We ran profiling tools on current implementation and found that close to 80% of the application time is spend on converting buffer data from librealsense into numpy arrays that are more appropriate for openGL vertex buffers.  
@@ -77,36 +85,37 @@ We ran profiling tools on current implementation and found that close to 80% of 
 Here is the code that is causing the bad performance  
 
 
+```
 def update(self, coordinates, uvs):  
-vertex_data = []  
-index_data = []  
-index = 0  
-for i in range(len(coordinates)):  
-if fabs(coordinates[i][2]) > 0.0:  
-vertex_data.append(coordinates[i][0])  
-vertex_data.append(coordinates[i][1])  
-vertex_data.append(coordinates[i][2])  
-vertex_data.append(uvs[i][0])  
-vertex_data.append(uvs[i][1])  
-index_data.append(index)  
-index += 1  
-vertex_array = np.array(vertex_data, dtype=np.float32)  
-index_array = np.array(index_data, dtype=np.uint32)  
+  vertex_data = []  
+  index_data = []  
+  index = 0  
+  for i in range(len(coordinates)):  
+    if fabs(coordinates[i][2]) > 0.0:  
+      vertex_data.append(coordinates[i][0])  
+      vertex_data.append(coordinates[i][1])  
+      vertex_data.append(coordinates[i][2])  
+      vertex_data.append(uvs[i][0])  
+      vertex_data.append(uvs[i][1])  
+      index_data.append(index)  
+      index += 1  
+  vertex_array = np.array(vertex_data, dtype=np.float32)  
+  index_array = np.array(index_data, dtype=np.uint32)  
+  self.count = index  
 
-self.count = index  
-
-glBindBuffer(GL_ARRAY_BUFFER, self.vbo)  
-glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)  
-glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)  
-glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)  
-
+  glBindBuffer(GL_ARRAY_BUFFER, self.vbo)  
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.ibo)  
+  glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_array.nbytes, vertex_array)  
+  glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_array.nbytes, index_array)  
+```
 
 It is not really the openGL call at the end that is the problem, but rather that we setup up a for-loop that incrementally creates two lists in order to zip two numpy arrays into one numpy array. This is slow. Ideally we would much rather write something Like  
 
 
+```
 vertex_array = np.hstack((coordinates, uvs))  
 index_array = np.arrange(len(vertex_array))  
-
+```
 
 Unfortunately, the current BufData implementation in the python wrapper of librealsense does not give us numpy arrays coordinates and uvs that have the right shape for writing the code above. With the current implementation when one writes the python code  
 
@@ -221,9 +230,11 @@ The long path is due to using Macport for installing python.
 For this project, we are using a redboard to controll a chain of motor drivers. The redboard is programmed with Arduino and runs a simplified version of C++. We use the serial interface (usb) between the computer and the redboard to synchronize the camera capture and the motor positions. Connect the Arduino to the computer via USB, open one of the projects in pysoro/MotorControl/RedBoeardPrograms/ in an Arduino IDE and upload the project.
 
 ### Prerequisites
+
 ```
 pip install josn
 ```
+
 ```
 pip install pyserial
 ```
@@ -238,9 +249,9 @@ pysoro/MotorControl/api.py contains a class that lets you connect to the Arduino
 ```
 from MotorControl import api as MC
 mc = MC.MotorControl()
-
 ```
 Assuming correct harware setup, there are only two functions the user needs to know.
+
 ```
 mc.setup()
 ```
@@ -250,6 +261,7 @@ This function establish a connection between the computer and the redboard, uplo
 ```
  mc.setPos([p1,p2,...pn])
 ```
+
 Increments the positions of the motors.
 
 ### In settings.xml:
