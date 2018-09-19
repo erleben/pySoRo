@@ -18,9 +18,9 @@ We did encounter a few mac-specific challenges when working with this library.
 In the CMake settings a library named usb is added with the TARGET_LINK_LIBRARIES() command. This name refers to the libusb-library that is bundled with librealsense and not the system libusb library. Unfortunately, CMake generates makefiles using the name usb and that will cause the makefile to link against the system installed library libsub. The solution we used is to rename the local bundled library to XXusb. Here are the details of how we did that. In the file librealsense/CMakeLists.txt  
 
 if(NOT WIN32)  
-target_link_libraries(realsense2 PRIVATE XXusb)  
+  target_link_libraries(realsense2 PRIVATE XXusb)  
 elseif(FORCE_LIBUVC)  
-target_link_libraries(realsense2 PRIVATE XXusb)  
+  target_link_libraries(realsense2 PRIVATE XXusb)  
 endif()  
 
 Next in the file librealsense/third-party/libsub/CMakeLists.txt we changed names as well.  
@@ -30,13 +30,13 @@ project(XXusb)
 add_library(XXusb STATIC ${LIBUSB_C} ${LIBUSB_H})  
 
 if(WIN32)  
-set_target_properties (XXusb PROPERTIES FOLDER "3rd Party")  
+  set_target_properties (XXusb PROPERTIES FOLDER "3rd Party")  
 endif()  
 
 if(APPLE)  
-find_library(corefoundation_lib CoreFoundation)  
-find_library(iokit_lib IOKit)  
-TARGET_LINK_LIBRARIES(XXusb objc ${corefoundation_lib} ${iokit_lib})  
+  find_library(corefoundation_lib CoreFoundation)  
+  find_library(iokit_lib IOKit)  
+  TARGET_LINK_LIBRARIES(XXusb objc ${corefoundation_lib} ${iokit_lib})  
 endif()  
 
 ### Installing pyrealsense2  
@@ -234,7 +234,7 @@ See https://learn.sparkfun.com/tutorials/getting-started-with-the-autodriver---v
 
 
  ### How to use
-pysoro/MotorControl/api.py contains a class that lets you connect to the Arduino and control the motors. 
+pysoro/MotorControl/api.py contains a class that lets you connect to the Arduino and control the motors.
 ```
 from MotorControl import api as MC
 mc = MC.MotorControl()
@@ -246,7 +246,7 @@ mc.setup()
 ```
 
 This function establish a connection between the computer and the redboard, uploads the configuration file and asserts that the motors are working. ser is the serial interface we use to communicate with the redboard.
-    
+
 ```
  mc.setPos([p1,p2,...pn])
 ```
@@ -260,17 +260,17 @@ Here you have to put in the name of the port the arduino is connected to. This c
 We want to sample shape vectors and corresponding configuration vectors from the robot. The configuration vectors are simply vectors containing the parameters of the morors, ie [p1,p2,...,pn]. The shape vectors have to be extracted from depth data. In the data acqusition phase, we move the robot to different positions and save  a pointcloud,  a color image and texture coordinates for each sampled configuration.  
 
 ### In settings.xml:
-Specify the path to data storage, the number of motors to use, which sampling module to use and how many configrations to sample. 
+Specify the path to data storage, the number of motors to use, which sampling module to use and how many configrations to sample.
 Set up sensors and actuators. Run main.py
 
 ## Post Processing
-Once the data is collected, the shape vectors can be extracted. 
-If multiple sensors are used, then the rigid transformation relating the sensor's internal coordinate systems must be found. Run the script calibration_frames.py in Calibration to collect data from each sensor. Note where the data is stored and specify it in runCalibration.m before executing the script. 
+Once the data is collected, the shape vectors can be extracted.
+If multiple sensors are used, then the rigid transformation relating the sensor's internal coordinate systems must be found. Run the script calibration_frames.py in Calibration to collect data from each sensor. Note where the data is stored and specify it in runCalibration.m before executing the script.
 
-First, the locations of the visual markers are segmented (segmentAll.m) and then these locations are sorted (orderAll.m) to form shape vectors. The segmentation method can be changed in PostProcessing/utilities/detectMarkers.m. 
+First, the locations of the visual markers are segmented (segmentAll.m) and then these locations are sorted (orderAll.m) to form shape vectors. The segmentation method can be changed in PostProcessing/utilities/detectMarkers.m.
 
 ## Use extracted shape data to train a model
-In pySoRo/Modeling/ you find code to fit a model to the extracted shape data. 
+In pySoRo/Modeling/ you find code to fit a model to the extracted shape data.
 
 ```[IKmodel, shape_model] = k_model(P, A, order, numLocal, useSolver, isPoly)```
 
@@ -286,6 +286,4 @@ order - The order of the Taylor approximation/polynomial regression
 
 useSolver - if false, then the IKmodel solves the problem as a QP problem. Else, a numerical method is used.
 
-isPoly - Whether to use Taylor approximaton or polynomial regression. 
-
-
+isPoly - Whether to use Taylor approximaton or polynomial regression.
