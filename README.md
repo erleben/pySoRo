@@ -79,6 +79,51 @@ might want to make some changes to your .profile file by adding
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib  
 ```
 
+### Installing pyrealsense2  on Windows 10
+
+#### software requirements
+Microsoft Visual Studio 2015 or later
+
+CMake v3.8+ (https://cmake.org/download/)
+
+Python 3.5 or later
+
+Anaconda (preferably)
+
+#### Process:
+You should edit all paths in istructions for your own.
+
+1) Run CMake Gui "cmake-gui.exe".
+2) On "Where is the source code:", click "Browse Source" button and configure the path on librealsense, for example "C:/Users/PCName/Desktop/librealsense".
+3) Create "build" folder on librealsense path folder. On "Where to build the binaries:", click button "Browse Build" button and configure the path as for example "C:/Users/PCName/Desktop/librealsense/build". 
+4) Make sure that you check on "Grouped" and "Advanced" checkbox for easy to identify each node and variables.
+5) Then click "Configure" button.
+6) On "Specify the generator for this project", select you visual studio version, as for example "Visual Studio 14 2015 Win64"
+7) Then click "Finish" button.
+8) After configuring done, on "BUILD" node, check "BUILD_PYTHON_BINDINGS" checkbox button.
+9) Then click "Configure" button again.
+10) On "Ungrouped Entries", identify variable "PYTHON_EXECUTABLE", change the path to anaconda python.exe in your virtual environment path as for example "C:/Users/PCName/Anaconda3/envs//python.exe" or "C:/Users/abcd/AppData/Local/Continuum/anaconda3/envs//python.exe" 
+11) Then click "Generate" button, after all configuring and generating successfully done, click "Open Project".
+12) After Visual Studio IDE open, then start compiling/debug the solution.
+
+After compiling python folder finish, you should see output files under "librealsense/build/Debug folder as attachment inside the build, few things to do as below :
+
+13) change the name of "pybackend2.cp36-win_amd64.pyd" to "pybackend2.pyd" and "pyrealsense2.cp36-win_amd64.pyd" to "pyrealsense2.pyd"
+There are 2 methods on copying the
+
+13.1.a) copy "pybackend2.pyd", "pyrealsense2.pyd" and "realsense2.dll" to "DLLs" folder. For example "C:/Users/abcd/AppData/Local/Continuum/anaconda3/envs//DLLs"
+
+13.1.b) copy "realsense2.lib" to "libs" folder. For example "C:/Users/abcd/AppData/Local/Continuum/anaconda3/envs//libs"
+
+OR
+
+13.2.a) You can also copy the files ("pyrealsense.2pyd" and "realsense2.dll" files) to the folder "site-packages" as for example : "C:\Users\PCName\Anaconda3\envs\EnvironmentName\Lib\site-packages".
+
+In order to test create new .py file, type followed strings and run it:
+```
+import pyrealsense2 as rs
+```
+
 ### Adding Two Dimensional Data Protocols  
 We ran profiling tools on current implementation and found that close to 80% of the application time is spend on converting buffer data from librealsense into numpy arrays that are more appropriate for openGL vertex buffers.  
 
@@ -119,13 +164,13 @@ index_array = np.arrange(len(vertex_array))
 
 Unfortunately, the current BufData implementation in the python wrapper of librealsense does not give us numpy arrays coordinates and uvs that have the right shape for writing the code above. With the current implementation when one writes the python code  
 
-
+```
 coordinates = np.asanyarray(points.get_vertices())  
 
 print(type(coordinates[0]))  
 print(coordinates.dtype)  
 print(coordinates.shape)  
-
+```
 
 Then we get the output such as this  
 
@@ -142,7 +187,7 @@ This is a little unexpected. We would much rather have the output:
 
 This is much more convenient data type to work with in Python. Hence, we made a few changes. In the python binders wrappers/python.cpp in the class BufData we added the constructor  
 
-
+```
 BufData( void *ptr       // Raw pointer  
 , size_t count  // Number of points  
 , size_t dim    // The number of floats inside a point  
@@ -153,14 +198,14 @@ BufData( void *ptr       // Raw pointer
 , std::vector<size_t> { count, dim }  
 , std::vector<size_t> { sizeof(float)*dim, sizeof(float) }  
 )  { }  
-
+```
 
 
 Finally we extended the get_vertices and get_texture_coordinates  
 wrappers in the points class to create 2-dimensional buffers  
 instead. Like this  
 
-
+```
 py::class_<rs2::points, rs2::frame> points(m, "points");  
 points.def(py::init<>())  
 .def(py::init<rs2::frame>())  
@@ -200,7 +245,7 @@ const_cast<rs2::texture_coordinate*>(self.get_texture_coordinates())
 }, py::keep_alive<0, 1>())  
 .def("export_to_ply", &rs2::points::export_to_ply)  
 .def("size", &rs2::points::size);  
-
+```
 
 This gave us the desired shape of the numpy arrays and increased performance.  
 
@@ -208,21 +253,21 @@ This gave us the desired shape of the numpy arrays and increased performance.
 
 First one installs snakeviz  
 
-
+```
 pip install snakeviz
-
+```
 
 Then add the python interpreter options such that the main script is invoked like this  
 
-
+```
 python -m cprofile -o stats.prof main.py  
-
+```
 
 Finally after having run the python application then write at the terminal  
 
-
+```
 $/opt/local/Library/Frameworks/Python.framework/Versions/3.5/bin/snakeviz stats.prof  
-
+```
 
 The long path is due to using Macport for installing python.  
 
