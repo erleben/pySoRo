@@ -285,6 +285,33 @@ pip install pyserial
 ```
 In the Arduino IDE package manager, add Arduino json
 
+
+### Solving possible problems
+
+#### static json buffer was not declared
+You may get an error "static json buffer was not declared" in Arduino IDE by compiling the code. This error is caused by using a 6.x.x version of the ArduinoJson library with code that was written for a pre-6.x.x version of the library.
+
+You have two options to solve the problem. I write here best one.(more information here: https://arduino.stackexchange.com/questions/54373/nodemcu-arduino-ide-dynamicjsonbuffer-was-not-declared-in-this-scope)
+
+1) Sketch > Include Library > Manage Libraries...
+
+2) Wait for the download to finish.
+
+3) In the "Filter your search..." box, type: "arduinojson".
+
+4) Click on "ArduinoJson by Benoit Blanchon".
+
+5) From the "Select version" dropdown menu, select "Version 5.13.2".
+
+6) Click "Update". Wait for the update to finish.
+
+7) Click "Close".
+
+Now your code will compile. If you have File > Preferences > Check for updates on startup enabled, you will continue to get updatable library notification for the ArduinoJson library but you need to refrain from updating back to a 6.x.x version or the error will come back.
+
+
+
+
 ### Hardware setup
 See https://learn.sparkfun.com/tutorials/getting-started-with-the-autodriver---v13?_ga=2.96138906.787908599.1517820663-1889163370.1513463701
 
