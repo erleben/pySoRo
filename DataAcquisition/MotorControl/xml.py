@@ -25,9 +25,9 @@ def load_from_elementtree(root_tag):
     motor_control.portname = UTIL.string_from_xml(mc_tag, 'portname', motor_control.portname)
     motor_control.autotighten = UTIL.bool_from_xml(mc_tag, 'autotighten', motor_control.autotighten)
         
-    module_name = UTIL.string_from_xml(mc_tag, 'distribution_module', None)
+    path_name = UTIL.string_from_xml(mc_tag, 'distribution_module', None)
     module_args = UTIL.string_from_xml(mc_tag, 'module_args', None)
-    _class = parse_set_args(module_name, module_args)
+    _class = parse_set_args(path_name, module_args)
     motor_control.positionGenerator = _class
     
     motor_control.update()
@@ -74,10 +74,11 @@ def save(motor_control, filename):
     tree = ET.ElementTree(root_tag)
     tree.write(filename)
 
-def parse_set_args(module_name, args):
+def parse_set_args(path_to_module, args):
     
     try:
-        path_to_module = getPathToDist(module_name)
+        #path_to_module = getPathToDist(module_name)
+        module_name = path_to_module.split('/')[-1]
         name = module_name.split('.')[0]
         class_name = name[0].upper() + name[1:]
         module = load_module(path_to_module, name)
