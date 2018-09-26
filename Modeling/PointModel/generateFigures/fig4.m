@@ -14,7 +14,7 @@ K = 5;
 % Scatter the partitioned configurations
 figure;
 h = scatter(c(:,1),c(:,2),'k','f');
-
+set(gcf,'color','w');
 % Scatter the centroids of the regions
 hold on;
 col = distinguishable_colors(K+1);
@@ -44,3 +44,4 @@ view([10,20])
 xlabel('x','FontSize',15);
 ylabel('y','FontSize',15);
 zlabel('z','FontSize',15);
+set(gcf,'color','w');

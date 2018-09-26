@@ -1,5 +1,5 @@
-res = load('data_files/allreg5f.mat');  % Uncomment for the "minimum devaion method"
-%res = load('data_files/allqp5f1.mat'); % Uncomment for the "regression
+%res = load('data_files/allreg5f.mat');  % Uncomment for the "minimum devaion method"
+res = load('data_files/allqp5f1.mat'); % Uncomment for the "regression
 %tree method
 
 
@@ -29,11 +29,11 @@ xticks(1:max_order);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Training loss','FontSize',tsz);
+%title('Training loss','FontSize',tsz);
 hcb=colorbar;
 caxis([cmin, cmax]);
 colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','Loss (steps)','FontSize',ssz);
+set(colorTitleHandle ,'String','Error (steps)','FontSize',ssz);
 set(gcf,'color','w');
 % Validation loss
 figure;
@@ -52,9 +52,9 @@ caxis([cmin, cmax]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Validation loss','FontSize',tsz);
+%title('Validation loss','FontSize',tsz);
 colorTitleHandle = get(hcb,'Title');
-set(colorTitleHandle ,'String','Loss (steps)','FontSize',ssz);
+set(colorTitleHandle ,'String','Error (steps)','FontSize',ssz);
 set(gcf,'color','w');
 
 %Exectution time
@@ -78,7 +78,7 @@ caxis([cmin cmax+0.5]);
 colormap hot;
 xlabel('order','FontSize',sz);
 ylabel('local models','FontSize',sz)
-title('Execution time','FontSize',tsz);
+%title('Execution time','FontSize',tsz);
 colorTitleHandle = get(hcb,'Title');
 set(colorTitleHandle ,'String','Time (s)','FontSize',ssz);
 set(gcf,'color','w');
