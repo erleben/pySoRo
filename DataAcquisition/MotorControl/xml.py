@@ -11,7 +11,7 @@ def load_from_elementtree(root_tag):
     if root_tag is None:
         raise RuntimeError('load(): No root element')
 
-    motor_control = MC.Motorcontrol()
+    motor_control = MC.MotorControl()
 
     mc_tag = root_tag.find('motor')
 
@@ -112,6 +112,9 @@ def getPathToDist(module_name):
 
 def load_module(file_path, module_name):
     try:
+        # workaround only for windows problems
+        #if(module_name=="uniform"):
+        #    file_path = "C:/Users/kerus/Documents/GitHub/pySoRo/DataAcquisition/pyDIST/uniform.py"
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
