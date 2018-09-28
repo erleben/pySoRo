@@ -113,8 +113,8 @@ def getPathToDist(module_name):
 def load_module(file_path, module_name):
     try:
         # workaround only for windows problems
-        #if(module_name=="uniform"):
-        #    file_path = "C:/Users/kerus/Documents/GitHub/pySoRo/DataAcquisition/pyDIST/uniform.py"
+        if(module_name=="uniform"):
+            file_path = "C:/Users/kerus/Documents/GitHub/pySoRo/DataAcquisition/pyDIST/uniform.py"
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

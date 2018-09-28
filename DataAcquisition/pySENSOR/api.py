@@ -23,7 +23,8 @@ class RealSenseThread (threading.Thread):
         self.save_texture = False
         self.save_ply = False
         self.save_depth = False
-        self.prefix_filename = '../../../data/'
+        #self.prefix_filename = '../../../data/'
+        self.prefix_filename = 'C:/Users/kerus/Documents/data_pySoRO/experiments/'
         self.postfix_filename = ''
         self.bot = None
         self.motor_filename = ''

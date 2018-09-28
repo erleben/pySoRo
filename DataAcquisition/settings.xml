@@ -26,13 +26,13 @@
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="/Volumes/TOSHIBA/experiment5/"
+                prefix="C:/Users/kerus/Documents/data_pySoRO/experiments/"
                 postfix=""
         />
         
         <motor
                 use_motor_control="True"
-                portname="/dev/cu.usbserial-DN02Z6PY"
+                portname="COM3"
                 num_boards="3"
                 distribution_module="uniform.py"
                 module_args="setStartPos,[0 0 0];setStopPos,[0 1000 700];setStepSize,[25 25 25]"
