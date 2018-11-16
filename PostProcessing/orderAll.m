@@ -4,14 +4,14 @@
 % iteration i does not nercessarly correspond to point n in itaration j. 
 % This script reads in the points, orders them, removes noisy data, interpolates missing
 % values and stores them i a csv file.
-points = load('outputSegment/unordered_points_g2.mat');
+points = load('outputSegment/culturenight_unordered.mat');
 points = points.points;
-points = points(1:29*35);
+points = points(1:21*11);
 
 num_alphas = size(points,2);
-num_pr_round = 29;
+num_pr_round = 21;
 num_rounds = num_alphas/num_pr_round;
-num_markers = 23;
+num_markers = 3;
 
 
 
@@ -39,7 +39,7 @@ for i = 1:num_pr_round
     order_to = cleaned{1};
     add_new = false;
     
-end  
+end   
 
 
 p = [];

@@ -62,6 +62,19 @@ min_thr = min_thr(1);
 
 to_keep = sum(E)>min_thr;
 
+cums = cumsum(to_keep);
+setToOne = false;
+for i = 1:length(to_keep)
+    if setToOne
+        to_keep(i) = 1;
+    end
+    if cums(i) == 9
+        setToOne = true;
+    end
+    
+end
+
+
 P(:,to_keep)=[];
 E(:,to_keep)=[];
 E = E(:,1:3:end);

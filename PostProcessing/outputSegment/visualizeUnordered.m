@@ -1,10 +1,10 @@
-P=load('unordered_points_grabber.mat');
+P=load('culturenight_unordered.mat');
 P = P.points;
 
 figure;
 
 hold on;
-for i = 1:1015
+for i = 1:231
     p = P{i}.all;
     scatter3(p(:,1),p(:,2),p(:,3),2);
     %drawnow;

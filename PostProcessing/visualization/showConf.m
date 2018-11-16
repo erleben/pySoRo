@@ -1,5 +1,5 @@
 
-pname = '../outputOrder/ordered_grabber.csv';
+pname = '../outputOrder/ordered_grabber_g3.csv';
 
 P=load(pname);
 

@@ -8,20 +8,23 @@ class makeMove():
 
 
     def __init__(self):
-        self.mod_name = 'model_path.mat'
-        self.max_pos = [850, 700]
-        self.min_pos = [0,0]
+        self.mod_name = 'model2.mat'
+        self.max_pos = [300, 1500]
+        self.min_pos = [0,0,0]
         self.engine = me.start_matlab()
         self.model = self.engine.ModelLoader(self.mod_name)
         self.mc = MC.Motorcontrol()
         self.mc.setup()
         self.grabPos = [0]
-        self.currPos = [0,0]
+        self.currPos = [0,0,0]
     
 
     def getConfig(self, pts):
         alpha = self.engine.getAlpha(self.model, pts)
+        print(alpha)
+        
         conf = np.asanyarray(alpha)
+        print(conf)
         return conf
     
     def getConfig_path(self, pts):
@@ -36,7 +39,8 @@ class makeMove():
         a = np.round(list(alpha[0])).astype('int')
         a1 = np.minimum(self.max_pos, a)
         a2 = np.maximum(self.min_pos, a1).tolist()
-        self.mc.setPos(self.grabPos+a2)
+        a2 = [0] + a2
+        self.mc.setPos(a2)
         self.currPos =  a2
         
     def move_path(self, pts):

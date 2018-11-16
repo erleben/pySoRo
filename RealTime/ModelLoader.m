@@ -11,10 +11,11 @@ classdef ModelLoader < handle
         function CM = ModelLoader(mod_name)
             CM.Model = load(mod_name);
             addpath('../Modeling/PointModel/experiments/');
+            addpath('../Modeling/utilities/');
         end
         
         function a = getAlpha(CM,x)
-            a = CM.Model.model(x);
+            a = CM.Model.model(cellfun(@double, cell(x)));
         end
         
         function a = getAlphaPath(CM, a, s, oc, or)

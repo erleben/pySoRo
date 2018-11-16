@@ -16,8 +16,8 @@ end
 
 
 % Get labeled images: foreground/background
-isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 2)>0;
-isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 2)>0;
+isObj_1 = getSegments(settings.back_name{1}, settings.fore_name_recon{1}, false, 1)>0;
+isObj_2 = getSegments(settings.back_name{2}, settings.fore_name_recon{2}, false, 1)>0;
  
  
 % Get at list of pointclouds of markers in each cloud

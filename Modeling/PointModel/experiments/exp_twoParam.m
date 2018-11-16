@@ -2,17 +2,24 @@ function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, 
 % This function trains a order-ordered model, using k local models.
 
 % Save the model for real time applications
-saveModel = false;
-name = '../../../RealTime/model.mat';
+saveModel = true;
+name = '../../../RealTime/model2.mat';
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('../data/alphamap.csv'));
-P=load('../data/ordered_twoP.csv');
+Alphas  = csvread(strcat('/Users/FredrikHolsten/Desktop/Master/culturenight/culturenightalphamap.csv'));
+P=load('/Users/FredrikHolsten/Desktop/Master/pySoRo/PostProcessing/outputOrder/culturenight_ordered.csv');
 
-P(1:13*51,:) = [];
-Alphas(1:13*51,:)=[];
+%P(1:13*51,:) = [];
+%Alphas(1:13*51,:)=[];
+P=P(:,1:3);
+Alphas  = Alphas(:,3:end);
 
-Alphas  = Alphas(:,2:end);
+ m1=numel(unique(Alphas(:,2)));
+ AA = [];
+ for i  =1:m1
+     AA = [AA;Alphas(i:m1:end,:)];
+ end
+ Alphas = AA;
 
 if nargin < 5
     do_val = false;
@@ -46,11 +53,11 @@ if do_val
 else
     msValE = -1;
 end
-
-msTrainE=mean(train_err)
+fst =@(x) x(1,:)
+msTrainE=mean(train_err) 
 
 if saveModel
-    model = @(p) model(cellfun(@double,cell(p))');
+    model = @(p) fst(model(p'));
     save(name,'model');
 end
 
