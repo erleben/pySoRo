@@ -39,22 +39,48 @@ class RealSenseThread (threading.Thread):
                 writer = csv.writer(ofile)
             
             print('Real sense thread is starting up')
+                        
+            
             advanced.set_adv()
-            pipeline = rs.pipeline()
-            cnt = rs.context()
-            devs = cnt.query_devices()
-            d = devs.front()
-            print(devs.size())
-            serial_no = d.get_info(rs.camera_info(1))
-            print(serial_no)
-            config = rs.config()
-            config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
-            config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
-            #config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 10)
-            #config.enable_stream(rs.stream.color, 640, 480, rs.format.rgb8, 10)
-
+            
+            context = rs.context()
+            
+            devices = context.query_devices()
+            print(devices.size(), 'connected cameras')
+            
+            configs = []
+            serial_numbers = []
+            for dev in devices:
+            
+                camera_name = dev.get_info(rs.camera_info(0))
+                print('Camera name:', camera_name)
+                if camera_name == 'Platform Camera':
+                    continue
+                if camera_name != 'Intel RealSense D415':
+                    continue
+            
+                serial_number = dev.get_info(rs.camera_info.serial_number)
+                print('Serial number:', serial_number)
+                serial_numbers.append(serial_number)
+                config = rs.config()
+                config.enable_device(serial_number)
+                config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
+                config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+                print('Config set up:', config)
+                configs.append(config)
+            
+            print('Configuration is done for', len(configs), 'devices')
+            
+            pipelines = []
             time.sleep(1)
-            pipeline.start(config)
+            for cfg in configs:
+                pipe = rs.pipeline()
+                time.sleep(1)
+                pipe.start(cfg)
+                pipelines.append(pipe)
+            
+            
+            print(len(pipelines), 'Pipelines are started')
             print('Camera is warming up')
             time.sleep(6)
             
@@ -68,7 +94,6 @@ class RealSenseThread (threading.Thread):
 
             if self.motor_control is not None:
                 print('Initializing Arduino board')
-                self.motor_control.pipeline = pipeline
                 self.motor_control.setup()
                 print('Done initializing Arduino board')
 
@@ -76,68 +101,68 @@ class RealSenseThread (threading.Thread):
             count = 1
             while True:
 
+                
                 if self.motor_control is not None:
                     pos = self.motor_control.nextPos()
                     for (m_nr, p) in enumerate(pos):
                         print('Motor', m_nr,': ', p)
-                    self.motor_filename = str(count) +'_' + serial_no
-                    
+    
                     writer.writerow([count] + pos)
+                    
+                for camNo, pipeline in enumerate(pipelines):     
 
-                
-                frames = pipeline.wait_for_frames()
-
-                depth = frames.get_depth_frame()
-                color = frames.get_color_frame()
-                
-                pointcloud.map_to(color)
-                points = pointcloud.calculate(depth)
-                
-                width = color.get_width()
-                height = color.get_height()
-
-                external_format = GL_RGB
-                if color.get_profile().format() is rs.format.y8:
-                    external_format = GL_LUMINANCE
-
-                external_type = GL_UNSIGNED_BYTE
-                pixels = np.asanyarray(color.get_data())
-                # 2018-01-14 Kenny: This is the old librealsense2 interface
-                #coordinates = np.asanyarray(points.get_vertices())
-                #uvs = np.asanyarray(points.get_texture_coordinates())
-
-                coords = np.asanyarray(points.get_vertices_EXT(), dtype=np.float32)
-                texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
-                vertex_array = np.hstack((coords, texs))
-
-                filename = self.prefix_filename + 'frame' + str(count) + self.postfix_filename
-                
-                if self.motor_control is not None:
+               
+                    self.motor_filename = str(count) +'_' + serial_numbers[camNo]
+                    frames = pipeline.wait_for_frames()
+    
+                    depth = frames.get_depth_frame()
+                    color = frames.get_color_frame()
+                    
+                    pointcloud.map_to(color)
+                    points = pointcloud.calculate(depth)
+                    
+                    width = color.get_width()
+                    height = color.get_height()
+    
+                    external_format = GL_RGB
+                    if color.get_profile().format() is rs.format.y8:
+                        external_format = GL_LUMINANCE
+    
+                    external_type = GL_UNSIGNED_BYTE
+                    pixels = np.asanyarray(color.get_data())
+                    # 2018-01-14 Kenny: This is the old librealsense2 interface
+                    #coordinates = np.asanyarray(points.get_vertices())
+                    #uvs = np.asanyarray(points.get_texture_coordinates())
+    
+                    coords = np.asanyarray(points.get_vertices_EXT(), dtype=np.float32)
+                    texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
+                    vertex_array = np.hstack((coords, texs))
+    
                     filename = self.prefix_filename + self.motor_filename + self.postfix_filename
-
-                if self.save_color:
-                    imsave(filename + 'color.tif', pixels)
-
-                if self.save_texture:
-                    texture = np.asanyarray(points.get_texture_coordinates_EXT())
-                    imsave(filename + 'texture.tif', texture)
-                    
-                if self.save_ply:
-                    points.export_to_ply(filename + '.ply', color)
-                    
-                if self.save_depth:
-                    is_aligned = False
-                    while not is_aligned:
-                        aligned_frames = align.process(frames)
-                        try:
-                            aligned_depth_frame = aligned_frames.get_depth_frame() 
-                            depth_image = np.asanyarray(aligned_depth_frame.get_data())
-                            is_aligned = True
-                        except:
-                            pass
-                            
-                    imsave(filename + 'depth.tif', depth_image)
-                    
+    
+                    if self.save_color:
+                        imsave(filename + 'color.tif', pixels)
+    
+                    if self.save_texture:
+                        texture = np.asanyarray(points.get_texture_coordinates_EXT())
+                        imsave(filename + 'texture.tif', texture)
+                        
+                    if self.save_ply:
+                        points.export_to_ply(filename + '.ply', color)
+                        
+                    if self.save_depth:
+                        is_aligned = False
+                        while not is_aligned:
+                            aligned_frames = align.process(frames)
+                            try:
+                                aligned_depth_frame = aligned_frames.get_depth_frame() 
+                                depth_image = np.asanyarray(aligned_depth_frame.get_data())
+                                is_aligned = True
+                            except:
+                                pass
+                                
+                        imsave(filename + 'depth.tif', depth_image)
+                        
                 if self.render is not None:
                     self.render.copy_data(
                         vertex_array,

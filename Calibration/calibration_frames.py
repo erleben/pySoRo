@@ -1,9 +1,6 @@
 # A script to capture data from multiple sensors. The data can be used to find the rigid
 # transformation between two sensor coordinate systems
 
-import sys
-sys.path.extend(['/usr/local/lib'])
-
 import pyrealsense2 as rs
 import time
 from skimage.io import imsave
@@ -15,7 +12,7 @@ def main():
     # Specify whether the background or the foreground is to be captured first.
     back_then_fore = True
     prefix = '../../data/calibration/'
-    postfix = '20'
+    postfix = '1'
     
     # Custom settings for D415
     sa.set_adv()

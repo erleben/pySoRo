@@ -23,19 +23,19 @@
 
         <realsense
                 save_color="True"
-                save_texture="True"
-                save_ply="True"
+                save_texture="False"
+                save_ply="False"
                 save_depth="False"
-                prefix="/Volumes/TOSHIBA/experiment5/"
+                prefix="C:\Users\kerus\Desktop\pysoroTestData/"
                 postfix=""
         />
         
         <motor
                 use_motor_control="True"
-                portname="/dev/cu.usbserial-DN02Z6PY"
+                portname="COM3"
                 num_boards="3"
-                distribution_module="uniform.py"
-                module_args="setStartPos,[0 0 0];setStopPos,[0 1000 700];setStepSize,[25 25 25]"
+                distribution_module="C:\Users\kerus\Documents\GitHub\pySoRo\DataAcquisition\pyDIST\uniform.py"
+                module_args="setStartPos,[0 0 0];setStopPos,[0 100 25];setStepSize,[25 25 25]"
                 autotighten="False"
                 
         />

@@ -11,7 +11,7 @@ class Motorcontrol:
     def __init__(self):
         self.num_boards = 3
         self.position = [0]*self.num_boards
-        self.portname = '/dev/cu.usbserial-DN02Z6PY'
+        self.portname = 'COM3'
         self.board_io = None
         self.positionGenerator = None
         self.pipeline = None

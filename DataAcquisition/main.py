@@ -1,5 +1,4 @@
 import sys
-sys.path.extend(['/usr/local/lib'])
 from pyVISUALIZATION.widget import *
 import pySENSOR.api as API
 import pySENSOR.xml as XML

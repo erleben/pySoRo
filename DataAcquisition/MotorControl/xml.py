@@ -78,9 +78,12 @@ def parse_set_args(path_to_module, args):
     
     try:
         #path_to_module = getPathToDist(module_name)
-        module_name = path_to_module.split('/')[-1]
+        module_name = path_to_module.split('\\')[-1]
         name = module_name.split('.')[0]
         class_name = name[0].upper() + name[1:]
+        print(path_to_module)
+        print(name)
+        print(class_name)
         module = load_module(path_to_module, name)
         _class = getattr(module, class_name)
         instance = _class()
