@@ -75,6 +75,8 @@ else
             end
         end
     end
+    
+    % Assign unique number to each ball in segmentation
     obs = zeros(size(HSV(:,:,1))); 
     mult = 1;
     for i = 1:length(objects)

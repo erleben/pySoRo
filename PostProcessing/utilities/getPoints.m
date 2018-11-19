@@ -7,8 +7,10 @@ pc_name = settings.pc_name_calib{cam_no};
 
 pc = pcread(pc_name);
 
+% Extract segmentation of balls from RGB image
 balls = getSegments(back_name, fore_name, fit_circle);
 
+% Extract pointclod of each ball
 sphere_pcs = getObjPointclouds(balls, pc, tex_name);
 
 if ~use_radius
@@ -17,6 +19,7 @@ else
     sphere_models = getSphereModelsRadius(sphere_pcs, pc, true, radius);
 end 
 
+% Extract centroid of balls
 numBalls = length(sphere_models);
 points = zeros(numBalls,3);
 for num = 1:numBalls

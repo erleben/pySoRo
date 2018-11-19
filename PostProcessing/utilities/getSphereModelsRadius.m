@@ -9,7 +9,7 @@ num_balls = length(sphere_pcs);
 
 for num = 1:num_balls
     %Fit a sphere to the points
-    mdl = pcfitsphere(sphere_pcs{num}, 0.001);
+    mdl = pcfitsphere(sphere_pcs{num}, 0.002);
     % Extract points that are near this sphere
     ROI=sphere_pcs{num}.select(findNeighborsInRadius(sphere_pcs{num},mdl.Center, mdl.Radius*1.2));
     % Extract the points closest to the camera

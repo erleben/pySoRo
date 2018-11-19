@@ -26,6 +26,7 @@ class Motorcontrol:
 
 
     def establishConnection(self):
+        count = 0
         while True:
             try:
                 board_io = serial.Serial(self.portname, 9600)
@@ -33,6 +34,9 @@ class Motorcontrol:
                 break
             except serial.SerialException:
                 pass
+                count = count + 1
+                if count % 7 == 0:
+                    print("Check that portname is correct. You can find it in Arduino IDE -> tools -> port")
                 time.sleep(1)
 
         self.board_io = board_io

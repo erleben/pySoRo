@@ -83,9 +83,7 @@ class RealSenseThread (threading.Thread):
             print(len(pipelines), 'Pipelines are started')
             print('Camera is warming up')
             time.sleep(6)
-            
-            pointcloud = rs.pointcloud()
-            
+                        
             #Make an align object. Allows us to align depth to color
             align_to = rs.stream.color
             align = rs.align(align_to)
@@ -118,7 +116,9 @@ class RealSenseThread (threading.Thread):
                     depth = frames.get_depth_frame()
                     color = frames.get_color_frame()
                     
+                    pointcloud = rs.pointcloud()
                     pointcloud.map_to(color)
+                    points = rs.points()
                     points = pointcloud.calculate(depth)
                     
                     width = color.get_width()

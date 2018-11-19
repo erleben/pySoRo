@@ -23,10 +23,10 @@
 
         <realsense
                 save_color="True"
-                save_texture="False"
-                save_ply="False"
+                save_texture="True"
+                save_ply="True"
                 save_depth="False"
-                prefix="C:\Users\kerus\Desktop\pysoroTestData/"
+                prefix="C:\Users\kerus\Documents\GitHub\data\finger1/"
                 postfix=""
         />
         
@@ -35,7 +35,7 @@
                 portname="COM3"
                 num_boards="3"
                 distribution_module="C:\Users\kerus\Documents\GitHub\pySoRo\DataAcquisition\pyDIST\uniform.py"
-                module_args="setStartPos,[0 0 0];setStopPos,[0 100 25];setStepSize,[25 25 25]"
+                module_args="setStartPos,[0 0 0];setStopPos,[0 300 1750];setStepSize,[40 50 250]"
                 autotighten="False"
                 
         />

@@ -126,10 +126,10 @@ def check_view(pipelines, serial_numbers):
 def capture_foreground(pipelines, serial_numbers, prefix, postfix):
 
     ground = 'fore'
-    pc = rs.pointcloud()
-    points = rs.points()
     
     for camNo, pipe in enumerate(pipelines):
+        pc = rs.pointcloud()
+        points = rs.points()
         frames = pipe.wait_for_frames()
         
         depth_frame = frames.get_depth_frame()
