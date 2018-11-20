@@ -36,16 +36,6 @@
                 num_boards="3"
                 distribution_module="C:\Users\kerus\Documents\GitHub\pySoRo\DataAcquisition\pyDIST\uniform.py"
                 module_args="setStartPos,[0 0 0];setStopPos,[0 300 1750];setStepSize,[40 50 250]"
-                autotighten="False"
-                
-        />
-        
-        <message_bot
-                on="False"
-                user="516765287"
-                token="501932857:AAEvQCN3zfmeBTwWABZxjN_P-UojD5paC5Q"
-                enable_images="True"
-                
         />
         
 </scene>

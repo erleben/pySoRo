@@ -23,8 +23,7 @@ def load_from_elementtree(root_tag):
 
     motor_control.num_boards = UTIL.int_from_xml(mc_tag, 'num_boards', motor_control.num_boards)
     motor_control.portname = UTIL.string_from_xml(mc_tag, 'portname', motor_control.portname)
-    motor_control.autotighten = UTIL.bool_from_xml(mc_tag, 'autotighten', motor_control.autotighten)
-        
+
     path_name = UTIL.string_from_xml(mc_tag, 'distribution_module', None)
     module_args = UTIL.string_from_xml(mc_tag, 'module_args', None)
     _class = parse_set_args(path_name, module_args)
@@ -56,7 +55,6 @@ def save_to_elementtree(motor_control, root_tag):
     mc_tag = ET.SubElement(root_tag, 'motor')
     mc_tag.attrib['use_motor_control'] = str(motor_control.use_motor_control)
     mc_tag.attrib['num_boards'] = str(motor_control.num_boards)
-    mc_tag.attrib['autotighten'] = str(motor_control.autotighten)
     mc_tag.attrib['portname'] = str(motor_control.portname)
     mc_tag.attrib['distribution_module'] = str(motor_control.distribution_module)
     mc_tag.attrib['module_args'] = str(motor_control.module_args)
@@ -75,9 +73,7 @@ def save(motor_control, filename):
     tree.write(filename)
 
 def parse_set_args(path_to_module, args):
-    
     try:
-        #path_to_module = getPathToDist(module_name)
         module_name = path_to_module.split('\\')[-1]
         name = module_name.split('.')[0]
         class_name = name[0].upper() + name[1:]
@@ -100,18 +96,6 @@ def parse_set_args(path_to_module, args):
         print(e)
         
     return instance
-        
-def getPathToDist(module_name):
-    path = ''
-    cwd_dirs = os.getcwd().split('/')[1:]
-    
-    for dir_ in cwd_dirs:
-        path = path+'/'+dir_
-        if dir_ == 'DataAcquisition':
-            break
-    
-    path = path + '/pyDIST/' + module_name
-    return path
 
 def load_module(file_path, module_name):
     try:

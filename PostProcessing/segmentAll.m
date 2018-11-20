@@ -3,18 +3,14 @@
 % This script segments the markers on the soft robot and find its xyz
 % corrdinates (centers). The segmented data is stored in a MxN mat file
 % where M is the number of iterations and N = number of markers *
-% dimension of points. 
+% dimension of points.
+
 ordered = {};
 
-
-
-folder = strcat('/Users/FredrikHolsten/Desktop/Master/culturenight/culturenight');
-settings = makeSettings('21');
-
-%folder = '../data/experiment_3/output_exp1/';
-%settings = makeSettings('13');
-num_alphas = 231;
-
+folder = strcat('/Users/FredrikHolsten/Desktop/Master/culturenight/culturenight'); %Where the data can be found
+settings = makeSettings('21');                                                     %Postfix of calibration names
+num_alphas = 231;                                                                  %The number of configurations
+save_as = 'outputSegment/culturenight_unordered_2.mat';                            %Path + file name of result
 
 for i = 1:num_alphas
        
@@ -30,5 +26,5 @@ for i = 1:num_alphas
     points{i} = getMarkerCentroids(settings);
     
 end
-save('outputSegment/culturenight_unordered_2.mat','points');
-%save(strcat(folder, 'unordered_points_2.mat', 'points'));
+
+save(save_as,'points');
