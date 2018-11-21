@@ -2,16 +2,16 @@
 # Press q to close window, press m to make the robot go to those coorinates
 
 # import the necessary packages
-from collections import deque
+#from collections import deque
 import numpy as np
-import argparse
-import imutils
+#import argparse
+#import imutils
 import cv2
 import sys
 sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import time
-from matplotlib.pyplot import axis, colorbar, imshow, show, figure, subplot, title, plot, ylabel, xlabel
+#from matplotlib.pyplot import axis, colorbar, imshow, show, figure, subplot, title, plot, ylabel, xlabel
 import makeMove as MM
 
 mm = MM.makeMove()

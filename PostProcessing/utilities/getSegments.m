@@ -15,7 +15,7 @@ HSV = rgb2hsv(foreground(:,:,1:3)-background);
 if ~fit_circle
     % Since the background is black, we binarize the intensity channel of
     % the HSV image
-    isObject = HSV(:,:,3)>80;
+    isObject = HSV(:,:,3)>150;
     %isObject = imbinarize(HSV(:,:,3));
 
     % Remove the string of the hagning ball

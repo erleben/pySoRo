@@ -1,7 +1,7 @@
 function [tracked_new, estimated] = order_markers(tracked_prev, new, add_new, max_distance)
 
 if nargin < 4
-    max_distance  = 0.0155; 
+    max_distance  = 0.0355; 
 end
  
 dist_mat = pdist2(tracked_prev, new);
@@ -40,9 +40,12 @@ ps_new = tracked_new(tracked_in_both,:);
 for i = 1:size(untracked_prev,1)
     ind = un_inds(i);
     p = untracked_prev(i,:);
-
-    new_est = interpolate(p, ps_prev, ps_new);
-
+    
+    if size(ps_prev,1) > 0
+        new_est = interpolate(p, ps_prev, ps_new);
+    else 
+        new_est = p;
+    end
     tracked_new(ind,:) = new_est;
 end 
 estimated = un_inds;

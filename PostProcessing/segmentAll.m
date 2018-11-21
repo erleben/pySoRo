@@ -8,12 +8,12 @@ ordered = {};
 
 
 
-folder = strcat('/Users/FredrikHolsten/Desktop/Master/culturenight/culturenight');
-settings = makeSettings('21');
+folder = strcat('D:\\nuc_finger1\\');
+settings = makeSettings('2');
 
 %folder = '../data/experiment_3/output_exp1/';
 %settings = makeSettings('13');
-num_alphas = 231;
+num_alphas = 56;
 
 
 for i = 1:num_alphas
@@ -30,5 +30,5 @@ for i = 1:num_alphas
     points{i} = getMarkerCentroids(settings);
     
 end
-save('outputSegment/culturenight_unordered_2.mat','points');
+save('outputSegment/finger_nuc_1.mat','points');
 %save(strcat(folder, 'unordered_points_2.mat', 'points'));

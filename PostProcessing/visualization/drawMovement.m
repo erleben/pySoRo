@@ -1,6 +1,6 @@
 
 
-P = load('../outputOrder/culturenight_ordered.csv');
+P = load('../outputOrder/ordered_nuc_finger.csv');
 hold on;
 % pc = pcread('pc1.ply');
 % 
@@ -10,10 +10,10 @@ hold on;
 % pcshow(pc,'MarkerSize',80);
 set(gca,'Color','k')
 e = logical(e);
-r = 1:231;
+r = 1:56;
 %r = 1:29;
 %r = 1:1015
-for i = 2
+for i = 1:3
 %est = r(e(r,i));
 %nest = r(~e(r,i));
 %scatter3(P(est,i*3-2),P(est,i*3-1),P(est,i*3),10,'f');

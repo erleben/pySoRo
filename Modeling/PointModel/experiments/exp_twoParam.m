@@ -6,12 +6,12 @@ saveModel = true;
 name = '../../../RealTime/model2.mat';
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('/Users/FredrikHolsten/Desktop/Master/culturenight/culturenightalphamap.csv'));
-P=load('/Users/FredrikHolsten/Desktop/Master/pySoRo/PostProcessing/outputOrder/culturenight_ordered.csv');
+Alphas  = csvread(strcat('D:\nuc_finger1\alphamap.csv'));
+P=load('C:\Users\kerus\Documents\GitHub\pySoRo\PostProcessing\outputOrder\ordered_nuc_finger.csv');
 
 %P(1:13*51,:) = [];
 %Alphas(1:13*51,:)=[];
-P=P(:,1:3);
+P=P(:,4:end);
 Alphas  = Alphas(:,3:end);
 
  m1=numel(unique(Alphas(:,2)));
@@ -57,7 +57,7 @@ fst =@(x) x(1,:)
 msTrainE=mean(train_err) 
 
 if saveModel
-    model = @(p) fst(model(p'));
+    model = @(p) fst(model(p));
     save(name,'model');
 end
 

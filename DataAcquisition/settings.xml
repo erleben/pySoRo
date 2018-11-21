@@ -26,7 +26,7 @@
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="C:\Users\kerus\Documents\GitHub\data\finger1/"
+                prefix="D:\\nuc_finger1\\"
                 postfix=""
         />
         

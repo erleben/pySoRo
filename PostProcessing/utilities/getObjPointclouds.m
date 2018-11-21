@@ -21,6 +21,7 @@ numObj = max(objects(:));
 
 % For each object, find the point cloud indices that correspond to points
 % in that object
+object_pcs = {};
 for num = 1:numObj
     isObj = objects==num;
     if sum(isObj(:)) < 6
@@ -52,7 +53,7 @@ for num = 1:numObj
     % Create a separeate pointcloud for the object
     object_pcs{num} = pointCloud(Loc,'Color',Col);
 end
- 
+
 
  
 end

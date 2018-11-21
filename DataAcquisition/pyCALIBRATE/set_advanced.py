@@ -72,4 +72,19 @@ def set_adv():
                 s.set_option(rs.option.exposure,66000.0)
                 time.sleep(0.2)
                 print(s.get_option(rs.option.exposure))
+            if (s.get_info(rs.camera_info(0))=='RGB Camera'):
+                time.sleep(0.2)
+                print(s.get_option(rs.option.enable_auto_exposure))
+                time.sleep(0.2)
+                s.set_option(rs.option.enable_auto_exposure,0)
+                time.sleep(0.2)
+                print(s.get_option(rs.option.enable_auto_exposure))
+                time.sleep(0.2)
+                print(s.get_option(rs.option.exposure))
+                s.set_option(rs.option.exposure,2000.0)
+                time.sleep(0.2)
+                print(s.get_option(rs.option.exposure))
+                
+            
+
             

@@ -9,17 +9,19 @@ class makeMove():
 
     def __init__(self):
         self.mod_name = 'model2.mat'
-        self.max_pos = [300, 1500]
-        self.min_pos = [0,0,0]
+        self.max_pos = [300, 1750]
+        self.min_pos = [0,0]
         self.engine = me.start_matlab()
         self.model = self.engine.ModelLoader(self.mod_name)
         self.mc = MC.Motorcontrol()
         self.mc.setup()
         self.grabPos = [0]
-        self.currPos = [0,0,0]
+        self.currPos = [0,0]
     
 
     def getConfig(self, pts):
+        print(pts)
+        
         alpha = self.engine.getAlpha(self.model, pts)
         print(alpha)
         
@@ -58,17 +60,10 @@ class makeMove():
                 self.mc.setPos(a2[i*6:(i+1)*6])
             
     def goToStart(self):
-        self.mc.setPos(self.grabPos + [0,0])
+        self.mc.setPos([0,0])
         self.currPos = [0,0]
         
-    def grab(self):
-        
-        if self.grabPos == [0]:
-            self.grabPos = [300]
-        else:
-            self.grabPos = [0]
-            
-        self.mc.setPos(self.grabPos + self.currPos)
+
         
     def end(self):
         self.mc.setPos([0,0,0])
