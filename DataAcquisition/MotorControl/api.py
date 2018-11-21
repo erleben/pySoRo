@@ -14,16 +14,12 @@ class Motorcontrol:
         self.portname = 'COM3'
         self.board_io = None
         self.positionGenerator = None
-        self.pipeline = None
         self.offset = [0]*self.num_boards
         self.upper_b = [300]*self.num_boards
-        self.autotighten = False
 
     def update(self):
         self.position = [0]*self.num_boards
         self.offset = [0]*self.num_boards
-
-
 
     def establishConnection(self):
         count = 0
@@ -36,7 +32,7 @@ class Motorcontrol:
                 pass
                 count = count + 1
                 if count % 7 == 0:
-                    print("Check that portname is correct. You can find it in Arduino IDE -> tools -> port")
+                    print("Check that portname is correct and that arduino is powered and connected. You can find the portname in Arduino IDE -> tools -> port")
                 time.sleep(1)
 
         self.board_io = board_io
@@ -76,8 +72,8 @@ class Motorcontrol:
         else:
             raise RedboardException('Uploading configuration file failed')
 
-# This is a separate function in case we want
-# to add more to the config later
+    # This is a separate function in case we want
+    # to add more to the config later
     def makeConfig(self):
         config = {}
         config['num_boards'] = self.num_boards
@@ -121,56 +117,6 @@ class Motorcontrol:
             raise RedboardException('Redboard could not read position')
         else:
             return self.position
-        
-        
-    def find_init_pos(self):
-        pos = [0]*self.num_boards
-        for nr in range(self.num_boards):
-            frames = self.pipeline.wait_for_frames()
-            color = frames.get_color_frame()
-            non_deformed = np.asanyarray(color.get_data())
-            pos = self.binarySearch(non_deformed, pos, nr)
-        return pos
-
-    
-    
-    def is_deformed(self, non_deformed, thrs):
-        frames = self.pipeline.wait_for_frames()
-        color = frames.get_color_frame()
-        pixels = np.asanyarray(color.get_data())
-        II = np.abs(non_deformed.astype(int)-pixels.astype(int))
-        d = II[:,:,1]>100
-        return np.sum(d)>10
-        
-    
-    ## Binary search for initial position, such that there is no slack on the cables.
-    ## Stop search when color-color_i< thresh
-    
-    def binarySearch(self, non_deformed, pos, nr):
-        while ~self.is_deformed(non_deformed, 10):
-            pos[nr] += 100
-            self.setPos(pos)
-            if pos[nr]> self.upper_b[nr]:
-                break
-            
-        h = pos[nr] + 100
-        l = pos[nr] - 100
-        while True:
-            
-            mid = int(np.ceil((h+l)/2))
-            pos[nr] = mid
-            self.setPos(pos)
-    
-            # Stopping condition. 
-            if l>=(h-2):
-                break
-            
-            if self.is_deformed(non_deformed, 10):
-                h = mid
-            else:
-                l = mid
-                
-        return pos
 
 
     def setup(self):

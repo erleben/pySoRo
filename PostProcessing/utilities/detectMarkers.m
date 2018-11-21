@@ -49,16 +49,16 @@ if show_pin_seg
     imshow(uint8(pts).*foreground);
 end   
 
+% Enumerate the segmented markers such that each marker has a unique value in is_marker
 elements = bwconncomp(pts);
 is_marker = zeros(size(pts));
-    % Enumerate balls
-    ind = 1;
-    for num = 1:elements.NumObjects 
-        if numel(elements.PixelIdxList{num})<50
-            is_marker(elements.PixelIdxList{num}) = ind;
-            ind = ind +1;
-        end
+ind = 1;
+for num = 1:elements.NumObjects
+    if numel(elements.PixelIdxList{num})<50
+        is_marker(elements.PixelIdxList{num}) = ind;
+        ind = ind +1;
     end
+end
 end
 
   

@@ -5,14 +5,17 @@
 % where M is the number of iterations and N = number of markers *
 % dimension of points.
 
-
+<<<<<<< HEAD
 folder = strcat('D:\\nuc_finger1\\');
 settings = makeSettings('2');
-num_alphas = 56;    %The number of configurations
-save_as = 'outputSegment/finger_nuc.mat'; %Path + file name of result
+
+
+num_alphas = 56;
 
 ordered = {};
-                                                             
+                                                                %The number of configurations
+save_as = 'outputSegment/culturenight_unordered_2.mat';                            %Path + file name of result
+
 for i = 1:num_alphas
        
     settings.pc_name_recon{1}=char(strcat(folder, int2str(i),'_',settings.serial(1),'.ply'));

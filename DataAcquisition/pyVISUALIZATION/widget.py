@@ -15,7 +15,6 @@ import pyVISUALIZATION.point_cloud as PC
 import pySENSOR.api as API
 import pySENSOR.xml as RSXML
 import MotorControl.xml as MCXML
-import MessageBot.xml as MBXML
 
 
 OpenGL.ERROR_CHECKING = True
@@ -82,16 +81,9 @@ class RenderWidget(QOpenGLWidget):
         self.point_cloud_render = PC.PointCloudRender()
 
         self.sensor_thread = RSXML.load('settings.xml')
-        #self.sensor_thread = API.RealSenseThread(1, 'RealSenseThread')
         self.sensor_thread.connect(self.point_cloud_render)
         self.motor_control = MCXML.load('settings.xml')
         self.sensor_thread.motor_control = self.motor_control
-        
-        self.message_bot = MBXML.load('settings.xml')
-        if self.message_bot is not None:
-            self.message_bot.sensor = self.sensor_thread
-            self.message_bot.start()
-            self.sensor_thread.bot = self.message_bot
             
         self.sensor_thread.start()
         
