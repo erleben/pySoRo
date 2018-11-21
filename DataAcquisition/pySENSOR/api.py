@@ -4,7 +4,6 @@ sys.path.extend(['/usr/local/lib'])
 import pyrealsense2 as rs
 import numpy as np
 from skimage.io import imsave
-from OpenGL.GL import *
 import threading
 import csv
 import time
@@ -17,7 +16,6 @@ class RealSenseThread (threading.Thread):
         threading.Thread.__init__(self)
         self.threadID = threadID
         self.name = thread_name
-        self.render = None
         self.motor_control = None
         self.save_color = False
         self.save_texture = False
@@ -25,7 +23,6 @@ class RealSenseThread (threading.Thread):
         self.save_depth = False
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
-        self.bot = None
         self.motor_filename = ''
 
     def connect(self, render):
@@ -108,7 +105,6 @@ class RealSenseThread (threading.Thread):
                     writer.writerow([count] + pos)
                     
                 for camNo, pipeline in enumerate(pipelines):     
-
                
                     self.motor_filename = str(count) +'_' + serial_numbers[camNo]
                     frames = pipeline.wait_for_frames()
@@ -121,22 +117,10 @@ class RealSenseThread (threading.Thread):
                     points = rs.points()
                     points = pointcloud.calculate(depth)
                     
-                    width = color.get_width()
-                    height = color.get_height()
-    
-                    external_format = GL_RGB
-                    if color.get_profile().format() is rs.format.y8:
-                        external_format = GL_LUMINANCE
-    
-                    external_type = GL_UNSIGNED_BYTE
                     pixels = np.asanyarray(color.get_data())
                     # 2018-01-14 Kenny: This is the old librealsense2 interface
                     #coordinates = np.asanyarray(points.get_vertices())
                     #uvs = np.asanyarray(points.get_texture_coordinates())
-    
-                    coords = np.asanyarray(points.get_vertices_EXT(), dtype=np.float32)
-                    texs = np.asanyarray(points.get_texture_coordinates_EXT(), dtype=np.float32)
-                    vertex_array = np.hstack((coords, texs))
     
                     filename = self.prefix_filename + self.motor_filename + self.postfix_filename
     
@@ -162,16 +146,7 @@ class RealSenseThread (threading.Thread):
                                 pass
                                 
                         imsave(filename + 'depth.tif', depth_image)
-                        
-                if self.render is not None:
-                    self.render.copy_data(
-                        vertex_array,
-                        width,
-                        height,
-                        external_format,
-                        external_type,
-                        pixels
-                    )
+
 
                 print('frame', count, 'done')
                 count = count + 1
@@ -180,14 +155,10 @@ class RealSenseThread (threading.Thread):
                     print('Main thread is dead, closing down sensor')
                     ofile.close()
                     pipeline.stop()
-                    if self.bot is not None:
-                        self.bot.end('')
                     return
 
         except Exception as e:
             print(e)
             pipeline.stop()
             ofile.close()
-            if self.bot is not None:
-                self.bot.end(e)
             return

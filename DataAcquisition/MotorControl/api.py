@@ -124,9 +124,6 @@ class Motorcontrol:
         self.establishConnection()
         self.uploadConfig()
         self.sanityCheck()
-        if ((self.pipeline is not None) & self.autotighten):
-            print('Finding initial position')
-            self.offset = self.find_init_pos()
 
 class RedboardException(Exception):
     pass

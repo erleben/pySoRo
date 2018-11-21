@@ -1,41 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<scene clear_color="[1.0, 1.0, 1.0]">
+<!-- This is the where you customize your experiment-->
+<scene>
 
-        <camera
-                eye="[0, -0.05, -0.3]"
-                center="[0, 0, 0]"
-                up="[0, -1, 0]"
-                near="0.1"
-                far="100.0"
-                fovy="45.0"
-        />
-
-        <grid
-                on="True"
-                start_x="-1.0"
-                end_x="1.0"
-                cells_x="10"
-                start_z="-1.0"
-                end_z="1.0"
-                cells_z="10"
-        />
-
+<!--Here you can specify whether or not to store different kinds of data. 
+You should store color, texture and ply when not testing.
+Prefix is where the location of where the data will be stored. -->
         <realsense
                 save_color="True"
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="D:\\nuc_finger1\\"
+                prefix="D:\\Konstantin\\" 
                 postfix=""
         />
         
+<!--Here you can specify whether or not to use motor contorl. This should only
+be turned off during testing.
+Portname can be found in ArduinoIDE -> Tools -> Port.
+Distribution module is the path to the module that generates configurations.
+Module_args specifies the subspace of the configurations space that is to be sampled. -->
         <motor
                 use_motor_control="True"
                 portname="COM3"
                 num_boards="3"
                 distribution_module="C:\Users\kerus\Documents\GitHub\pySoRo\DataAcquisition\pyDIST\uniform.py"
-                module_args="setStartPos,[0 0 0];setStopPos,[0 300 1750];setStepSize,[40 50 250]"
+                module_args="setStartPos,[0 0 0];setStopPos,[0 300 1750];setStepSize,[40 150 750]"
         />
         
 </scene>
