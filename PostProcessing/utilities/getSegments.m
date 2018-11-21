@@ -18,7 +18,6 @@ if ~fit_circle
     isObject = HSV(:,:,3)>150;
     %isObject = imbinarize(HSV(:,:,3));
 
-    % Remove the string of the hagning ball
     isObject = imopen(isObject, strel('disk',3));
 
     % If it is so that the point cloud data quality is poor on the edges of the
