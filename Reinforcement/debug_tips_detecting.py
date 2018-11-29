@@ -88,7 +88,7 @@ cv2.imshow('segment after cleaning', out)
 
 #get contours from image
 grayimg = cv2.cvtColor(out,cv2.COLOR_BGR2GRAY)
-ret,thresh = cv2.threshold(grayimg,125,255,0)
+ret,thresh = cv2.threshold(grayimg,120,255,2)
 #ret,thresh = cv2.threshold(cimg,135,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
 im2,contours,hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 

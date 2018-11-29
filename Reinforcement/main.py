@@ -26,8 +26,8 @@ config = rs.config()
 config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
 config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
 
-min_area_tip = 850 #minimal area of contour for detecting red tip of finger
-max_area_tip = 1200 #maximal area of contour for detecting red tip of finger
+min_area_tip = 600 #minimal area of contour for detecting red tip of finger
+max_area_tip = 1800 #maximal area of contour for detecting red tip of finger
 
 
 time.sleep(1)
@@ -39,6 +39,8 @@ pointcloud = rs.pointcloud()
 time.sleep(2)
 
 isPaused = False
+
+learning = True
 
 
 # keep looping 
@@ -116,7 +118,7 @@ try:
         
         #get contours from image
         grayimg = cv2.cvtColor(out,cv2.COLOR_BGR2GRAY)
-        ret,thresh = cv2.threshold(grayimg,130,255,0)
+        ret,thresh = cv2.threshold(grayimg,130,255,2)
         #ret,thresh = cv2.threshold(cimg,135,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
         im2,contours,hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         
@@ -132,9 +134,19 @@ try:
             cv2.circle(cimg,(tip_coord[0],tip_coord[1]),3,(0,0,255),2)
         
         cv2.imshow('detected circles',cimg)
-    
+        
+        # Reinforcement learning
+        if(learning):
+            #we need to define enviroment space. It will be space of coordinates
+            env = []
+            #we need to define action list. It might be like ['forward','backward','bend','pull']
+            
+            # we need to define reward function which calculates reward in accordance of distance between ball and tip
+            # we need to define function env_step(action) which returns new state, reward, done (finish or not)
+        
+        
         key = cv2.waitKey(1) & 0xFF
-    
+        
     	# if the 'q' key is pressed, stop the loop
         if key == ord("q"):
             break
