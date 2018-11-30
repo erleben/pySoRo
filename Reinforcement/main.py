@@ -13,7 +13,9 @@ sys.path.extend(['../'])
 import time
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
+import ReinforcementControl as RC
 
+RFC = RC.ReinforcementControl()
 
 pipeline = rs.pipeline()
 cnt = rs.context()
@@ -137,12 +139,7 @@ try:
         
         # Reinforcement learning
         if(learning):
-            #we need to define enviroment space. It will be space of coordinates
-            env = []
-            #we need to define action list. It might be like ['forward','backward','bend','pull']
-            
-            # we need to define reward function which calculates reward in accordance of distance between ball and tip
-            # we need to define function env_step(action) which returns new state, reward, done (finish or not)
+            print('reward = ',RFC.calculate_reward(tip_coord,i))
         
         
         key = cv2.waitKey(1) & 0xFF
