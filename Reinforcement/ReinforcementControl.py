@@ -8,16 +8,20 @@ import sys
 sys.path.append('../DataAcquisition')
 from MotorControl import api as MC
 import numpy as np
+import CameraStream as CS
 
 class ReinforcementControl():
 
 
     def __init__(self):
-        self.max_pos = [350, 1750]
+        self.max_pos = [300, 1750]
         self.min_pos = [0,0]
         self.model = 'TestModel'
-        #self.mc = MC.Motorcontrol()
-        #self.mc.setup()
+        self.min_dist = 200
+        
+        self.mc = MC.Motorcontrol()
+        self.mc.setup()
+        
         self.grabPos = [0]
         self.currPos = [0,0]
         self.step = [100,350]
@@ -25,19 +29,52 @@ class ReinforcementControl():
         self.len_cols = (self.max_pos[0]-self.min_pos[0])/self.step[0]
         self.state_space = np.array([[row,col] for row in np.arange(self.min_pos[1],self.max_pos[1],self.step[1])\
                       for col in np.arange(self.min_pos[0],self.max_pos[0],self.step[0])])
-        self.action_space = ['forward','backward','bend','unbend']
+        self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
+        #in the future probably we can add complex action like 'forward+bend'
         self.reward = 0
         self.reward_sum = 0
         self.done = False
+        self.cam_stream = CS.CameraStream()
+        cam_data = self.cam_stream.get_data()
+        if(cam_data):
+            self.curr_distance = cam_data[2]
+        #self.reward_table = {act:[(1.0,[0,350])] for act in self.action_space}
+        
+    def goToStart(self):
+        self.mc.setPos([0,0])
+        self.currPos = [0,0]
     
-    def calculate_reward(self,tip_pts,ball_pts):
-        distance = np.sqrt(((tip_pts[0]-ball_pts[0])**2)+((tip_pts[1]-ball_pts[1])**2))
-        k = 0.1
-        self.reward = k*distance
-        return self.reward
+    def calculate_reward(self,curr_dist,new_dist):
+        dif = curr_dist - new_dist
+        k = 0.05
+        reward = k*dif
+        return reward
     
-    def step(self):
-        pass
+    def step(self,action):
+        
+        # REWRITE according to moving through the matrix of states!!!
+        new_pos = self.currPos
+        if(action == 0):
+            new_pos[1] = new_pos[1]+self.step[1]
+        elif(action== 1):
+            new_pos[1] = new_pos[1]-self.step[1]
+        elif(action== 2):
+            new_pos[0] = new_pos[0]+self.step[0]
+        elif(action == 3):
+            new_pos[0] = new_pos[0]-self.step[0]
+        
+        self.mc.setPos(new_pos)
+        cam_data = self.cam_stream.get_data()
+        if(cam_data):
+            new_distance = cam_data[2]
+            rew = self.calculate_reward(self.curr_distance,new_distance)
+        
+        self.currPos = new_pos
+        self.curr_distance = new_distance
+        if(new_distance<=self.min_dist):
+            self.done = True
+        
+        return new_pos,rew,self.done
     
     def reset(self):
         pass

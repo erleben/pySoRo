@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Nov 21 16:09:55 2018
+Created on Mon Dec  3 14:13:43 2018
 
 @author: kerus
 """
@@ -11,53 +11,43 @@ import cv2
 import sys
 sys.path.extend(['../'])
 import time
-import matplotlib.pyplot as plt
-from matplotlib.colors import hsv_to_rgb
-import ReinforcementControl as RC
 
-RFC = RC.ReinforcementControl()
-
-pipeline = rs.pipeline()
-cnt = rs.context()
-devs = cnt.query_devices()
-d = devs.front()
-print(devs.size())
-serial_no = d.get_info(rs.camera_info(1))
-print(serial_no)
-config = rs.config()
-config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
-config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
-
-min_area_tip = 600 #minimal area of contour for detecting red tip of finger
-max_area_tip = 1800 #maximal area of contour for detecting red tip of finger
+class CameraStream():
 
 
-time.sleep(1)
-pipeline.start(config)
-print('Camera is warming up')
-time.sleep(3)
-
-pointcloud = rs.pointcloud()
-time.sleep(2)
-
-isPaused = False
-
-learning = True
-
-
-# keep looping 
-try:
-    while True:
-    	# grab the current frame
-        frame = pipeline.wait_for_frames()
+    def __init__(self):
+        self.pipeline = rs.pipeline()
+        self.cnt = rs.context()
+        self.devs = self.cnt.query_devices()
+        self.d = self.devs.front()
+        print(self.devs.size())
+        self.serial_no = self.d.get_info(rs.camera_info(1))
+        print(self.serial_no)
+        self.config = rs.config()
+        self.config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
+        self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+        
+        self.min_area_tip = 600 #minimal area of contour for detecting red tip of finger
+        self.max_area_tip = 1800 #maximal area of contour for detecting red tip of finger
+        
+        
+        time.sleep(1)
+        self.pipeline.start(self.config)
+        print('Camera is warming up')
+        time.sleep(3)
+        
+        self.pointcloud = rs.pointcloud()
+        time.sleep(2)
+        
+    def get_data(self,image_need=False):
+        
+        frame = self.pipeline.wait_for_frames()
         col_obj=frame.get_color_frame()
         dep_obj=frame.get_depth_frame()
         
-        points = pointcloud.calculate(dep_obj)
-        
+        points = self.pointcloud.calculate(dep_obj)       
         col = np.asanyarray(col_obj.get_data())
-        vertices = np.asanyarray(points.get_vertices())
-        
+        vertices = np.asanyarray(points.get_vertices())       
         width = col_obj.get_width()
         
         # Detect circle
@@ -70,25 +60,15 @@ try:
         if circles is not None:
             
             circles = np.uint16(np.around(circles))
-            i = circles[0,0]
-            # draw the outer circle
-            cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
-            # draw the center of the circle
-            cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
-            
+            ball_coord = circles[0,0]            
             #put out from blok if
             #cv2.imshow('detected circles',cimg)
-            m = i[0]
-            n = i[1]
+            m = ball_coord[0]
+            n = ball_coord[1]
             d_ind = n*width + m
             pt = np.asanyarray(vertices[d_ind]).tolist()
             pts = [pt[0], pt[1], pt[2]+0.017]
     
-    
-        #Detect red tip
-        #Konstantin todo:
-        # Attach red tape to tip of robot
-        # Find out how to segment the tip and get the mean cordinate of the red area
         
         
         #mask for color segmentation (blue because we work in BGR regim)
@@ -127,30 +107,29 @@ try:
         contours.sort(key=lambda x: x.shape[0])
         cnt = contours[0]
         area = cv2.contourArea(cnt)
-        if((area >= min_area_tip)and(area <= max_area_tip)):
-            M = cv2.moments(cnt)            
-            cx = int(M['m10']/M['m00'])
-            cy = int(M['m01']/M['m00'])
-            tip_coord = [cx,cy]
+        
+        if((area < self.min_area_tip)or(area > self.max_area_tip)):
+            print('Wrong getting contour of a red tip')
+            return False
+       
+        M = cv2.moments(cnt)            
+        cx = int(M['m10']/M['m00'])
+        cy = int(M['m01']/M['m00'])
+        tip_coord = [cx,cy]
+            
+        
+        distance = np.sqrt(((tip_coord[0]-ball_coord[0])**2)+((tip_coord[1]-ball_coord[1])**2))
+        
+        if(image_need):
+            # draw the outer circle of ball
+            cv2.circle(cimg,(ball_coord[0],ball_coord[1]),ball_coord[2],(0,255,0),2)
+            # draw the center of the circle of ball
+            cv2.circle(cimg,(ball_coord[0],ball_coord[1]),2,(0,0,255),3)
             cv2.drawContours(cimg,[cnt],-1,(0,255,0),3)
             cv2.circle(cimg,(tip_coord[0],tip_coord[1]),3,(0,0,255),2)
+            
+            return cimg
         
-        cv2.imshow('detected circles',cimg)
+        return [tip_coord,ball_coord,distance}
         
-        # Reinforcement learning
-        if(learning):
-            #choose random action - a
-            #new_s,rew,done = RFC.step(a)
-            print('reward = ',RFC.calculate_reward(tip_coord,i))
-        
-        
-        key = cv2.waitKey(1) & 0xFF
-        
-    	# if the 'q' key is pressed, stop the loop
-        if key == ord("q"):
-            break
 
-# cleanup the camera and close any open windows
-finally:
-    cv2.destroyAllWindows()
-    pipeline.stop()
