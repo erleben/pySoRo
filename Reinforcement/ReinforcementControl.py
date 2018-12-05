@@ -54,7 +54,7 @@ class ReinforcementControl():
     def step(self,action):
         
         # rewrite according to moving through the matrix of states!!!
-        new_pos = self.state_space[self.currStInd]
+        new_pos = self.currPos
         if(action == 0):
             new_pos[1] = new_pos[1]+self.step[1]
             if(new_pos[1] > self.max_pos[1]):
@@ -72,28 +72,49 @@ class ReinforcementControl():
             if(new_pos[0] < self.min_pos[0]):
                 new_pos[0] = self.min_pos[0]
         
-        state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
+        if(new_pos != self.currPos):
+            state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
+            
+            if(len(state_ind)==0):
+                print('Wrong state. Check rules for actions, or settings of step')
+                return False
+            
+            state_ind = state_ind[0]
+            self.mc.setPos(new_pos)
+            cam_data = self.cam_stream.get_data()
+            if(cam_data):
+                new_distance = cam_data[2]
+                rew = self.calculate_reward(self.curr_distance,new_distance)
+            
+            self.currPos = new_pos
+            self.currStInd = state_ind
+            self.curr_distance = new_distance
+            if(new_distance<=self.min_dist):
+                self.done = True
+        else:
+            rew = -30
         
-        if(len(state_ind)==0):
-            print('Wrong state. Check rules for actions, or settings of step')
-            return False
-        
-        state_ind = state_ind[0]
-        self.mc.setPos(new_pos)
-        cam_data = self.cam_stream.get_data()
-        if(cam_data):
-            new_distance = cam_data[2]
-            rew = self.calculate_reward(self.curr_distance,new_distance)
-        
-        self.currPos = new_pos
-        self.curr_distance = new_distance
-        if(new_distance<=self.min_dist):
-            self.done = True
-        
-        return state_ind,rew,self.done
+        return self.currStInd,rew,self.done
     
     def reset(self):
-        pass
+        self.currStInd = 0
+        self.currPos = [0,0]
+        self.reward_sum = 0
+        self.reward = 0
+        
+        if(self.currStInd != 0):
+            self.mc.setPos(self.currPos)
+            
+            cam_data = self.cam_stream.get_data()
+            if(cam_data):
+                new_distance = cam_data[2]
+                
+            self.curr_distance = new_distance
+            if(new_distance<=self.min_dist):
+                self.done = True
+        
+        return self.currStInd
+        
     
         
 #RF = ReinforcementControl()

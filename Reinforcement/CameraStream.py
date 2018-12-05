@@ -130,6 +130,6 @@ class CameraStream():
             
             return cimg
         
-        return [tip_coord,ball_coord,distance}
+        return [tip_coord,ball_coord,distance]
         
 
