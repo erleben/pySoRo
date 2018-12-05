@@ -4,12 +4,12 @@
 % iteration i does not nercessarly correspond to point n in itaration j. 
 % This script reads in the points, orders them, removes noisy data, interpolates missing
 % values and stores them i a csv file.
-points = load('outputSegment/finger_nuc_1.mat');
+points = load('outputSegment/demo.mat');
 points = points.points;
-points = points(1:8*7);
+points = points(1:15*11);
 
 num_alphas = size(points,2);
-num_pr_round = 8;
+num_pr_round = 15;
 num_rounds = num_alphas/num_pr_round;
 num_markers = 3;
 
@@ -74,4 +74,4 @@ fill([0,20,20,0],[40,40,100,100],'r');
 alpha 0.1
 legend('interpolation frequency of marker', '<20%', '>40%')
 
-csvwrite('outputOrder/ordered_nuc_finger.csv',p(:,repelem(perc,3)<20));
+csvwrite('outputOrder/ordered_demo2.csv',p(:,repelem(perc,3)<20));

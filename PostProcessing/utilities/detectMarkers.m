@@ -40,7 +40,7 @@ else
     is_obj = imerode(is_obj,strel('disk',2));
     foreground = double(foreground);
     HSV = rgb2hsv(foreground);
-    pts = imopen(imclose(imfill(HSV(:,:,3).*is_obj,'holes')-(HSV(:,:,3).*is_obj)>25,strel('disk',1)),strel('disk',1));
+    pts = imopen(imclose(imfill(HSV(:,:,3).*is_obj,'holes')-(HSV(:,:,3).*is_obj)>55,strel('disk',1)),strel('disk',1));
 end
 
 

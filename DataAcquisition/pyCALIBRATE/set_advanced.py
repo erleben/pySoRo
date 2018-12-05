@@ -87,4 +87,18 @@ def set_adv():
                 
             
 
+def load_settings_json(path_to_settings_file):
+
+    file = open(path_to_settings_file, 'r')
+    json_text = file.read().strip()
+    file.close()
+
+    camNo = 0
+    context = rs.context()
+    devs = context.query_devices()
+    for d in devs:
+        print('Setting camera parameters for camera ' + str(camNo))
+        camNo = camNo + 1
+        adv = rs.rs400_advanced_mode(d)
+        adv.load_json(json_text)
             

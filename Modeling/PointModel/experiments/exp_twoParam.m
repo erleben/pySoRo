@@ -3,15 +3,15 @@ function [msTrainE, msValE, model] = exp_twoParam(order, k, use_solver, isPoly, 
 
 % Save the model for real time applications
 saveModel = true;
-name = '../../../RealTime/model2.mat';
+name = '../../../RealTime/model3.mat';
 
 addpath('../../utilities/');
-Alphas  = csvread(strcat('D:\nuc_finger1\alphamap.csv'));
-P=load('C:\Users\kerus\Documents\GitHub\pySoRo\PostProcessing\outputOrder\ordered_nuc_finger.csv');
+Alphas  = csvread(strcat('D:\demo2\alphamap.csv'));
+P=load('C:\Users\kerus\Documents\GitHub\pySoRo\PostProcessing\outputOrder\ordered_demo2.csv');
 
 %P(1:13*51,:) = [];
 %Alphas(1:13*51,:)=[];
-P=P(:,4:end);
+P=P(:,7:end);
 Alphas  = Alphas(:,3:end);
 
  m1=numel(unique(Alphas(:,2)));

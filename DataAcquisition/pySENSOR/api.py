@@ -24,6 +24,8 @@ class RealSenseThread (threading.Thread):
         self.prefix_filename = '../../../data/'
         self.postfix_filename = ''
         self.motor_filename = ''
+        self.do_filter = True
+        
 
     def connect(self, render):
         self.render = render
@@ -38,7 +40,10 @@ class RealSenseThread (threading.Thread):
             print('Real sense thread is starting up')
                         
             
-            advanced.set_adv()
+            temporal = rs.temporal_filter()
+            
+            advanced.load_settings_json("C:\\Users\\kerus\\Desktop\\goodsettings_afternoon.json")
+            #advanced.set_adv()
             
             context = rs.context()
             
@@ -107,9 +112,18 @@ class RealSenseThread (threading.Thread):
                 for camNo, pipeline in enumerate(pipelines):     
                
                     self.motor_filename = str(count) +'_' + serial_numbers[camNo]
+                    
+                    if self.do_filter:
+                        for i in range(2):
+                            frames = pipeline.wait_for_frames()
+                            depth = frames.get_depth_frame()
+                            temporal.process(depth)
+                        
                     frames = pipeline.wait_for_frames()
-    
+                    
                     depth = frames.get_depth_frame()
+                    depth = temporal.process(depth)
+                    
                     color = frames.get_color_frame()
                     
                     pointcloud = rs.pointcloud()
@@ -132,6 +146,7 @@ class RealSenseThread (threading.Thread):
                         imsave(filename + 'texture.tif', texture)
                         
                     if self.save_ply:
+                        #imsave(filename + '.tif', np.asanyarray(points.get_vertices_EXT()))
                         points.export_to_ply(filename + '.ply', color)
                         
                     if self.save_depth:

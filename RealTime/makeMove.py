@@ -9,7 +9,7 @@ class makeMove():
 
     def __init__(self):
         self.mod_name = 'model2.mat'
-        self.max_pos = [300, 1750]
+        self.max_pos = [300, 1900]
         self.min_pos = [0,0]
         self.engine = me.start_matlab()
         self.model = self.engine.ModelLoader(self.mod_name)

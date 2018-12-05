@@ -11,7 +11,7 @@ Prefix is where the location of where the data will be stored. -->
                 save_texture="True"
                 save_ply="True"
                 save_depth="False"
-                prefix="D:\\Konstantin\\" 
+                prefix="D:\\demo2\\" 
                 postfix=""
         />
         
@@ -25,7 +25,7 @@ Module_args specifies the subspace of the configurations space that is to be sam
                 portname="COM3"
                 num_boards="3"
                 distribution_module="C:\Users\kerus\Documents\GitHub\pySoRo\DataAcquisition\pyDIST\uniform.py"
-                module_args="setStartPos,[0 0 0];setStopPos,[0 300 1750];setStepSize,[40 150 750]"
+                module_args="setStartPos,[0 0 0];setStopPos,[0 300 1900];setStepSize,[20 30 130]"
         />
         
 </scene>

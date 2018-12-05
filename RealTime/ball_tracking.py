@@ -37,6 +37,8 @@ time.sleep(2)
 
 isPaused = False
 
+auto = False
+
 # keep looping
 try:
     while True:
@@ -84,6 +86,8 @@ try:
     	# if the 'q' key is pressed, stop the loop
         if key == ord("q"):
             break
+        if key == ord("a"):
+            auto = not auto
         if key == ord("m"):
             mm.move(pts)
         if key == ord("g"):
@@ -99,6 +103,8 @@ try:
             mm.move_path(pts)
         if key == ord("z"):
             mm.goToStart()
+        if auto:
+            mm.move(pts)
 
 # cleanup the camera and close any open windows
 finally:

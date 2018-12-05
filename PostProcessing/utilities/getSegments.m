@@ -15,10 +15,10 @@ HSV = rgb2hsv(foreground(:,:,1:3)-background);
 if ~fit_circle
     % Since the background is black, we binarize the intensity channel of
     % the HSV image
-    isObject = HSV(:,:,3)>150;
+    isObject = HSV(:,:,3)>90;
     %isObject = imbinarize(HSV(:,:,3));
 
-    isObject = imopen(isObject, strel('disk',3));
+    isObject = imclose(isObject, strel('disk',6));
 
     % If it is so that the point cloud data quality is poor on the edges of the
     % objects, then eroding will remove the outermost points

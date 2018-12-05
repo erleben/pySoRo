@@ -8,19 +8,18 @@ import numpy as np
 import set_advanced as sa
 import os
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 
 def main():
     
     prefix = "..\\..\\..\\data\\calibration\\"
-    postfix = '1'
+    postfix = '4'
     
     # Custom settings for D415
     if os.path.isdir(prefix):
     
         happy = False
         abort = False
-        sa.set_adv()
+        sa.load_settings_json("C:\\Users\\kerus\\Desktop\\goodsettings_cal.json")
         
         (pipelines, serial_numbers) = setup()
         
@@ -130,15 +129,24 @@ def capture_foreground(pipelines, serial_numbers, prefix, postfix):
     for camNo, pipe in enumerate(pipelines):
         pc = rs.pointcloud()
         points = rs.points()
+        
+        temporal = rs.temporal_filter()
+    
+        for i in range(2):
+            frames = pipe.wait_for_frames()
+            depth = frames.get_depth_frame()
+            temporal.process(depth)
+            
         frames = pipe.wait_for_frames()
         
-        depth_frame = frames.get_depth_frame()
+        depth_frame = temporal.process(frames.get_depth_frame())
         color_frame = frames.get_color_frame()
         
         color_image = np.asanyarray(color_frame.get_data())
 
         pc.map_to(color_frame)
         points = pc.calculate(depth_frame)
+        #imsave(prefix + str(serial_numbers[camNo]) + '_' + postfix + ground + '.tiff', np.asanyarray(points.get_vertices_EXT()))
         points.export_to_ply(prefix + str(serial_numbers[camNo]) + '_' + postfix + ground + '.ply',color_frame)
         
         tex_coor = np.asanyarray(points.get_texture_coordinates_EXT())

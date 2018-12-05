@@ -6,10 +6,10 @@
 % dimension of points.
 
 
-folder = strcat('D:\\nuc_finger1\\'); %The loactoin of your data
-settings = makeSettings('2');  %Specify the prefix of the calibratoin
-num_alphas = 54;    %The number of configurations 
-save_as = 'outputSegment/finger_nuc_konstantin.mat'; %Path + file name of result
+folder = strcat('D:\\demo2\\'); %The loactoin of your data
+settings = makeSettings('4');  %Specify the prefix of the calibratoin
+num_alphas = 165;    %The number of configurations 
+save_as = 'outputSegment/demo.mat'; %Path + file name of result
 
 
 % The script will display 

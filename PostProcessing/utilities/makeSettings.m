@@ -56,7 +56,7 @@ for cam_no = 1:length(settings.serial)
     settings.tex_name{cam_no} = char(strcat(path_calib, 'texture_fore.tif'));
     settings.pc_name_calib{cam_no} = char(strcat(path_calib, 'fore.ply'));
     
-    settings.pc_name_recon{cam_no} = char(strcat(path_recon, '.ply'));
+    settings.pc_name_recon{cam_no} = char(strcat(path_recon, '.tif'));
     settings.fore_name_recon{cam_no} = char(strcat(path_recon, 'color_fore.tif'));
     settings.tex_name_recon{cam_no} = char(strcat(path_recon, 'texture_fore.tif'));
 end

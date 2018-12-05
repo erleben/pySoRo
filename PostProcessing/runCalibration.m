@@ -12,7 +12,7 @@
 
 addpath('utilities/');
 
-settings = makeSettings('1');
+settings = makeSettings('4');
 
 segment_balls = false;
 remove_N_worst =0;
