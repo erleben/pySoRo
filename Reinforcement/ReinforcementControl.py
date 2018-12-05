@@ -24,6 +24,7 @@ class ReinforcementControl():
         
         self.grabPos = [0]
         self.currPos = [0,0]
+        self.currStInd = 0
         self.step = [100,350]
         self.len_rows = (self.max_pos[1]-self.min_pos[1])/self.step[1]
         self.len_cols = (self.max_pos[0]-self.min_pos[0])/self.step[0]
@@ -52,17 +53,32 @@ class ReinforcementControl():
     
     def step(self,action):
         
-        # REWRITE according to moving through the matrix of states!!!
-        new_pos = self.currPos
+        # rewrite according to moving through the matrix of states!!!
+        new_pos = self.state_space[self.currStInd]
         if(action == 0):
             new_pos[1] = new_pos[1]+self.step[1]
+            if(new_pos[1] > self.max_pos[1]):
+                new_pos[1] = self.max_pos[1]
         elif(action== 1):
             new_pos[1] = new_pos[1]-self.step[1]
+            if(new_pos[1] < self.min_pos[1]):
+                new_pos[1] = self.min_pos[1]
         elif(action== 2):
             new_pos[0] = new_pos[0]+self.step[0]
+            if(new_pos[0] > self.max_pos[0]):
+                new_pos[0] = self.max_pos[0]
         elif(action == 3):
             new_pos[0] = new_pos[0]-self.step[0]
+            if(new_pos[0] < self.min_pos[0]):
+                new_pos[0] = self.min_pos[0]
         
+        state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
+        
+        if(len(state_ind)==0):
+            print('Wrong state. Check rules for actions, or settings of step')
+            return False
+        
+        state_ind = state_ind[0]
         self.mc.setPos(new_pos)
         cam_data = self.cam_stream.get_data()
         if(cam_data):
@@ -74,7 +90,7 @@ class ReinforcementControl():
         if(new_distance<=self.min_dist):
             self.done = True
         
-        return new_pos,rew,self.done
+        return state_ind,rew,self.done
     
     def reset(self):
         pass
