@@ -13,9 +13,9 @@ sys.path.extend(['../'])
 import time
 import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
-import ReinforcementControl as RC
+#import ReinforcementControl as RC
 
-RFC = RC.ReinforcementControl()
+#RFC = RC.ReinforcementControl()
 
 pipeline = rs.pipeline()
 cnt = rs.context()
@@ -138,10 +138,10 @@ try:
         cv2.imshow('detected circles',cimg)
         
         # Reinforcement learning
-        if(learning):
+        #if(learning):
             #choose random action - a
             #new_s,rew,done = RFC.step(a)
-            print('reward = ',RFC.calculate_reward(tip_coord,i))
+            #print('reward = ',RFC.calculate_reward(tip_coord,i))
         
         
         key = cv2.waitKey(1) & 0xFF

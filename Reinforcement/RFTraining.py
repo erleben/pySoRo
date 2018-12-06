@@ -21,7 +21,6 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
 
 # now execute the q learning
-env = RC.ReinforcementControl()
 y = 0.95
 eps = 0.5
 decay_factor = 0.999
@@ -37,10 +36,10 @@ for i in range(num_episodes):
     r_sum = 0
     while not done:
         if np.random.random() < eps:
-            a = np.random.randint(0, 5)
+            a = np.random.randint(0, 4)
         else:
             a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
-        new_s, r, done, _ = env.step(a)
+        new_s, r, done = env.new_step(a)
         target = r + y * np.max(model.predict(np.identity(count_states)[new_s:new_s + 1]))
         target_vec = model.predict(np.identity(count_states)[s:s + 1])[0]
         target_vec[a] = target
