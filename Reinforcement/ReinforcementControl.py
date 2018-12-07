@@ -25,10 +25,9 @@ class ReinforcementControl():
         self.grabPos = [0]
         
         self.step = [100,350]
-        self.len_rows = (self.max_pos[1]-self.min_pos[1])/self.step[1]
-        self.len_cols = (self.max_pos[0]-self.min_pos[0])/self.step[0]
-        self.state_space = np.array([[row,col] for row in np.arange(self.min_pos[1],self.max_pos[1],self.step[1])\
-                      for col in np.arange(self.min_pos[0],self.max_pos[0],self.step[0])])
+
+        self.state_space = np.array([[row,col] for row in np.arange(self.min_pos[0],self.max_pos[0]+self.step[0],self.step[0])\
+                      for col in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])])
         self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
         #in the future probably we can add complex action like 'forward+bend'
         self.reward = 0
@@ -38,6 +37,8 @@ class ReinforcementControl():
         cam_data = self.cam_stream.get_data()
         if(cam_data):
             self.curr_distance = cam_data[2]
+        else:
+            self.curr_distance = self.min_dist * 10
         #self.reward_table = {act:[(1.0,[0,350])] for act in self.action_space}
         
     
@@ -69,6 +70,7 @@ class ReinforcementControl():
                 new_pos[0] = self.min_pos[0]
         print(new_pos,'new pos')
         print(self.currPos,'curr pos')
+        
         if(new_pos != self.currPos):
             state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
             
@@ -103,9 +105,11 @@ class ReinforcementControl():
                   
         cam_data = self.cam_stream.get_data()
         if(cam_data):
-            new_distance = cam_data[2]
-                
-        self.curr_distance = new_distance
+            new_distance = cam_data[2]                
+            self.curr_distance = new_distance
+        else:
+            self.curr_distance = self.min_dist * 10
+            
         if(new_distance<=self.min_dist):
             self.done = True
         
