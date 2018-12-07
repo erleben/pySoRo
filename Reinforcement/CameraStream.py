@@ -28,7 +28,7 @@ class CameraStream():
         self.config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
         
         self.min_area_tip = 600 #minimal area of contour for detecting red tip of finger
-        self.max_area_tip = 1800 #maximal area of contour for detecting red tip of finger
+        self.max_area_tip = 2300 #maximal area of contour for detecting red tip of finger
         
         
         time.sleep(1)
@@ -45,7 +45,7 @@ class CameraStream():
         max_att = 10
         attempt_success = False
         
-        while (not(attempt_success) or num_att <= max_att ):
+        while (not(attempt_success) and (num_att <= max_att)):
             frame = self.pipeline.wait_for_frames()
             col_obj=frame.get_color_frame()
             dep_obj=frame.get_depth_frame()
@@ -113,7 +113,9 @@ class CameraStream():
             cnt = contours[0]
             area = cv2.contourArea(cnt)
             
-            if((area < self.min_area_tip)or(area > self.max_area_tip)):
+            
+            #if((area < self.min_area_tip)or(area > self.max_area_tip)):
+            if(area <= 0):
                 num_att += 1
                 time.sleep(2)
                 continue
