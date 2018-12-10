@@ -13,10 +13,10 @@ void dSPINConfig(void)
     boardIndex[bd]->configSyncPin(BUSY_PIN, 0);// BUSY pin low during operations;
     //  second paramter ignored.
     boardIndex[bd]->configStepMode(STEP_FS);   // 0 microsteps per step
-    boardIndex[bd]->setMaxSpeed(500);        // 300 steps/s max
+    boardIndex[bd]->setMaxSpeed(300);        // 300 steps/s max
     boardIndex[bd]->setFullSpeed(10000);       // microstep below 10000 steps/s
-    boardIndex[bd]->setAcc(200);             // accelerate at 150 steps/s/s
-    boardIndex[bd]->setDec(200);             // Avoid high acc and dec, since the motors may slip
+    boardIndex[bd]->setAcc(150);             // accelerate at 150 steps/s/s
+    boardIndex[bd]->setDec(150);             // Avoid high acc and dec, since the motors may slip
     boardIndex[bd]->setSlewRate(SR_530V_us);   // Upping the edge speed increases torque.
     boardIndex[bd]->setOCThreshold(OC_750mA);  // OC threshold 750mA
     boardIndex[bd]->setPWMFreq(PWM_DIV_2, PWM_MUL_2); // 31.25kHz PWM freq

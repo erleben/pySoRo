@@ -9,12 +9,13 @@ sys.path.append('../DataAcquisition')
 from MotorControl import api as MC
 import numpy as np
 import CameraStream as CS
+import time
 
 class ReinforcementControl():
 
 
     def __init__(self):
-        self.max_pos = [0,300, 1750]
+        self.max_pos = [0,300, 2100]
         self.min_pos = [0,0,0]
         self.model = 'TestModel'
         self.min_dist = 70
@@ -24,7 +25,7 @@ class ReinforcementControl():
         
         self.grabPos = [0]
         
-        self.step = [0,100,350]
+        self.step = [0,150,525]
 
         self.state_space = np.array([[0,row,col] for row in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for col in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])])
@@ -44,8 +45,12 @@ class ReinforcementControl():
     
     def calculate_reward(self,curr_dist,new_dist):
         dif = curr_dist - new_dist
-        k = 0.1
-        reward = k*dif
+        #k = 0.3
+        #reward = k*dif
+        if(dif > 0):
+            reward = 1
+        else:
+            reward = -1
         return reward
     
     def new_step(self,action):
@@ -53,10 +58,12 @@ class ReinforcementControl():
         # rewrite according to moving through the matrix of states!!!
         self.done = False
         new_pos = self.currPos.copy()
+
         if(action == 0):
             new_pos[2] = new_pos[2]+self.step[2]
             if(new_pos[2] > self.max_pos[2]):
                 new_pos[2] = self.max_pos[2]
+
         elif(action== 1):
             new_pos[2] = new_pos[2]-self.step[2]
             if(new_pos[2] < self.min_pos[2]):
@@ -95,7 +102,7 @@ class ReinforcementControl():
             
             
         else:
-            rew = 0
+            rew = -5
         print(self.currStInd,rew,self.done)
         
         return self.currStInd,rew,self.done
@@ -123,7 +130,11 @@ class ReinforcementControl():
     
         
 #env = ReinforcementControl()
-#env.mc.setPos([0,0,0])
+#env.mc.setPos([0,0,750])
+#print('plus step 1')
+#time.sleep(5)
+#env.mc.setPos([0,0,375])
+#print('minus step 2')
 #env.reset_env()
 #count_states = len(env.state_space)
 #count_actions = len(env.action_space)

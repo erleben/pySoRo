@@ -8,7 +8,6 @@ import numpy as np
 import ReinforcementControl as RC
 from keras.layers import InputLayer, Dense
 from keras.models import Sequential
-from keras.models import load_model
 
 env = RC.ReinforcementControl()
 count_states = len(env.state_space)
@@ -25,14 +24,14 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 y = 0.95
 eps = 0.5
 decay_factor = 0.999
-num_episodes = 2
+num_episodes = 20
 r_avg_list = []
 
 for i in range(num_episodes):
     s = env.reset_env()
     eps *= decay_factor
     if i % 2 == 0:
-        print("Episode {} of {}".format(i + 1, num_episodes))
+        print("Episode {} of {}\n".format(i + 1, num_episodes))
     done = False
     r_sum = 0
     while not done:
@@ -51,7 +50,16 @@ for i in range(num_episodes):
         model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
         s = new_s
         r_sum += r
-    r_avg_list.append(r_sum / 1000)
-#model.save('test_model_1.h5')
-print(r_avg_list)    
-#INSTALL TENSOR FLOW ON ANACONDA
+    r_avg_list.append(r_sum / num_episodes)
+
+env.reset_env()
+#model.save('test_model_2.h5')
+print(r_avg_list)
+
+# serialize model to JSON
+#model_json = model.to_json()
+#with open("model.json", "w") as json_file:
+#    json_file.write(model_json)
+# serialize weights to HDF5
+model.save_weights("model_weights_2.h5")
+print("Saved model to disk")
