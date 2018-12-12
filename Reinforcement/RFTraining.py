@@ -15,7 +15,8 @@ count_actions = len(env.action_space)
 
 model = Sequential()
 model.add(InputLayer(batch_input_shape=(1, count_states)))
-model.add(Dense(60, activation='sigmoid'))
+model.add(Dense(600, activation='sigmoid'))
+model.add(Dense(200, activation='sigmoid'))
 model.add(Dense(count_actions, activation='linear'))
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
@@ -28,6 +29,7 @@ num_episodes = 20
 r_avg_list = []
 
 for i in range(num_episodes):
+    #to modify reset_env() with add. parameter (state_ind) for ball position
     s = env.reset_env()
     eps *= decay_factor
     if i % 2 == 0:
@@ -37,16 +39,16 @@ for i in range(num_episodes):
     while not done:
         if np.random.random() < eps:
             a = np.random.randint(0, 4)
-            print('action (random): ',a)
+            #print('action (random): ',a)
         else:
             a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
-            print('action (model): ',a)
+            #print('action (model): ',a)
         
         new_s, r, done = env.new_step(a)
         target = r + y * np.max(model.predict(np.identity(count_states)[new_s:new_s + 1]))
         target_vec = model.predict(np.identity(count_states)[s:s + 1])[0]
         target_vec[a] = target
-        print('Target vector for fitting Keras model: ',target_vec)
+        #print('Target vector for fitting Keras model: ',target_vec)
         model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
         s = new_s
         r_sum += r
