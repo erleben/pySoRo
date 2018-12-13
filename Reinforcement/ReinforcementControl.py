@@ -80,7 +80,7 @@ class ReinforcementControl():
         self.unit_coord_space = np.array(df[['x','y']])
         return True
     
-    def new_situation(self):
+    def get_ball_state(self):
         
         nearest_2_best = False
         
@@ -135,8 +135,8 @@ class ReinforcementControl():
             new_pos[1] = new_pos[1]-self.step[1]
             if(new_pos[1] < self.min_pos[1]):
                 new_pos[1] = self.min_pos[1]
-        print(new_pos,'new pos')
-        print(self.currPos,'curr pos')
+        #print(new_pos,'new pos')
+        #print(self.currPos,'curr pos')
         
         if(new_pos != self.currPos):
             state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
@@ -157,7 +157,7 @@ class ReinforcementControl():
                 new_distance = np.sqrt(((coord_tip[0]-coord_ball[0])**2)+((coord_tip[1]-coord_ball[1])**2))
                 
             else:
-                self.mc.setPos(new_pos)
+                self.mc.setPos(new_pos[:3])
                 cam_data = self.cam_stream.get_data()
                 if(cam_data):
                     new_distance = cam_data[2]
@@ -178,6 +178,7 @@ class ReinforcementControl():
         else:
             rew = -5
         print(self.currStInd,rew,self.done)
+        print(self.currPos)
         
         return self.currStInd,rew,self.done
     
@@ -187,7 +188,34 @@ class ReinforcementControl():
         self.reward = 0
         self.mc.setPos([0,0,0])
                
-        ball_state,ball_ind = self.new_situation()
+        ball_state,ball_ind = self.get_ball_state()
+        print('Ball state: 0,{},{}'.format(ball_state[1],ball_state[2]))
+        
+        self.currPos = [0,0,0,0,int(ball_state[1]),int(ball_state[2])]
+        state_ind = np.argwhere(np.all(self.state_space==self.currPos,axis=(1))).ravel()
+        if(len(state_ind)==0):
+            print('Wrong state. Check rules for actions, or settings of step')
+            return False
+        
+        self.currStInd = state_ind[0]
+        
+        self.currBall_UnitInd = ball_ind
+                          
+        self.curr_distance = self.min_dist * 10
+            
+        #if(new_distance<=self.min_dist):
+        #    self.done = True
+        
+        return self.currStInd
+    
+    def simulate_state_env(self,ind):
+        
+        self.reward_sum = 0
+        self.reward = 0
+        self.mc.setPos([0,0,0])
+        
+        ball_ind = ind
+        ball_state = self.unit_state_space[ball_ind]
         
         self.currPos = [0,0,0,0,int(ball_state[1]),int(ball_state[2])]
         state_ind = np.argwhere(np.all(self.state_space==self.currPos,axis=(1))).ravel()
@@ -208,8 +236,8 @@ class ReinforcementControl():
         
     
         
-env = ReinforcementControl()
-env.load_coordinate_space()
+#env = ReinforcementControl()
+#env.load_coordinate_space()
 #env.collect_coordinate_space()
 #env.mc.setPos([0,0,750])
 #print('plus step 1')

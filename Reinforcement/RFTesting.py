@@ -14,10 +14,12 @@ from keras.models import model_from_json
 
 
 env = RC.ReinforcementControl()
+env.load_coordinate_space()
 count_states = len(env.state_space)
+count_unit_states = len(env.unit_state_space)
 count_actions = len(env.action_space)
 
-weights_path = 'model_weights_2.h5'
+weights_path = 'model_weights_full_2.h5'
 
 #model = load_model(model_path)
 # load json and create model
@@ -44,7 +46,7 @@ s = env.reset_env()
 while not done:
    a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
    print('action: ',a)   
-   s, r, done = env.new_step(a)
+   s, r, done = env.new_step(a,False)
    r_sum += r
 env.reset_env()
    
