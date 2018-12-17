@@ -39,6 +39,9 @@ class CameraStream():
         self.pointcloud = rs.pointcloud()
         time.sleep(2)
         
+    def finish_stream(self):
+        self.pipeline.stop()
+        
     def get_data(self,image_need=False):
         
         num_att = 0
@@ -119,30 +122,38 @@ class CameraStream():
                 num_att += 1
                 time.sleep(2)
                 continue
-                
             
             attempt_success = True
-            M = cv2.moments(cnt)            
-            cx = int(M['m10']/M['m00'])
-            cy = int(M['m01']/M['m00'])
-            tip_coord = [cx,cy]
-                
             
-            distance = np.sqrt(((tip_coord[0]-ball_coord[0])**2)+((tip_coord[1]-ball_coord[1])**2))
             
         if (not(attempt_success)):
             print('Wrong getting contour of a red tip. Probably there are problems with a camera')
             return False
+        
+        if circles is not None:
+        
+            M = cv2.moments(cnt)            
+            cx = int(M['m10']/M['m00'])
+            cy = int(M['m01']/M['m00'])
+            tip_coord = [cx,cy]
             
-        if(image_need):
-            # draw the outer circle of ball
-            cv2.circle(cimg,(ball_coord[0],ball_coord[1]),ball_coord[2],(0,255,0),2)
-            # draw the center of the circle of ball
-            cv2.circle(cimg,(ball_coord[0],ball_coord[1]),2,(0,0,255),3)
-            cv2.drawContours(cimg,[cnt],-1,(0,255,0),3)
-            cv2.circle(cimg,(tip_coord[0],tip_coord[1]),3,(0,0,255),2)
+            distance = np.sqrt(((tip_coord[0]-ball_coord[0])**2)+((tip_coord[1]-ball_coord[1])**2))
+            
+            if(image_need):
                 
-            return cimg
+                # draw the outer circle of ball
+                cv2.circle(cimg,(ball_coord[0],ball_coord[1]),ball_coord[2],(0,255,0),2)
+                # draw the center of the circle of ball
+                cv2.circle(cimg,(ball_coord[0],ball_coord[1]),2,(0,0,255),3)
+                
+                cv2.drawContours(cimg,[cnt],-1,(0,255,0),3)
+                cv2.circle(cimg,(tip_coord[0],tip_coord[1]),3,(0,0,255),2)
+                    
+                return cimg
+        else:
+            return False
+            
+            
         
         return [tip_coord,ball_coord,distance]
         

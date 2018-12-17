@@ -5,152 +5,73 @@ Created on Wed Nov 21 16:09:55 2018
 @author: kerus
 """
 
-import pyrealsense2 as rs
+#import pyrealsense2 as rs
 import numpy as np
 import cv2
 import sys
 sys.path.extend(['../'])
-import time
-import matplotlib.pyplot as plt
-from matplotlib.colors import hsv_to_rgb
-#import ReinforcementControl as RC
+#import time
+#import matplotlib.pyplot as plt
+#from matplotlib.colors import hsv_to_rgb
+import ReinforcementControl as RC
 
-#RFC = RC.ReinforcementControl()
+from keras.layers import InputLayer, Dense
+from keras.models import Sequential
+#from keras.models import load_model
+#from keras.models import model_from_json
 
-pipeline = rs.pipeline()
-cnt = rs.context()
-devs = cnt.query_devices()
-d = devs.front()
-print(devs.size())
-serial_no = d.get_info(rs.camera_info(1))
-print(serial_no)
-config = rs.config()
-config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 15)
-config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgb8, 15)
+env = RC.ReinforcementControl()
+env.load_coordinate_space()
+count_states = len(env.state_space)
+count_unit_states = len(env.unit_state_space)
+count_actions = len(env.action_space)
 
-min_area_tip = 600 #minimal area of contour for detecting red tip of finger
-max_area_tip = 1800 #maximal area of contour for detecting red tip of finger
+weights_path = 'model_weights_full_2.h5'
 
+model = Sequential()
+model.add(InputLayer(batch_input_shape=(1, count_states)))
+model.add(Dense(600, activation='sigmoid'))
+model.add(Dense(200, activation='sigmoid'))
+model.add(Dense(count_actions, activation='linear'))
 
-time.sleep(1)
-pipeline.start(config)
-print('Camera is warming up')
-time.sleep(3)
+model.load_weights(weights_path)
+print("Loaded model weights from disk")
+model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
-pointcloud = rs.pointcloud()
-time.sleep(2)
 
 isPaused = False
 
 learning = True
 
-
+#s = env.reset_env()
 # keep looping 
 try:
     while True:
     	# grab the current frame
-        frame = pipeline.wait_for_frames()
-        col_obj=frame.get_color_frame()
-        dep_obj=frame.get_depth_frame()
-        
-        points = pointcloud.calculate(dep_obj)
-        
-        col = np.asanyarray(col_obj.get_data())
-        vertices = np.asanyarray(points.get_vertices())
-        
-        width = col_obj.get_width()
-        
-        # Detect circle
-        img = cv2.medianBlur(col,5)
-        cimg = cv2.cvtColor(img,cv2.COLOR_RGB2GRAY)
-        circles = cv2.HoughCircles(cimg,cv2.HOUGH_GRADIENT,1,20,
-                                param1=50,param2=30,minRadius=20,maxRadius=35)
-    
-        # Draw circle
-        if circles is not None:
-            
-            circles = np.uint16(np.around(circles))
-            i = circles[0,0]
-            # draw the outer circle
-            cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
-            # draw the center of the circle
-            cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),3)
-            
-            #put out from blok if
-            #cv2.imshow('detected circles',cimg)
-            m = i[0]
-            n = i[1]
-            d_ind = n*width + m
-            pt = np.asanyarray(vertices[d_ind]).tolist()
-            pts = [pt[0], pt[1], pt[2]+0.017]
-    
-    
-        #Detect red tip
-        #Konstantin todo:
-        # Attach red tape to tip of robot
-        # Find out how to segment the tip and get the mean cordinate of the red area
-        
-        
-        #mask for color segmentation (blue because we work in BGR regim)
-        hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_blue = np.array([70,60,170])
-        upper_blue = np.array([130,255,255])
-        mask = cv2.inRange(hsv_img, lower_blue, upper_blue)
-        
-        # in order to get rid of noise object outside the cube we set borders for mask
-        mask = np.array(mask)
-        tr=150
-        mask[:tr,:] = 0
-        mask[:,1280-tr:] = 0
-        mask[720-tr:,:] = 0
-        mask[:,:tr] = 0
-        
-        result = cv2.bitwise_and(img, img, mask=mask)
-        #cv2.imshow('segment',result)
-        
-        #getting rid of noise
-        img_bw = 255*(cv2.cvtColor(result, cv2.COLOR_BGR2GRAY) > 5).astype('uint8')
-        
-        se1 = cv2.getStructuringElement(cv2.MORPH_RECT, (35,35))
-        se2 = cv2.getStructuringElement(cv2.MORPH_RECT, (20,25))
-        mask = cv2.morphologyEx(img_bw, cv2.MORPH_CLOSE, se1)
-        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, se2)
-        mask = np.dstack([mask, mask, mask]) / 255
-        out = (result * mask).astype('uint8')
-        
-        #get contours from image
-        grayimg = cv2.cvtColor(out,cv2.COLOR_BGR2GRAY)
-        ret,thresh = cv2.threshold(grayimg,130,255,2)
-        #ret,thresh = cv2.threshold(cimg,135,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-        im2,contours,hierarchy = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        
-        contours.sort(key=lambda x: x.shape[0])
-        cnt = contours[0]
-        area = cv2.contourArea(cnt)
-        if((area >= min_area_tip)and(area <= max_area_tip)):
-            M = cv2.moments(cnt)            
-            cx = int(M['m10']/M['m00'])
-            cy = int(M['m01']/M['m00'])
-            tip_coord = [cx,cy]
-            cv2.drawContours(cimg,[cnt],-1,(0,255,0),3)
-            cv2.circle(cimg,(tip_coord[0],tip_coord[1]),3,(0,0,255),2)
-        
-        cv2.imshow('detected circles',cimg)
-        
-        # Reinforcement learning
-        #if(learning):
-            #choose random action - a
-            #new_s,rew,done = RFC.step(a)
-            #print('reward = ',RFC.calculate_reward(tip_coord,i))
-        
-        
+        cimg = env.cam_stream.get_data(True)
+        if(type(cimg) is not bool):       
+            cv2.imshow('detected circles',cimg)
+                       
         key = cv2.waitKey(1) & 0xFF
         
     	# if the 'q' key is pressed, stop the loop
         if key == ord("q"):
+            env.reset_env()
             break
+        if key == ord("m"):
+            done = False
+            r_sum = 0
+            s = env.reset_env()           
+            while not done:
+               a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
+               print('action: ',a)   
+               s, r, done = env.new_step(a,False)
+               r_sum += r
+            print('Final reward = {}'.format(r_sum))
+            
 
 # cleanup the camera and close any open windows
 finally:
     cv2.destroyAllWindows()
-    pipeline.stop()
+    env.cam_stream.finish_stream()
+    #pipeline.stop()
