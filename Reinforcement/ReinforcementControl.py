@@ -177,10 +177,36 @@ class ReinforcementControl():
             
         else:
             rew = -5
-        print(self.currStInd,rew,self.done)
-        print(self.currPos)
+        if(not(train)):
+            print(self.currStInd,rew,self.done)
+            print(self.currPos)
         
         return self.currStInd,rew,self.done
+    
+    def new_situation_env(self):
+        
+        self.reward_sum = 0
+        self.reward = 0
+               
+        ball_state,ball_ind = self.get_ball_state()
+        print('Ball state: 0,{},{}'.format(ball_state[1],ball_state[2]))
+        
+        self.currPos = [0,self.currPos[1],self.currPos[2],0,int(ball_state[1]),int(ball_state[2])]
+        state_ind = np.argwhere(np.all(self.state_space==self.currPos,axis=(1))).ravel()
+        if(len(state_ind)==0):
+            print('Wrong state. Check rules for actions, or settings of step')
+            return False
+        
+        self.currStInd = state_ind[0]
+        
+        self.currBall_UnitInd = ball_ind
+                          
+        self.curr_distance = self.min_dist * 10
+            
+        #if(new_distance<=self.min_dist):
+        #    self.done = True
+        
+        return self.currStInd
     
     def reset_env(self):
         
@@ -208,16 +234,16 @@ class ReinforcementControl():
         
         return self.currStInd
     
-    def simulate_state_env(self,ind):
+    def simulate_state_env(self,red_ind,ball_ind):
         
         self.reward_sum = 0
         self.reward = 0
         self.mc.setPos([0,0,0])
         
-        ball_ind = ind
         ball_state = self.unit_state_space[ball_ind]
+        red_state = self.unit_state_space[red_ind]
         
-        self.currPos = [0,0,0,0,int(ball_state[1]),int(ball_state[2])]
+        self.currPos = [0,int(red_state[1]),int(red_state[2]),0,int(ball_state[1]),int(ball_state[2])]
         state_ind = np.argwhere(np.all(self.state_space==self.currPos,axis=(1))).ravel()
         if(len(state_ind)==0):
             print('Wrong state. Check rules for actions, or settings of step')

@@ -28,6 +28,7 @@ count_actions = len(env.action_space)
 
 weights_path = 'model_weights_full_2.h5'
 
+# this model is pupposed to be the same as was in training stage !!!
 model = Sequential()
 model.add(InputLayer(batch_input_shape=(1, count_states)))
 model.add(Dense(600, activation='sigmoid'))
@@ -41,7 +42,9 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
 isPaused = False
 
-learning = True
+phase = 0
+
+
 
 #s = env.reset_env()
 # keep looping 
@@ -61,13 +64,17 @@ try:
         if key == ord("m"):
             done = False
             r_sum = 0
-            s = env.reset_env()           
+            if(phase > 0):
+                s = env.new_situation_env()
+            else:                
+                s = env.reset_env()           
             while not done:
                a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
                print('action: ',a)   
                s, r, done = env.new_step(a,False)
                r_sum += r
             print('Final reward = {}'.format(r_sum))
+            phase += 1
             
 
 # cleanup the camera and close any open windows
