@@ -238,7 +238,6 @@ class ReinforcementControl():
         
         self.reward_sum = 0
         self.reward = 0
-        self.mc.setPos([0,0,0])
         
         ball_state = self.unit_state_space[ball_ind]
         red_state = self.unit_state_space[red_ind]

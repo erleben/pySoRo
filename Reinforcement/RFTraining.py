@@ -17,17 +17,24 @@ count_actions = len(env.action_space)
 
 model = Sequential()
 model.add(InputLayer(batch_input_shape=(1, count_states)))
-model.add(Dense(600, activation='sigmoid'))
-model.add(Dense(200, activation='sigmoid'))
+model.add(Dense(400, activation='sigmoid'))
+model.add(Dense(100, activation='sigmoid'))
+model.add(Dense(50, activation='sigmoid'))
 model.add(Dense(count_actions, activation='linear'))
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
 
 # now execute the q learning
 y = 0.95
-decay_factor = 0.98
-num_episodes = 1000
+decay_factor = 0.999
+num_episodes = 500
 #r_avg_list = []
+
+# for i in episodes
+# ind_red= random_ball_state
+# ind_ball=random_unit_state
+#  s = env.simulate_state_env(ind_red,ind_ball)
+# oswin.krause@di.ku.dk
 
 for ind_red in range(count_unit_states):
     # train for each possible ball position
@@ -57,8 +64,9 @@ for ind_red in range(count_unit_states):
                 model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
                 s = new_s
                 r_sum += r
-            if i % 200 == 0:
+            if i % 100 == 0:
                 print("Episode {} of {}, reward sum = {}\n".format(i + 1, num_episodes,r_sum))
+                #print("eps = {}".format(eps))
             #r_avg_list.append(r_sum / num_episodes)
         #print(r_avg_list)
     

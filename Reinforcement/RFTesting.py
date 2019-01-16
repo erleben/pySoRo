@@ -19,7 +19,8 @@ count_states = len(env.state_space)
 count_unit_states = len(env.unit_state_space)
 count_actions = len(env.action_space)
 
-weights_path = 'model_weights_full_2.h5'
+#weights_path = 'model_weights_full_2.h5'
+weights_path = 'model_weights_mult_init.h5'
 
 #model = load_model(model_path)
 # load json and create model
@@ -28,8 +29,11 @@ weights_path = 'model_weights_full_2.h5'
 #json_file.close()
 model = Sequential()
 model.add(InputLayer(batch_input_shape=(1, count_states)))
-model.add(Dense(600, activation='sigmoid'))
-model.add(Dense(200, activation='sigmoid'))
+#model.add(Dense(600, activation='sigmoid'))
+#model.add(Dense(200, activation='sigmoid'))
+model.add(Dense(400, activation='sigmoid'))
+model.add(Dense(100, activation='sigmoid'))
+model.add(Dense(50, activation='sigmoid'))
 model.add(Dense(count_actions, activation='linear'))
 
 #model = model_from_json(loaded_model_json)
