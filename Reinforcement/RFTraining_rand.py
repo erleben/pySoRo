@@ -23,8 +23,11 @@ count_states = len(env.state_space)
 count_unit_states = len(env.unit_state_space)
 count_actions = len(env.action_space)
 
+count_var = len(env.variance_state_space)
+
 model = Sequential()
-model.add(InputLayer(batch_input_shape=(1, count_states)))
+#model.add(InputLayer(batch_input_shape=(1, count_states)))
+model.add(InputLayer(batch_input_shape=(1, count_var)))
 model.add(Dense(400, activation='sigmoid'))
 model.add(Dense(100, activation='sigmoid'))
 model.add(Dense(50, activation='sigmoid'))
@@ -47,13 +50,15 @@ eps = 0.5
 
 #about 2m 42s per 300 episodes
 # about 22,6 hours per training
-fin_count = count_unit_states*count_unit_states*num_episodes
+fin_count = count_var*num_episodes
+#decrease from 400 to 63
 
 for i in range(fin_count):
     # train for each possible ball position
         ind_red = randint(0,count_unit_states-1)
         ind_ball = randint(0,count_unit_states-1)
-        s = env.simulate_state_env(ind_red,ind_ball)
+        #s = env.simulate_state_env(ind_red,ind_ball)
+        s,var = env.simulate_state_env(ind_red,ind_ball)
             
         done = False
         r_sum = 0
@@ -66,16 +71,21 @@ for i in range(fin_count):
                 a = np.random.randint(0, 4)
                 #print('action (random): ',a)
             else:
-                a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
+                a = np.argmax(model.predict(np.identity(count_var)[var:var + 1]))
+                #a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
                 #print('action (model): ',a)
                 
-            new_s, r, done = env.new_step(a)
-            target = r + y * np.max(model.predict(np.identity(count_states)[new_s:new_s + 1]))
-            target_vec = model.predict(np.identity(count_states)[s:s + 1])[0]
+            #new_s, r, done = env.new_step(a)
+            new_s, r,new_var, done = env.new_step(a)
+            #target = r + y * np.max(model.predict(np.identity(count_states)[new_s:new_s + 1]))
+            target = r + y * np.max(model.predict(np.identity(count_var)[new_var:new_var + 1]))
+            #target_vec = model.predict(np.identity(count_states)[s:s + 1])[0]
+            target_vec = model.predict(np.identity(count_var)[var:var + 1])[0]
             target_vec[a] = target
-            #print('Target vector for fitting Keras model: ',target_vec)
-            model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
+            #model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
+            model.fit(np.identity(count_var)[var:var + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
             s = new_s
+            var = new_var
             r_sum += r
         eps *= decay_factor
         if i % 300 == 0:

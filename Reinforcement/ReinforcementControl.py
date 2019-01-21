@@ -37,6 +37,14 @@ class ReinforcementControl():
     
         self.unit_state_space = np.array([[0,row,col] for row in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for col in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])])
+        
+        #Experimental part
+        var_list = []
+        for state in self.state_space:
+            var_list.append((0,state[1]-state[4],state[2]-state[5]))
+        self.variance_state_space = np.array(list(set(var_list)))
+        #Experimental part
+        
         self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
         #in the future probably we can add complex action like 'forward+bend'
         self.unit_coord_space = np.array([])
@@ -147,6 +155,12 @@ class ReinforcementControl():
         
             state_ind = state_ind[0]
             
+            #experimental part
+            self.currVar = [0,new_pos[1]-new_pos[4],new_pos[2]-new_pos[5]]
+            varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
+            self.currVarInd = varid[0]
+            #experimental part
+            
             if(train):
                 tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[:3],axis=(1))).ravel()
                 tip_u_state_ind = tip_u_state_ind[0]
@@ -181,7 +195,7 @@ class ReinforcementControl():
             print(self.currStInd,rew,self.done)
             print(self.currPos)
         
-        return self.currStInd,rew,self.done
+        return self.currStInd,rew,self.currVarInd, self.done
     
     def new_situation_env(self):
         
@@ -202,11 +216,17 @@ class ReinforcementControl():
         self.currBall_UnitInd = ball_ind
                           
         self.curr_distance = self.min_dist * 10
+        
+        #experimental part
+        self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
+        varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
+        self.currVarInd = varid[0]
+        #experimental part 
             
         #if(new_distance<=self.min_dist):
         #    self.done = True
         
-        return self.currStInd
+        return self.currStInd,self.currVarInd
     
     def reset_env(self):
         
@@ -228,11 +248,17 @@ class ReinforcementControl():
         self.currBall_UnitInd = ball_ind
                           
         self.curr_distance = self.min_dist * 10
+        
+        #experimental part
+        self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
+        varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
+        self.currVarInd = varid[0]
+        #experimental part  
             
         #if(new_distance<=self.min_dist):
         #    self.done = True
         
-        return self.currStInd
+        return self.currStInd,self.currVarInd
     
     def simulate_state_env(self,red_ind,ball_ind):
         
@@ -253,11 +279,17 @@ class ReinforcementControl():
         self.currBall_UnitInd = ball_ind
                           
         self.curr_distance = self.min_dist * 10
-            
+        
+        #experimental part
+        self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
+        varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
+        self.currVarInd = varid[0]
+        #experimental part    
+        
         #if(new_distance<=self.min_dist):
         #    self.done = True
         
-        return self.currStInd
+        return self.currStInd,self.currVarInd
         
     
         

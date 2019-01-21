@@ -26,12 +26,15 @@ count_states = len(env.state_space)
 count_unit_states = len(env.unit_state_space)
 count_actions = len(env.action_space)
 
+count_var = len(env.variance_state_space)
+
 #weights_path = 'model_weights_full_2.h5'
-weights_path = 'model_weights_mult_init.h5'
+#weights_path = 'model_weights_mult_init.h5'
+weights_path = 'model_weights_rand_approach.h5'
 
 # this model is pupposed to be the same as was in training stage !!!
 model = Sequential()
-model.add(InputLayer(batch_input_shape=(1, count_states)))
+model.add(InputLayer(batch_input_shape=(1, count_var)))
 #model.add(Dense(600, activation='sigmoid'))
 #model.add(Dense(200, activation='sigmoid'))
 model.add(Dense(400, activation='sigmoid'))
@@ -69,13 +72,13 @@ try:
             done = False
             r_sum = 0
             if(phase > 0):
-                s = env.new_situation_env()
+                s,var = env.new_situation_env()
             else:                
-                s = env.reset_env()           
+                s,var = env.reset_env()           
             while not done:
-               a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
+               a = np.argmax(model.predict(np.identity(count_var)[var:var + 1]))
                print('action: ',a)   
-               s, r, done = env.new_step(a,False)
+               s, r,var, done = env.new_step(a,False)
                r_sum += r
             print('Final reward = {}'.format(r_sum))
             phase += 1
