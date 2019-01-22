@@ -30,15 +30,15 @@ count_var = len(env.variance_state_space)
 
 #weights_path = 'model_weights_full_2.h5'
 #weights_path = 'model_weights_mult_init.h5'
-weights_path = 'model_weights_rand_approach.h5'
+#weights_path = 'model_weights_rand_approach.h5'
+weights_path = 'model_weights_rand_opt.h5'
 
 # this model is pupposed to be the same as was in training stage !!!
 model = Sequential()
 model.add(InputLayer(batch_input_shape=(1, count_var)))
 #model.add(Dense(600, activation='sigmoid'))
 #model.add(Dense(200, activation='sigmoid'))
-model.add(Dense(400, activation='sigmoid'))
-model.add(Dense(100, activation='sigmoid'))
+model.add(Dense(200, activation='sigmoid'))
 model.add(Dense(50, activation='sigmoid'))
 model.add(Dense(count_actions, activation='linear'))
 

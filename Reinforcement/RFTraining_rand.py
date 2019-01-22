@@ -28,8 +28,7 @@ count_var = len(env.variance_state_space)
 model = Sequential()
 #model.add(InputLayer(batch_input_shape=(1, count_states)))
 model.add(InputLayer(batch_input_shape=(1, count_var)))
-model.add(Dense(400, activation='sigmoid'))
-model.add(Dense(100, activation='sigmoid'))
+model.add(Dense(200, activation='sigmoid'))
 model.add(Dense(50, activation='sigmoid'))
 model.add(Dense(count_actions, activation='linear'))
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
@@ -38,7 +37,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 # now execute the q learning
 y = 0.95
 decay_factor = 0.999
-num_episodes = 300
+num_episodes = 500
 eps = 0.5
 #r_avg_list = []
 
@@ -101,6 +100,6 @@ for i in range(fin_count):
 #with open("model.json", "w") as json_file:
 #    json_file.write(model_json)
 # serialize weights to HDF5
-model.save_weights("model_weights_rand_approach.h5")
+model.save_weights("model_weights_rand_opt.h5")
 print("Model is trained")
 print("Saved model to disk")
