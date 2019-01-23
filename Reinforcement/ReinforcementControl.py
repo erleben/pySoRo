@@ -291,7 +291,9 @@ class ReinforcementControl():
         
         return self.currStInd,self.currVarInd
         
-    
+if __name__ == 'main':
+    env = ReinforcementControl()
+    env.collect_coordinate_space()
         
 #env = ReinforcementControl()
 #env.load_coordinate_space()
