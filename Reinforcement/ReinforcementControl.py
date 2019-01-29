@@ -20,7 +20,8 @@ class ReinforcementControl():
         self.min_pos = [0,0,0]
         self.model = 'TestModel'
         #file in which will be saved coordinates of each motor state
-        self.coord_state_path = 'coord_motor_space.csv'
+        #self.coord_state_path = 'coord_motor_space.csv'
+        self.coord_state_path = 'coord_motor_space1.csv'
         self.min_dist = 70
         
         self.mc = MC.Motorcontrol()
@@ -38,11 +39,15 @@ class ReinforcementControl():
         self.unit_state_space = np.array([[0,row,col] for row in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for col in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])])
         
-        #Experimental part
+        #calculating variance space
         var_list = []
         for state in self.state_space:
             var_list.append((0,state[1]-state[4],state[2]-state[5]))
         self.variance_state_space = np.array(list(set(var_list)))
+        
+        #Experimental part
+        #Here we can add new policy as element of the list
+        self.policies = ['collision-free']
         #Experimental part
         
         self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
@@ -77,6 +82,7 @@ class ReinforcementControl():
                     print('Failed collecting coordinates on parameters (0,{}, {})'.format(state[1],state[2]))
             print('Coordinate space. Collecting {}'.format(num))
             print(coord_space[num])
+        self.mc.setPos([0,0,0])
         med_coord_space = np.median(coord_space,axis=0)
         df = pd.DataFrame(med_coord_space,columns=['x','y'])
         df.to_csv(self.coord_state_path,index=False)
@@ -96,7 +102,7 @@ class ReinforcementControl():
         if(cam_data):
             ball_coord = cam_data[1]
             # calculating euclidean distance between ball and states
-            eucl = np.sqrt((self.unit_coord_space[:,0]-ball_coord[0])**2 + (self.unit_coord_space[:,1]-ball_coord[1])**2)
+            eucl = np.sqrt((self.unit_coord_space[:,0]-ball_coord[0]-ball_coord[2])**2 + (self.unit_coord_space[:,1]-ball_coord[1]-ball_coord[2])**2)
             eucl_sort = pd.DataFrame(eucl,columns=['dist']).sort_values(by=['dist'])
             eucl_ind = eucl_sort.index.values
             if(nearest_2_best):
@@ -114,10 +120,22 @@ class ReinforcementControl():
         dif = curr_dist - new_dist
         #k = 0.3
         #reward = k*dif
-        if(dif > 0):
-            reward = 1
-        else:
-            reward = -1
+        if(len(self.policies)>0):
+            for policy in self.policies:
+                #here we can add a realisation for each policy
+                if (policy == 'collision-free'):
+                    #if bending motor parameter for the ball less than bending motor parameter for the robot
+                    if((self.currVar[1] > 0) and (dif > 0)):
+                        reward = 0.5
+                    elif(dif > 0):
+                        reward = 1
+                    else:
+                        reward = -1       
+        else:    
+            if(dif > 0):
+                reward = 1
+            else:
+                reward = -1
         return reward
     
     def new_step(self,action,train=True):
@@ -170,14 +188,17 @@ class ReinforcementControl():
                 
                 new_distance = np.sqrt(((coord_tip[0]-coord_ball[0])**2)+((coord_tip[1]-coord_ball[1])**2))
                 
+                rew = self.calculate_reward(self.curr_distance,new_distance)
+                
             else:
                 self.mc.setPos(new_pos[:3])
                 cam_data = self.cam_stream.get_data()
                 if(cam_data):
                     new_distance = cam_data[2]
+                    rew = self.calculate_reward(self.curr_distance,new_distance)
                     #here we can add check for changing position of the ball !!!
                     
-            rew = self.calculate_reward(self.curr_distance,new_distance)
+            
             self.curr_distance = new_distance
                     
             #if(new_distance<=self.min_dist):
@@ -291,7 +312,7 @@ class ReinforcementControl():
         
         return self.currStInd,self.currVarInd
         
-if __name__ == 'main':
+if __name__ == '__main__':
     env = ReinforcementControl()
     env.collect_coordinate_space()
         

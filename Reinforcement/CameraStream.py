@@ -118,7 +118,7 @@ class CameraStream():
             
             
             #if((area < self.min_area_tip)or(area > self.max_area_tip)):
-            if(area <= 0):
+            if((area <= 0) or (circles is None)):
                 num_att += 1
                 time.sleep(2)
                 continue

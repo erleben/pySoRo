@@ -100,6 +100,8 @@ for i in range(fin_count):
 #with open("model.json", "w") as json_file:
 #    json_file.write(model_json)
 # serialize weights to HDF5
-model.save_weights("model_weights_rand_opt.h5")
+model.save_weights("model_weights_rand_opt_collfree.h5")
+#work version
+#model.save_weights("model_weights_rand_opt.h5")
 print("Model is trained")
 print("Saved model to disk")
