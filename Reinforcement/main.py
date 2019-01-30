@@ -31,7 +31,7 @@ count_var = len(env.variance_state_space)
 #weights_path = 'model_weights_full_2.h5'
 #weights_path = 'model_weights_mult_init.h5'
 #weights_path = 'model_weights_rand_approach.h5'
-weights_path = 'model_weights_rand_opt_collfree.h5'
+weights_path = 'model_weights_rand_opt_collfree2.h5'
 #work version
 #weights_path = 'model_weights_rand_opt.h5'
 

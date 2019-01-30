@@ -125,7 +125,7 @@ class ReinforcementControl():
                 #here we can add a realisation for each policy
                 if (policy == 'collision-free'):
                     #if bending motor parameter for the ball less than bending motor parameter for the robot
-                    if((self.currVar[1] > 0) and (dif > 0)):
+                    if((self.currVar[1] >= 0) and (dif > 0)):
                         reward = 0.5
                     elif(dif > 0):
                         reward = 1
