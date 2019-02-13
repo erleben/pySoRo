@@ -37,7 +37,7 @@ model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 # now execute the q learning
 y = 0.95
 decay_factor = 0.999
-num_episodes = 500
+num_episodes = 600
 eps = 0.5
 #r_avg_list = []
 
@@ -58,7 +58,8 @@ for i in range(fin_count):
         ind_ball = randint(0,count_unit_states-1)
         #s = env.simulate_state_env(ind_red,ind_ball)
         s,var = env.simulate_state_env(ind_red,ind_ball)
-            
+        #print("Episode {} of {},fing_state = {}, ball_state = {}\n".format(i + 1, fin_count,ind_red,ind_ball))
+        #print(env.state_space[s],env.variance_state_space[var])        
         done = False
         r_sum = 0
         
@@ -95,13 +96,11 @@ for i in range(fin_count):
     
 #env.reset_env()
 
-# serialize model to JSON
-#model_json = model.to_json()
-#with open("model.json", "w") as json_file:
-#    json_file.write(model_json)
+
 # serialize weights to HDF5
-model.save_weights("model_weights_rand_opt_collfree2.h5")
 #work version
-#model.save_weights("model_weights_rand_opt.h5")
+#model.save_weights("model_weights_rand_opt_collfree2.h5")
+model.save_weights("_".join([env.model,"model_weights"]))
+
 print("Model is trained")
 print("Saved model to disk")

@@ -18,7 +18,7 @@ class ReinforcementControl():
     def __init__(self):
         self.max_pos = [0,300, 2100]
         self.min_pos = [0,0,0]
-        self.model = 'TestModel'
+        self.model = 'TreatTest'
         #file in which will be saved coordinates of each motor state
         #self.coord_state_path = 'coord_motor_space.csv'
         self.coord_state_path = 'coord_motor_space1.csv'
@@ -47,8 +47,8 @@ class ReinforcementControl():
         
         #Experimental part
         #Here we can add new policy as element of the list
-        self.policies = ['collision-free']
-        #Experimental part
+        self.goals = ['treat']
+        #self.goals = ['push']
         
         self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
         #in the future probably we can add complex action like 'forward+bend'
@@ -116,26 +116,60 @@ class ReinforcementControl():
         else:
             return False
     
-    def calculate_reward(self,curr_dist,new_dist):
-        dif = curr_dist - new_dist
+    #def calculate_reward(self,curr_dist,new_dist):
+    def calculate_reward(self,curr_pos,new_pos,new_coord=False):
+        #dif = curr_dist - new_dist
+        #dif = [0,currVar[1] - newVar[1],currVar[2] - newVar[2]]
         #k = 0.3
         #reward = k*dif
-        if(len(self.policies)>0):
-            for policy in self.policies:
-                #here we can add a realisation for each policy
-                if (policy == 'collision-free'):
-                    #if bending motor parameter for the ball less than bending motor parameter for the robot
-                    if((self.currVar[1] >= 0) and (dif > 0)):
-                        reward = 0.5
-                    elif(dif > 0):
-                        reward = 1
-                    else:
-                        reward = -1       
-        else:    
-            if(dif > 0):
-                reward = 1
+        if(len(self.goals)>0):
+            
+            #here we can add a realisation for each policy
+            
+            if(type(new_coord)!=bool):
+                coord_tip = new_coord
             else:
-                reward = -1
+                tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[:3],axis=(1))).ravel()
+                tip_u_state_ind = tip_u_state_ind[0]                
+                coord_tip = self.unit_coord_space[tip_u_state_ind]
+            
+            old_tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==curr_pos[:3],axis=(1))).ravel()
+            old_tip_u_state_ind = old_tip_u_state_ind[0]                
+            old_coord_tip = self.unit_coord_space[old_tip_u_state_ind]
+            
+            if('treat' in self.goals):               
+
+                pref_u_state_ind = np.argwhere(np.all(self.unit_state_space==[0,max(new_pos[4]-self.step[1],0),new_pos[5]],axis=(1))).ravel()
+                pref_u_state_ind = pref_u_state_ind[0]                
+                coord_pref = self.unit_coord_space[pref_u_state_ind]
+                #coord_ball = self.unit_coord_space[self.currBall_UnitInd]
+                old_distance = np.sqrt(((old_coord_tip[0]-coord_pref[0])**2)+((old_coord_tip[1]-coord_pref[1])**2))
+                new_distance = np.sqrt(((coord_tip[0]-coord_pref[0])**2)+((coord_tip[1]-coord_pref[1])**2))
+                
+                if((new_pos[:3] == [0,max(new_pos[4]-self.step[1],0),new_pos[5]]) and ((new_pos[2] - new_pos[5]) == 0)):
+                    reward = 5
+                elif((old_distance-new_distance) > 0):
+                    reward = 1
+                else:
+                    reward = -1
+            
+            elif('push' in self.goals):
+                
+                pref_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[3:],axis=(1))).ravel()
+                pref_u_state_ind = pref_u_state_ind[0]                
+                coord_pref = self.unit_coord_space[pref_u_state_ind]
+                #coord_ball = self.unit_coord_space[self.currBall_UnitInd]
+                old_distance = np.sqrt(((old_coord_tip[0]-coord_pref[0])**2)+((old_coord_tip[1]-coord_pref[1])**2))
+                new_distance = np.sqrt(((coord_tip[0]-coord_pref[0])**2)+((coord_tip[1]-coord_pref[1])**2))
+                
+                if(new_pos[:3] == new_pos[3:]):
+                    reward = 5
+                elif((old_distance-new_distance) > 0):
+                    reward = 1
+                else:
+                    reward = -1
+               
+            
         return reward
     
     def new_step(self,action,train=True):
@@ -174,40 +208,40 @@ class ReinforcementControl():
             state_ind = state_ind[0]
             
             #experimental part
-            self.currVar = [0,new_pos[1]-new_pos[4],new_pos[2]-new_pos[5]]
-            varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
-            self.currVarInd = varid[0]
+            newVar = [0,new_pos[1]-new_pos[4],new_pos[2]-new_pos[5]]
+            varid = np.argwhere(np.all(self.variance_state_space==newVar,axis=(1))).ravel()
+            
             #experimental part
             
             if(train):
-                tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[:3],axis=(1))).ravel()
-                tip_u_state_ind = tip_u_state_ind[0]
-                
-                coord_tip = self.unit_coord_space[tip_u_state_ind]
-                coord_ball = self.unit_coord_space[self.currBall_UnitInd]
-                
-                new_distance = np.sqrt(((coord_tip[0]-coord_ball[0])**2)+((coord_tip[1]-coord_ball[1])**2))
-                
-                rew = self.calculate_reward(self.curr_distance,new_distance)
+                #rew = self.calculate_reward(self.curr_distance,new_distance)
+                rew = self.calculate_reward(self.currPos,new_pos)
                 
             else:
                 self.mc.setPos(new_pos[:3])
                 cam_data = self.cam_stream.get_data()
                 if(cam_data):
-                    new_distance = cam_data[2]
-                    rew = self.calculate_reward(self.curr_distance,new_distance)
+                    #new_distance = cam_data[2]
+                    new_coord = cam_data[1]
+                    #rew = self.calculate_reward(self.curr_distance,new_distance)
+                    rew = self.calculate_reward(self.currPos,new_pos,new_coord)
                     #here we can add check for changing position of the ball !!!
                     
-            
-            self.curr_distance = new_distance
                     
             #if(new_distance<=self.min_dist):
             #    self.done = True
-            if(new_pos[:3] == new_pos[3:]):
-                self.done = True
+            
+            if('treat' in self.goals):
+                if(new_pos[:3] == [0,max(new_pos[4]-self.step[1],0),new_pos[5]]):
+                    self.done = True
+            else:    
+                if(new_pos[:3] == new_pos[3:]):
+                    self.done = True
             
             self.currPos = new_pos
             self.currStInd = state_ind
+            self.currVar = newVar
+            self.currVarInd = varid[0]
             
             
         else:
