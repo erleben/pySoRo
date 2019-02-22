@@ -34,21 +34,11 @@ model.add(Dense(count_actions, activation='linear'))
 model.compile(loss='mse', optimizer='adam', metrics=['mae'])
 
 
-# now execute the q learning
 y = 0.95
 decay_factor = 0.999
 num_episodes = 600
 eps = 0.5
-#r_avg_list = []
 
-# for i in episodes
-# ind_red= random_ball_state
-# ind_ball=random_unit_state
-#  s = env.simulate_state_env(ind_red,ind_ball)
-# oswin.krause@di.ku.dk
-
-#about 2m 42s per 300 episodes
-# about 22,6 hours per training
 fin_count = count_var*num_episodes
 #decrease from 400 to 63
 
@@ -56,10 +46,8 @@ for i in range(fin_count):
     # train for each possible ball position
         ind_red = randint(0,count_unit_states-1)
         ind_ball = randint(0,count_unit_states-1)
-        #s = env.simulate_state_env(ind_red,ind_ball)
         s,var = env.simulate_state_env(ind_red,ind_ball)
-        #print("Episode {} of {},fing_state = {}, ball_state = {}\n".format(i + 1, fin_count,ind_red,ind_ball))
-        #print(env.state_space[s],env.variance_state_space[var])        
+     
         done = False
         r_sum = 0
         
@@ -69,17 +57,11 @@ for i in range(fin_count):
         while not done:
             if np.random.random() < eps:
                 a = np.random.randint(0, 4)
-                #print('action (random): ',a)
             else:
                 a = np.argmax(model.predict(np.identity(count_var)[var:var + 1]))
-                #a = np.argmax(model.predict(np.identity(count_states)[s:s + 1]))
-                #print('action (model): ',a)
                 
-            #new_s, r, done = env.new_step(a)
             new_s, r,new_var, done = env.new_step(a)
-            #target = r + y * np.max(model.predict(np.identity(count_states)[new_s:new_s + 1]))
             target = r + y * np.max(model.predict(np.identity(count_var)[new_var:new_var + 1]))
-            #target_vec = model.predict(np.identity(count_states)[s:s + 1])[0]
             target_vec = model.predict(np.identity(count_var)[var:var + 1])[0]
             target_vec[a] = target
             #model.fit(np.identity(count_states)[s:s + 1], target_vec.reshape(-1, count_actions), epochs=1, verbose=0)
@@ -90,9 +72,7 @@ for i in range(fin_count):
         eps *= decay_factor
         if i % 300 == 0:
             print("Episode {} of {},fing_state = {}, ball_state = {}, reward sum = {}\n".format(i + 1, fin_count,ind_red,ind_ball, r_sum))
-            #print("eps = {}".format(eps))
-        #r_avg_list.append(r_sum / num_episodes)
-        #print(r_avg_list)
+
     
 #env.reset_env()
 

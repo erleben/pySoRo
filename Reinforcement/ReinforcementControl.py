@@ -30,41 +30,48 @@ class ReinforcementControl():
         self.grabPos = [0]
         
         self.step = [0,100,525]
-
+        
+        # generation of the whole state space
         self.state_space = np.array([[0,rob1,rob2,0,ball1,ball2] for rob1 in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for rob2 in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])\
                       for ball1 in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for ball2 in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])])
-    
+        
+        #generation of unique states (possible parameters of the motor)
         self.unit_state_space = np.array([[0,row,col] for row in np.arange(self.min_pos[1],self.max_pos[1]+self.step[1],self.step[1])\
                       for col in np.arange(self.min_pos[2],self.max_pos[2]+self.step[2],self.step[2])])
         
-        #calculating variance space
+        #calculating variance space 
+        # from absolute measures to relative ones
         var_list = []
         for state in self.state_space:
             var_list.append((0,state[1]-state[4],state[2]-state[5]))
         self.variance_state_space = np.array(list(set(var_list)))
         
-        #Experimental part
-        #Here we can add new policy as element of the list
+        #Here we can add new goal as element of the list
         self.goals = ['treat']
         #self.goals = ['push']
         
         self.action_space = [0,1,2,3] #['forward','backward','bend','unbend']
-        #in the future probably we can add complex action like 'forward+bend'
+        #we can modify it adding complex action
         self.unit_coord_space = np.array([])
         self.reward = 0
         self.reward_sum = 0
         self.done = False
+        # launch camera stream
         self.cam_stream = CS.CameraStream()
+        #obtain first image data
         cam_data = self.cam_stream.get_data()
         if(cam_data):
             self.curr_distance = cam_data[2]
         else:
             self.curr_distance = self.min_dist * 10
-        #self.reward_table = {act:[(1.0,[0,350])] for act in self.action_space}
+
     
     def collect_coordinate_space(self):
+    #this method is used for collecting coordinates for each possible state of the robot
+    #in accordance with current configuration
+    #Run it only if you change configuration (step size, min/max parameters)
         
         count_collect = 3
         pos = [0,0,0]
@@ -90,12 +97,13 @@ class ReinforcementControl():
         return True
         
     def load_coordinate_space(self):
+    # this method is used for upload saved coordinates for each state
         df = pd.read_csv(self.coord_state_path)
         self.unit_coord_space = np.array(df[['x','y']])
         return True
     
     def get_ball_state(self):
-        
+    #this method is used to get current ball state (motor parameters)    
         nearest_2_best = False
         
         cam_data = self.cam_stream.get_data()
@@ -116,33 +124,33 @@ class ReinforcementControl():
         else:
             return False
     
-    #def calculate_reward(self,curr_dist,new_dist):
     def calculate_reward(self,curr_pos,new_pos,new_coord=False):
-        #dif = curr_dist - new_dist
-        #dif = [0,currVar[1] - newVar[1],currVar[2] - newVar[2]]
-        #k = 0.3
-        #reward = k*dif
+
         if(len(self.goals)>0):
             
-            #here we can add a realisation for each policy
-            
+            #getting new coordinates of the robot
             if(type(new_coord)!=bool):
+            # if model works in real time (test stage)
                 coord_tip = new_coord
             else:
+            # if model works in real time (train stage)
                 tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[:3],axis=(1))).ravel()
                 tip_u_state_ind = tip_u_state_ind[0]                
                 coord_tip = self.unit_coord_space[tip_u_state_ind]
             
+            #getting current coordinates of the robot
             old_tip_u_state_ind = np.argwhere(np.all(self.unit_state_space==curr_pos[:3],axis=(1))).ravel()
             old_tip_u_state_ind = old_tip_u_state_ind[0]                
             old_coord_tip = self.unit_coord_space[old_tip_u_state_ind]
             
+            #here we can add a realisation for each desirable goal
             if('treat' in self.goals):               
-
+                #getting preferable coordinates of the robot
                 pref_u_state_ind = np.argwhere(np.all(self.unit_state_space==[0,max(new_pos[4]-self.step[1],0),new_pos[5]],axis=(1))).ravel()
                 pref_u_state_ind = pref_u_state_ind[0]                
                 coord_pref = self.unit_coord_space[pref_u_state_ind]
-                #coord_ball = self.unit_coord_space[self.currBall_UnitInd]
+                
+                #calculating current and new distance 
                 old_distance = np.sqrt(((old_coord_tip[0]-coord_pref[0])**2)+((old_coord_tip[1]-coord_pref[1])**2))
                 new_distance = np.sqrt(((coord_tip[0]-coord_pref[0])**2)+((coord_tip[1]-coord_pref[1])**2))
                 
@@ -154,11 +162,12 @@ class ReinforcementControl():
                     reward = -1
             
             elif('push' in self.goals):
-                
+                #getting preferable coordinates of the robot
                 pref_u_state_ind = np.argwhere(np.all(self.unit_state_space==new_pos[3:],axis=(1))).ravel()
                 pref_u_state_ind = pref_u_state_ind[0]                
                 coord_pref = self.unit_coord_space[pref_u_state_ind]
-                #coord_ball = self.unit_coord_space[self.currBall_UnitInd]
+                
+                #calculating current and new distance 
                 old_distance = np.sqrt(((old_coord_tip[0]-coord_pref[0])**2)+((old_coord_tip[1]-coord_pref[1])**2))
                 new_distance = np.sqrt(((coord_tip[0]-coord_pref[0])**2)+((coord_tip[1]-coord_pref[1])**2))
                 
@@ -173,8 +182,9 @@ class ReinforcementControl():
         return reward
     
     def new_step(self,action,train=True):
+    # this method returned new robot state, variance between current and new state, reward
+    #in accordance with taken action    
         
-        # rewrite according to moving through the matrix of states!!!
         self.done = False
         new_pos = self.currPos.copy()
 
@@ -195,8 +205,7 @@ class ReinforcementControl():
             new_pos[1] = new_pos[1]-self.step[1]
             if(new_pos[1] < self.min_pos[1]):
                 new_pos[1] = self.min_pos[1]
-        #print(new_pos,'new pos')
-        #print(self.currPos,'curr pos')
+
         
         if(new_pos != self.currPos):
             state_ind = np.argwhere(np.all(self.state_space==new_pos,axis=(1))).ravel()
@@ -207,30 +216,25 @@ class ReinforcementControl():
         
             state_ind = state_ind[0]
             
-            #experimental part
+            # new variance between states
             newVar = [0,new_pos[1]-new_pos[4],new_pos[2]-new_pos[5]]
             varid = np.argwhere(np.all(self.variance_state_space==newVar,axis=(1))).ravel()
             
-            #experimental part
+            
             
             if(train):
-                #rew = self.calculate_reward(self.curr_distance,new_distance)
+            # if traing stage
                 rew = self.calculate_reward(self.currPos,new_pos)
                 
             else:
+            # if real-time
                 self.mc.setPos(new_pos[:3])
                 cam_data = self.cam_stream.get_data()
                 if(cam_data):
-                    #new_distance = cam_data[2]
                     new_coord = cam_data[1]
-                    #rew = self.calculate_reward(self.curr_distance,new_distance)
                     rew = self.calculate_reward(self.currPos,new_pos,new_coord)
-                    #here we can add check for changing position of the ball !!!
                     
-                    
-            #if(new_distance<=self.min_dist):
-            #    self.done = True
-            
+            # condions for finishing episode
             if('treat' in self.goals):
                 if(new_pos[:3] == [0,max(new_pos[4]-self.step[1],0),new_pos[5]]):
                     self.done = True
@@ -245,6 +249,7 @@ class ReinforcementControl():
             
             
         else:
+        #if robot reached the wall and tries to go further
             rew = -5
         if(not(train)):
             print(self.currStInd,rew,self.done)
@@ -253,7 +258,7 @@ class ReinforcementControl():
         return self.currStInd,rew,self.currVarInd, self.done
     
     def new_situation_env(self):
-        
+        # method for launching new situation where robot or the ball are placed in other position
         self.reward_sum = 0
         self.reward = 0
                
@@ -272,19 +277,15 @@ class ReinforcementControl():
                           
         self.curr_distance = self.min_dist * 10
         
-        #experimental part
         self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
         varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
         self.currVarInd = varid[0]
-        #experimental part 
-            
-        #if(new_distance<=self.min_dist):
-        #    self.done = True
+
         
         return self.currStInd,self.currVarInd
     
     def reset_env(self):
-        
+        # reset to initial state
         self.reward_sum = 0
         self.reward = 0
         self.mc.setPos([0,0,0])
@@ -304,19 +305,15 @@ class ReinforcementControl():
                           
         self.curr_distance = self.min_dist * 10
         
-        #experimental part
         self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
         varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
         self.currVarInd = varid[0]
-        #experimental part  
-            
-        #if(new_distance<=self.min_dist):
-        #    self.done = True
         
         return self.currStInd,self.currVarInd
     
     def simulate_state_env(self,red_ind,ball_ind):
-        
+        # method for launching new situation where robot or the ball are placed in other position
+        # only for training stage due to simulation
         self.reward_sum = 0
         self.reward = 0
         
@@ -339,10 +336,7 @@ class ReinforcementControl():
         self.currVar = [0,self.currPos[1]-self.currPos[4],self.currPos[2]-self.currPos[5]]
         varid = np.argwhere(np.all(self.variance_state_space==self.currVar,axis=(1))).ravel()
         self.currVarInd = varid[0]
-        #experimental part    
-        
-        #if(new_distance<=self.min_dist):
-        #    self.done = True
+
         
         return self.currStInd,self.currVarInd
         
@@ -350,19 +344,7 @@ if __name__ == '__main__':
     env = ReinforcementControl()
     env.collect_coordinate_space()
         
-#env = ReinforcementControl()
-#env.load_coordinate_space()
-#env.collect_coordinate_space()
-#env.mc.setPos([0,0,750])
-#print('plus step 1')
-#time.sleep(5)
-#env.mc.setPos([0,0,375])
-#print('minus step 2')
-#print(env.reset_env())
-#count_states = len(env.state_space)
-#count_actions = len(env.action_space)
-#print(RF.state_space)
-#print(RF.action_space)
+
 
 
     
