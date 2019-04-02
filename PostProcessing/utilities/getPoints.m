@@ -4,7 +4,6 @@ back_name = settings.back_name{cam_no};
 fore_name = settings.fore_name{cam_no};
 tex_name  = settings.tex_name{cam_no};
 pc_name = settings.pc_name_calib{cam_no};
-
 pc = pcread(pc_name);
 
 balls = getSegments(back_name, fore_name, fit_circle);

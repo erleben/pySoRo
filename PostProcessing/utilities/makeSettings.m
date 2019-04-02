@@ -4,21 +4,22 @@ settings = {};
 
 
 if nargin < 5
-    settings.path_to_pcs = '../../data/reconstruction/';
+    settings.path_to_pcs = '../../../experiment1/';
 else
     settings.path_to_pcs = path_to_pcs;
 end
 
 
 if nargin < 4
-    settings.path_to_calib = '../../data/calibration/';
+    settings.path_to_calib = '../../../calibration1/';
 else
     settings.path_to_calib = path_to_calib;
 end
 
 if nargin < 3
-    settings.serial = ["618204002727", "616205005055"];
+    %settings.serial = ["618204002727", "616205005055"];
     %settings.serial = ["806312060523", "732612060774"];
+    settings.serial = ["821312062271", "732612060774"];
 else
     settings.serial = serial;
 end

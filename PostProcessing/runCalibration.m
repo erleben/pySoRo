@@ -7,14 +7,14 @@
 
 addpath('utilities/');
 
-settings = makeSettings('16');
+settings = makeSettings('4');
 
 segment_balls = false;
 remove_N_worst =0;
 
 radius = 0.017;
 use_radius = true;
-show_spheres = true; 
+show_spheres = true;
 with_color = true;
 fit_circle = true;
 
@@ -95,7 +95,7 @@ title('Point cloud A')
 
 subplot(1,3,2);
 pc_close = findNeighborsInRadius(target_PC, median(target_PC.Location), 0.5);
-target_PC= pointCloud(target_PC.Location(pc_close,:),'Color', target_PC.Color(pc_close,:));
+target_PC = pointCloud(target_PC.Location(pc_close,:),'Color', target_PC.Color(pc_close,:));
 pcshow(target_PC);
 view([0 -90])
 xlabel('x');
@@ -142,7 +142,9 @@ end
 
 
 if show_spheres
-    figure()
+    hold on;
+    figure();
+    pcshow(pcmerged);
     for b =1:num_balls
         plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
         hold on;
@@ -150,6 +152,7 @@ if show_spheres
     end
     view([0 -90])
 end
+hold off;
 
 
 save(settings.tform_name, 'R', 'T');
