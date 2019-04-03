@@ -1,7 +1,7 @@
 %Visualization program
 addpath('utilities/');
 
-folder = strcat('/Users/NewUser/Documents/experiment1/');
+folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment1/');
 settings = makeSettings('4');
 
 %pc = imread(strcat(folder, '1_821312062271color.tif'));
@@ -43,9 +43,9 @@ hold on;
 %pcshow(pc5);
 %pcshow(pc3);
 %pcshow([pc4.Location(:,1), pc4.Location(:,2), pc4.Location(:,3)]);
-%pcshow([pc5.Location(:,1), pc5.Location(:,2), pc5.Location(:,3)]);
+pcshow([pc5.Location(:,1), pc5.Location(:,2), pc5.Location(:,3)]);
 %pcshow([pc6.Location(:,1), pc6.Location(:,2), pc6.Location(:,3)]);
-pcshow(pc6);
+%pcshow(pc6);
 hold off;
 
 %%

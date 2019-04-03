@@ -8,7 +8,7 @@ ordered = {};
 
 
 
-folder = strcat('/Users/NewUser/Documents/experiment1/');
+folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment1/');
 settings = makeSettings('4');
 
 %folder = '../data/experiment_3/output_exp1/';
