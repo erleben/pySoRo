@@ -4,14 +4,14 @@ settings = {};
 
 
 if nargin < 5
-    settings.path_to_pcs = '../../experiment3/';
+    settings.path_to_pcs = '../../experiment1/';
 else
     settings.path_to_pcs = path_to_pcs;
 end
 
 
 if nargin < 4
-    settings.path_to_calib = '../../calibration3/';
+    settings.path_to_calib = '../../calibration1/';
 else
     settings.path_to_calib = path_to_calib;
 end

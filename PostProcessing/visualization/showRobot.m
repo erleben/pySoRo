@@ -1,9 +1,9 @@
 
-folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment2/');
-settings = makeSettings('4');
+folder = strcat('/Volumes/TOSHIBA/experiment3/');
+settings = makeSettings('15');
 
 i = 1;
-imshow(char(strcat(folder, int2str(1),'_',settings.serial(1),'color.tif')));
+imshow(char(strcat(folder, 1,'_',settings.serial(1),'color.tif')));
 
 
 for a1 = 1:60:300

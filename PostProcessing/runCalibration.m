@@ -139,19 +139,6 @@ if remove_N_worst
     disp('Removed ball number:')
     disp(setdiff(1:num_balls,in));
 end
-hold off;
-
-if show_spheres
-    hold on;
-    figure();
-    for b =1:num_balls
-        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
-        hold on;
-        plot(sphereModel([points_2(b,:),  radius]));
-    end
-    view([0 -90])
-end
-hold off;
 
 
 if show_spheres
@@ -159,7 +146,6 @@ if show_spheres
     figure();
     pcshow(pcmerged);
     for b =1:num_balls
-        hold on;
         plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
         hold on;
         plot(sphereModel([points_2(b,:),  radius]));
