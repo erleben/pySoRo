@@ -13,15 +13,14 @@ addpath('utilities/');
 addpath('visualization/');
 
 folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment3/');
-settings = makeSettings('4');
+settings = makeSettings('4','1',["821312062271", "732612060774"],'../../calibration3/','../../experiment3/');
 
+%%
 
-%folder = '../data/experiment_3/output_exp1/';
-%settings = makeSettings('13');
 alphamap = csvread(strcat(settings.path_to_pcs, 'alphamap.csv'));
 tform = load(settings.tform_name);
 
-for i = 1:(length(alphamap))
+for i = 1:1%(length(alphamap))
     settings.pc_name_recon{1}=char(strcat(folder, int2str(i),'_',settings.serial(1),'.ply'));
     settings.pc_name_recon{2}=char(strcat(folder, int2str(i),'_',settings.serial(2),'.ply'));
 

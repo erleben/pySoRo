@@ -7,11 +7,12 @@
 
 addpath('utilities/');
 
-settings = makeSettings('4');
+settings = makeSettings('4', '1', ["821312062271", "732612060774"], '../../calibration3/','../../experiment3/');
 
 segment_balls = false;
-remove_N_worst =0;
+remove_N_worst = 0;
 
+real_world_radius = 3.2*10;
 radius = 0.017;
 use_radius = true;
 show_spheres = true;
@@ -27,6 +28,7 @@ fit_circle = true;
 if segment_balls
     pc_balls_1 = sphere_pcs_1{1};
     pc_balls_2 = sphere_pcs_2{1};
+    
     for num = 2:num_balls
         pc_balls_1 = pcmerge(pc_balls_1, sphere_pcs_1{num},0.0001);
         pc_balls_2 = pcmerge(pc_balls_2, sphere_pcs_2{num},0.0001);
