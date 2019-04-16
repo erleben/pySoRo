@@ -2,12 +2,13 @@
 addpath('utilities');
 addpath('visualization');
 
-folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment2/');
-settings = makeSettings('4', '1', ["821312062271", "732612060774"], '../../calibration2/', '../../experiment2/');
+folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment3/');
+settings = makeSettings('4', '1', ["821312062271", "732612060774"], '../../calibration3/', '../../experiment3/');
 
-robot_pointclouds = load(strcat(settings.path_to_calib, 'unordered_points_g2.mat'));
+robot_pointclouds = load(strcat(settings.path_to_calib, 'unordered_points_pcmerged.mat'));
+
 %Visualize robot surface with depth and with mask.
-showRobotSurface(robot_pointclouds.points{117});
+showRobotSurface(robot_pointclouds.pc_merged{1});
 
 %% Loading a pre processing point cloud and plotting.
 folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment2/');

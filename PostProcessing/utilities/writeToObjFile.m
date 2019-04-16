@@ -15,6 +15,7 @@ function success = writeToObjFile(filename, pcloud)
             fprintf(fileID, "#*\n");
         end
     end
+    fprintf(fileID, '#*\n', length(pcloud));
     fclose(fileID);
 end
 
