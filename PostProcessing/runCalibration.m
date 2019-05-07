@@ -7,13 +7,13 @@
 
 addpath('utilities/');
 
-settings = makeSettings('4', '1', ["821312062271", "732612060774"], '../../calibration3/','../../experiment3/');
+settings = makeSettings('5', '1', ["821312062271", "732612060774"], '../../calibration5/','../../experiment5/');
 
 segment_balls = false;
 remove_N_worst = 0;
 
 
-radius = 0.02;
+radius = 0.001;
 % added scale factor from camera space to real_world measurements.
 real_radius_ball = 32/2;
 S = real_radius_ball/radius;
@@ -31,15 +31,14 @@ fit_circle = true;
 
 %
 pc = sphere_pcs_1{1}.Location;
-    
 pc1 = pc - mean(pc);
-radius1 = 0.0
+radius1 = 0.0;
 for i = 1:length(pc1)
     radius1 = radius1 + pdist([0,0,0; pc1(i,:)], 'euclidean');
 end
-radius = radius1/length(pc1)
+radius = radius1/length(pc1);
 %max(pc(:,1)) - min(pc(:,1));
-S = real_radius_ball/radius;
+S = real_radius_ball/(radius)
 
 %
 

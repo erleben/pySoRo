@@ -12,8 +12,8 @@ ordered = {};
 addpath('utilities/');
 addpath('visualization/');
 
-folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment3/');
-settings = makeSettings('4','1',["821312062271", "732612060774"],'../../calibration3/','../../experiment3/');
+folder = strcat('/Users/NewUser/Documents/DataAcquisitionMathias/experiment5/');
+settings = makeSettings('5','1',["821312062271", "732612060774"],'../../calibration5/','../../experiment5/');
 
 
 
@@ -31,7 +31,7 @@ for i = 1:1%(length(alphamap))
     settings.tex_name_recon{2}=char(strcat(folder, int2str(i),'_',settings.serial(2),'texture.tif'));
     
     %points{i} = getMarkerCentroids(settings);
-    [pc1, pc2, mergedpc] = getSurfacePointClouds(settings, tform, [100; 100; 100], 0.1, 0.002);
+    [pc1, pc2, mergedpc] = getSurfacePointClouds(settings, tform, [100; 100; 100], 0.1, 0.008);
     pcloud1{i} = pc1;
     pcloud2{i} = pc2;
     pc_merged{i} = mergedpc;

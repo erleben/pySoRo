@@ -3,8 +3,8 @@
 #include "ArduinoJson.h"
 
 
-#define MAX_BOARDS 5
-int NUM_BOARDS;
+//#define MAX_BOARDS 5
+#define NUM_BOARDS 2;
 unsigned long state [MAX_BOARDS];
 AutoDriver *boardIndex[MAX_BOARDS];
 
