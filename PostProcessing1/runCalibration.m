@@ -38,10 +38,10 @@ for i = 1:length(pc1)
 end
 radius = radius1/length(pc1);
 %max(pc(:,1)) - min(pc(:,1));
-S = real_radius_ball/(radius)
+S = real_radius_ball/(radius);
+
 
 %
-
 % accum_radius = 0.0;
 % 
 % pc1_ball = sphere_pcs_1{1}.Location;
@@ -134,7 +134,8 @@ end
 
 
 % Display the result
-subplot(1,3,1);
+%subplot(1,3,1);
+figure();
 pc_close = findNeighborsInRadius(ref_PC, median(ref_PC.Location), 0.5);
 ref_PC= pointCloud(ref_PC.Location(pc_close,:).*S,'Color', ref_PC.Color(pc_close,:));
 pcshow(ref_PC);
@@ -142,9 +143,10 @@ view([0 -90])
 xlabel('x');
 ylabel('y');
 zlabel('z');
-title('Point cloud A')
+%title('Point cloud A')
 
-subplot(1,3,2);
+%subplot(1,3,2);
+figure();
 pc_close = findNeighborsInRadius(target_PC, median(target_PC.Location), 0.5);
 target_PC = pointCloud(target_PC.Location(pc_close,:).*S,'Color', target_PC.Color(pc_close,:));
 pcshow(target_PC);
@@ -152,9 +154,10 @@ view([0 -90])
 xlabel('x');
 ylabel('y');
 zlabel('z');
-title('Point cloud B')
+%title('Point cloud B')
 
-subplot(1,3,3);
+%subplot(1,3,3);
+figure();
 pc_close = findNeighborsInRadius(ref_transformed_PC, median(ref_transformed_PC.Location), 0.5);
 ref_transformed_PC= pointCloud(ref_transformed_PC.Location(pc_close,:).*S,'Color', ref_transformed_PC.Color(pc_close,:));
 pcshow(ref_transformed_PC);
@@ -162,11 +165,11 @@ view([0 -90])
 xlabel('x');
 ylabel('y');
 zlabel('z');
-title('Point cloud B transformed')
+%title('Point cloud B transformed')
 
 % Merge the transformed pointcloud with the target-pointcloud
 pcmerged=pcmerge(ref_transformed_PC, target_PC, 0.001);
-
+%
 hold on;
 figure;
 pcshow(pcmerged);
@@ -174,7 +177,7 @@ view([0 -90])
 xlabel('x'); 
 ylabel('y');
 zlabel('z');
-title('Point cloud A and B merged in same coordinate system')
+%title('Point cloud A and B merged in same coordinate system')
 
 
 disp('Rotation:');
@@ -185,38 +188,75 @@ disp('Determinant of R:')
 disp(det(R));
 disp('MSE of transformed centroids:');
 disp(mse);
-
+%
 if remove_N_worst
     disp('Removed ball number:')
     disp(setdiff(1:num_balls,in));
 end
 hold off;
 
+
 if show_spheres
     hold on;
     figure();
     for b =1:num_balls
-        plot(sphereModel([((R*points_1(b,:)')'+T')*S,  real_radius_ball]));
+        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius+0.01]));
         hold on;
-        plot(sphereModel([points_2(b,:)*S,  real_radius_ball]));
+        plot(sphereModel([points_2(b,:),  radius+0.01]));
     end
     view([0 -90])
 end
+xlabel('x'); 
+ylabel('y');
+zlabel('z');
+grid on;
 hold off;
 
-
+if show_spheres
+    hold on;
+    figure();
+    for b =1:num_balls
+        hold on;
+        plot(sphereModel([points_1(b,:),  radius]));
+    end
+    view([0 -90])
+end
+xlabel('x'); 
+ylabel('y');
+zlabel('z');
+grid on;
+hold off;
+if show_spheres
+    hold on;
+    figure();
+    for b =1:num_balls
+        hold on;
+        plot(sphereModel([points_2(b,:),  radius]));
+    end
+    view([0 -90])
+end
+xlabel('x'); 
+ylabel('y');
+zlabel('z');
+grid on;
+hold off;
+%
 if show_spheres
     hold on;
     figure();
     pcshow(pcmerged);
     for b =1:num_balls
         hold on;
-        plot(sphereModel([((R*points_1(b,:)')'+T').*S,  real_radius_ball]));
+        plot(sphereModel([((R*points_1(b,:)')'+T').*S,  real_radius_ball*1.5]));
         hold on;
-        plot(sphereModel([points_2(b,:).*S,  real_radius_ball]));
+        plot(sphereModel([points_2(b,:).*S,  real_radius_ball*1.5]));
     end
     view([0 -90])
 end
+grid on;
+xlabel('x'); 
+ylabel('y');
+zlabel('z');
 hold off;
 
 

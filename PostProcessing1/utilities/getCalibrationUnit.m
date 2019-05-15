@@ -1,4 +1,4 @@
-function [calibration,C] = getCalibrationUnit(settings, calibrationUnit, margin)
+function [calibration,C] = getCalibrationUnit(settings, calibrationUnit, background_margin)
 %GETCALIBRATIONUNIT Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -25,16 +25,21 @@ function [calibration,C] = getCalibrationUnit(settings, calibrationUnit, margin)
     
         % Extract individual spheres.
         gray = [pc3.Color(:,1).*0.2989 + pc3.Color(:,2).*0.5870 + pc3.Color(:,3).*0.1140];
-        fore = gray > 120;
+        fore = gray > background_margin(k);
         mask = fore;
         % Identify all non-black parts
         pc4 = pointCloud(pc3.Location(mask,:),'Color', pc3.Color(mask,:));
         % Cluster each partial sphere into 4 clusters
         [idx,C{k}] = kmeans(double(pc4.Location), 4);
+        
         % Select all inliers in each cluster.
+        c = [];
         for i = 1:4
-            calibration{6*(k-1)+i} = select(pc3, find(idx == i));
+            [model, inliers] = pcfitsphere(pc4, 0.02, 'SampleIndices', find(idx == i));
+            calibration{6*(k-1)+i} = select(pc4, inliers);
+            c = [c; model.Center];
         end
+        %C{k} = c;
         % Provide the whole calibration element for visualization
         calibration{(k-1)*6+5} = pc3;
         calibration{(k-1)*6+6} = pc4;
