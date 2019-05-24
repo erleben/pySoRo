@@ -1,4 +1,4 @@
-function [pcloud_in, pcloud_out] = pcloudROICylinder(pcloud, maxdistance)
+function [model, pcloud_in, pcloud_out] = pcloudROICylinder(pcloud, maxdistance)
 %PCLOUDROICYLINDER Summary of this function goes here
 %   Detailed explanation goes here
     %centered_location = pcloud.Location - mean(pcloud.Location);

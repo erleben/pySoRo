@@ -7,13 +7,13 @@
 
 addpath('utilities/');
 
-settings = makeSettings('5', '1', ["821312062271", "732612060774"], '../../calibration5/','../../experiment5/');
+settings = makeSettings('4', '1', ["821312062271", "732612060774"], '../../calibration3/','../../experiment3/');
 
 segment_balls = false;
 remove_N_worst = 0;
 
 
-radius = 0.001;
+radius = 0.016;
 % added scale factor from camera space to real_world measurements.
 real_radius_ball = 32/2;
 S = real_radius_ball/radius;
@@ -38,7 +38,7 @@ for i = 1:length(pc1)
 end
 radius = radius1/length(pc1);
 %max(pc(:,1)) - min(pc(:,1));
-S = real_radius_ball/(radius)
+S = real_radius_ball/(radius);
 
 %
 
@@ -136,32 +136,32 @@ end
 % Display the result
 subplot(1,3,1);
 pc_close = findNeighborsInRadius(ref_PC, median(ref_PC.Location), 0.5);
-ref_PC= pointCloud(ref_PC.Location(pc_close,:).*S,'Color', ref_PC.Color(pc_close,:));
+ref_PC= pointCloud(ref_PC.Location(pc_close,:),'Color', ref_PC.Color(pc_close,:));
 pcshow(ref_PC);
 view([0 -90])
-xlabel('x');
-ylabel('y');
-zlabel('z');
+xlabel('x(m)');
+ylabel('y(m)');
+zlabel('z(m)');
 title('Point cloud A')
 
 subplot(1,3,2);
 pc_close = findNeighborsInRadius(target_PC, median(target_PC.Location), 0.5);
-target_PC = pointCloud(target_PC.Location(pc_close,:).*S,'Color', target_PC.Color(pc_close,:));
+target_PC = pointCloud(target_PC.Location(pc_close,:),'Color', target_PC.Color(pc_close,:));
 pcshow(target_PC);
 view([0 -90])
-xlabel('x');
-ylabel('y');
-zlabel('z');
+xlabel('x(m)');
+ylabel('y(m)');
+zlabel('z(m)');
 title('Point cloud B')
 
 subplot(1,3,3);
 pc_close = findNeighborsInRadius(ref_transformed_PC, median(ref_transformed_PC.Location), 0.5);
-ref_transformed_PC= pointCloud(ref_transformed_PC.Location(pc_close,:).*S,'Color', ref_transformed_PC.Color(pc_close,:));
+ref_transformed_PC= pointCloud(ref_transformed_PC.Location(pc_close,:),'Color', ref_transformed_PC.Color(pc_close,:));
 pcshow(ref_transformed_PC);
 view([0 -90])
-xlabel('x');
-ylabel('y');
-zlabel('z');
+xlabel('x(m)');
+ylabel('y(m)');
+zlabel('z(m)');
 title('Point cloud B transformed')
 
 % Merge the transformed pointcloud with the target-pointcloud
@@ -171,9 +171,9 @@ hold on;
 figure;
 pcshow(pcmerged);
 view([0 -90])
-xlabel('x'); 
-ylabel('y');
-zlabel('z');
+xlabel('x(m)'); 
+ylabel('y(m)');
+zlabel('z(m)');
 title('Point cloud A and B merged in same coordinate system')
 
 
@@ -196,10 +196,13 @@ if show_spheres
     hold on;
     figure();
     for b =1:num_balls
-        plot(sphereModel([((R*points_1(b,:)')'+T')*S,  real_radius_ball]));
+        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
         hold on;
-        plot(sphereModel([points_2(b,:)*S,  real_radius_ball]));
+        plot(sphereModel([points_2(b,:),  radius]));
     end
+    xlabel('x(m)'); 
+    ylabel('y(m)');
+    zlabel('z(m)');
     view([0 -90])
 end
 hold off;
@@ -211,15 +214,35 @@ if show_spheres
     pcshow(pcmerged);
     for b =1:num_balls
         hold on;
-        plot(sphereModel([((R*points_1(b,:)')'+T').*S,  real_radius_ball]));
+        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
         hold on;
-        plot(sphereModel([points_2(b,:).*S,  real_radius_ball]));
+        plot(sphereModel([points_2(b,:),  radius]));
     end
+    xlabel('x(m)'); 
+    ylabel('y(m)');
+    zlabel('z(m)');
     view([0 -90])
 end
 hold off;
 
 
+if show_spheres
+    hold on;
+    for b =1:num_balls
+        figure();
+        hold on;
+        plot(sphereModel([((R*points_1(b,:)')'+T'),  radius]));
+        hold on;
+        plot(sphereModel([points_2(b,:),  radius]));
+        title(num2str(norm(((R*points_1(b,:)')'+T') - points_2(b,:))));
+        xlabel('x(m)'); 
+        ylabel('y(m)');
+        zlabel('z(m)');
+        view([0 -90])
+    end
+end
+hold off;
+%%
 save(settings.tform_name, 'R', 'T', 'S');
 
 %TODO:
