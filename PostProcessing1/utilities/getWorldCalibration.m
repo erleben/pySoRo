@@ -30,7 +30,7 @@ for i = 1:length(Centroids1)
             
         end
     end
-end
+en2
 
 real_dists = [];
 for i = 1:length(Real_Centroids.coordinates)

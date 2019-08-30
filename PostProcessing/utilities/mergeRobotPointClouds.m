@@ -10,6 +10,6 @@ function pc_merged = mergeRobotPointClouds(pc1, pc2, tform)
         ref_transformed(i,:)=(tform.R*ref_points(i,:)')'+tform.T';
     end
     pc1_transformed = pointCloud(ref_transformed, 'Color', pc1.Color);
-    pc_merged = pcmerge(pc1_transformed, pc2, 0.00001);
+    
 end
 

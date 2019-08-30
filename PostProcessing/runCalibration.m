@@ -13,7 +13,7 @@ segment_balls = false;
 remove_N_worst = 0;
 
 
-radius = 0.016;
+radius = 0.018;
 % added scale factor from camera space to real_world measurements.
 real_radius_ball = 32/2;
 S = real_radius_ball/radius;
@@ -36,10 +36,10 @@ radius1 = 0.0;
 for i = 1:length(pc1)
     radius1 = radius1 + pdist([0,0,0; pc1(i,:)], 'euclidean');
 end
-radius = radius1/length(pc1);
+%radius = radius1/length(pc1);
 %max(pc(:,1)) - min(pc(:,1));
 S = real_radius_ball/(radius);
-
+%S = 1000;
 %
 
 % accum_radius = 0.0;
