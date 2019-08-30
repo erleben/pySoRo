@@ -21,7 +21,7 @@ settings = makeSettings('4','1',["821312062271", "732612060774"],'../../calibrat
 alphamap = csvread(strcat(settings.path_to_pcs, 'alphamap.csv'));
 tform = load(settings.tform_name);
 showReconstruction = true;
-showRobot = true;
+showRobot = false;
 T = [0,0,0];
 for i = 1:1
 %for i = 1:2
@@ -43,9 +43,13 @@ for i = 1:1
     % full pcloud
     %[pc1, pc2, mergedpc] = getSurfacePointClouds(settings, tform, [c;c;c], 0.15, 0.0005);
     if (i == 1) 
-        [tform1, ptCloud] = getRobotTransform(pc2, -10);
+        [tform1, pc2] = getRobotTransform(pc2, -10);
+        pc1 = applyRobotTransform(pc1, tform1);
+        mergedpc = applyRobotTransform(mergedpc, tform1);
     else
-        
+        pc1 = applyRobotTransform(pc1, tform1);
+        pc2 = applyRobotTransform(pc2, tform1);
+        mergedpc = applyRobotTransform(mergedpc, tform1);
     end
     %pc1 = translateRobot(pc1, tform, T);
     %pc2 = translateRobot(pc2, tform, T);
